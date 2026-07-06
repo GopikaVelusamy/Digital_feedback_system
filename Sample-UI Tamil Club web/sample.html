@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>நற்பணி மன்றம் — Narpani Mandram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Tiro+Tamil:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=Hind+Madurai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --stone: #1a0a00;
+  --gold: #d4a017;
+  --gold-light: #f0c040;
+  --gold-dim: #8a6510;
+  --vermillion: #c0392b;
+  --cream: #f5e6c8;
+  --cream-dim: #e8d4b0;
+  --carved: #3d2b1f;
+  --lotus: #e8927c;
+  --deep: #0d0500;
+  --mid: #2a1505;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--stone);color:var(--cream);font-family:'Lora',Georgia,serif;overflow-x:hidden;cursor:default}
+
+/* ── ANIMATION CLASSES ── */
+.fade-up{opacity:0;transform:translateY(60px);transition:opacity .7s ease-out,transform .7s ease-out}
+.fade-left{opacity:0;transform:translateX(-80px);transition:opacity .6s ease-out,transform .6s ease-out}
+.fade-right{opacity:0;transform:translateX(80px);transition:opacity .6s ease-out,transform .6s ease-out}
+.scale-in{opacity:0;transform:scale(.5);transition:opacity .5s cubic-bezier(.34,1.56,.64,1),transform .5s cubic-bezier(.34,1.56,.64,1)}
+.rotate-in{opacity:0;transform:rotateY(90deg);transition:opacity .8s ease,transform .8s ease}
+.blur-in{opacity:0;filter:blur(12px);transition:opacity 1s ease,filter 1s ease}
+.is-visible.fade-up{opacity:1;transform:translateY(0)}
+.is-visible.fade-left{opacity:1;transform:translateX(0)}
+.is-visible.fade-right{opacity:1;transform:translateX(0)}
+.is-visible.scale-in{opacity:1;transform:scale(1)}
+.is-visible.rotate-in{opacity:1;transform:rotateY(0deg)}
+.is-visible.blur-in{opacity:1;filter:blur(0)}
+.delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}.delay-3{transition-delay:.3s}
+.delay-4{transition-delay:.4s}.delay-5{transition-delay:.5s}.delay-6{transition-delay:.6s}
+
+/* ── SECTION WRAPPER ── */
+.section-wrap{position:relative;overflow:hidden}
+.section-wrap::before{
+  content:'தமிழ்';position:absolute;font-family:'Tiro Tamil',serif;
+  font-size:clamp(8rem,20vw,22rem);color:var(--gold);opacity:.03;
+  transform:rotate(-30deg);top:50%;left:50%;translate:-50% -50%;
+  pointer-events:none;z-index:0;white-space:nowrap
+}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;
+  display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(to bottom,rgba(26,10,0,.95),transparent);
+  backdrop-filter:blur(2px);transition:background .3s}
+nav.scrolled{background:rgba(13,5,0,.97);border-bottom:1px solid rgba(212,160,23,.2)}
+.nav-brand{font-family:'Cinzel Decorative',serif;font-size:.82rem;color:var(--gold);
+  letter-spacing:.15em;text-decoration:none}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{color:var(--cream-dim);text-decoration:none;font-family:'Lora',serif;
+  font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--gold)}
+.nav-toggle{display:none;cursor:pointer;flex-direction:column;gap:5px}
+.nav-toggle span{width:24px;height:2px;background:var(--gold);display:block;transition:all .3s}
+
+/* ── LOTUS DIVIDER ── */
+.lotus-divider{display:flex;justify-content:center;align-items:center;padding:1.5rem 0;background:var(--stone)}
+.lotus-divider svg{width:120px;height:50px;overflow:visible}
+
+/* ══════════════════════════════════
+   SECTION 1 — HERO
+══════════════════════════════════ */
+#hero{height:100vh;min-height:650px;position:relative;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 110%,#3d1a00 0%,#1a0a00 45%,#0d0500 100%)}
+#hero-sky{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,#3d1505 0%,#1a0a00 60%);z-index:0}
+.hero-kolam-bg{position:absolute;inset:0;z-index:0;opacity:.06}
+#flames-container{position:absolute;inset:0;z-index:3;pointer-events:none}
+
+/* Gopuram */
+#gopuram-wrap{position:absolute;bottom:0;left:50%;
+  transform:translateX(-50%) translateY(240px);z-index:2;
+  animation:gopuram-rise 1.6s cubic-bezier(.22,1,.36,1) .3s forwards;
+  width:min(360px,55vw)}
+@keyframes gopuram-rise{to{transform:translateX(-50%) translateY(0)}}
+
+/* Hero text */
+.hero-content{position:relative;z-index:10;text-align:center;padding:0 1.5rem}
+.hero-org-tamil{font-family:'Tiro Tamil',serif;font-size:clamp(2.8rem,9vw,7rem);
+  color:var(--gold);text-shadow:0 0 40px rgba(212,160,23,.6),0 0 80px rgba(212,160,23,.2);
+  animation:title-enter 1.2s cubic-bezier(.22,1,.36,1) .5s both;line-height:1.1;
+  filter:drop-shadow(0 4px 16px rgba(0,0,0,.8))}
+.hero-org-english{font-family:'Cinzel Decorative',serif;font-size:clamp(.65rem,1.8vw,1.1rem);
+  color:var(--cream-dim);letter-spacing:.25em;text-transform:uppercase;margin-top:.6rem;
+  animation:title-enter 1.2s cubic-bezier(.22,1,.36,1) .8s both}
+.hero-sub{font-family:'Lora',serif;font-style:italic;font-size:clamp(.82rem,1.8vw,1rem);
+  color:var(--lotus);margin-top:.4rem;opacity:.9;
+  animation:title-enter 1.2s cubic-bezier(.22,1,.36,1) 1s both}
+@keyframes title-enter{
+  from{opacity:0;transform:translateY(-30px);filter:blur(10px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}}
+
+/* Animated kolam stroke */
+#hero-kolam-svg{position:absolute;top:8%;right:4%;width:min(200px,28vw);
+  opacity:.2;z-index:5;pointer-events:none}
+#hero-kolam-svg path{stroke-dasharray:1400;stroke-dashoffset:1400;
+  animation:kolam-draw 3s ease-in-out .5s forwards}
+@keyframes kolam-draw{to{stroke-dashoffset:0}}
+
+/* Scroll lotus */
+.scroll-lotus{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  z-index:10;animation:lotus-pulse 2s ease-in-out infinite;cursor:pointer}
+@keyframes lotus-pulse{
+  0%,100%{transform:translateX(-50%) translateY(0) scale(1);opacity:.8}
+  50%{transform:translateX(-50%) translateY(8px) scale(1.08);opacity:1}}
+
+/* ══════════════════════════════════
+   SECTION 2 — ABOUT
+══════════════════════════════════ */
+#about{padding:6rem 2rem;
+  background:linear-gradient(135deg,#1a0a00 0%,#0d0500 50%,#1a0800 100%)}
+.about-inner{max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+  position:relative;z-index:2}
+.section-label{font-family:'Cinzel Decorative',serif;font-size:clamp(.5rem,1vw,.68rem);
+  color:var(--gold);letter-spacing:.35em;text-transform:uppercase;margin-bottom:.5rem;opacity:.8}
+.section-heading-tamil{font-family:'Tiro Tamil',serif;font-size:clamp(1.8rem,4vw,3rem);
+  color:var(--gold);line-height:1.15}
+.section-heading-english{font-family:'Cinzel Decorative',serif;font-size:clamp(.85rem,1.8vw,1.2rem);
+  color:var(--cream-dim);letter-spacing:.08em;margin-bottom:1.5rem}
+.about-text p{font-family:'Lora',serif;font-size:clamp(.85rem,1.4vw,.98rem);
+  color:var(--cream-dim);line-height:1.9;margin-bottom:1rem;opacity:.9}
+
+/* Flip card */
+.flip-card-wrap{perspective:1000px;height:310px}
+.flip-card{width:100%;height:100%;transform-style:preserve-3d;
+  transition:transform .9s cubic-bezier(.4,0,.2,1);position:relative;cursor:pointer}
+.flip-card:hover{transform:rotateY(180deg)}
+.flip-front,.flip-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:4px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:2.5rem;text-align:center}
+.flip-front{background:linear-gradient(135deg,#2a1505,#3d2b1f);
+  border:1px solid rgba(212,160,23,.3);
+  box-shadow:inset 0 0 40px rgba(0,0,0,.5),0 20px 60px rgba(0,0,0,.6);
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.flip-back{background:linear-gradient(135deg,#d4a017,#8a6510);
+  transform:rotateY(180deg);
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.kural-tamil{font-family:'Tiro Tamil',serif;font-size:clamp(1.1rem,2.5vw,1.6rem);
+  color:var(--gold);line-height:1.6;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.kural-ref{font-family:'Lora',serif;font-size:.72rem;color:var(--gold-dim);
+  margin-top:.8rem;letter-spacing:.1em}
+.kural-english{font-family:'Lora',serif;font-style:italic;font-size:1rem;
+  color:var(--stone);line-height:1.8}
+.flip-hint{font-size:.68rem;color:var(--gold-dim);letter-spacing:.12em;margin-top:1rem;opacity:.7}
+
+/* Timeline */
+.timeline{position:relative;padding-left:2rem;margin-top:2rem}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom,var(--gold),transparent)}
+.timeline-item{position:relative;margin-bottom:1.6rem;padding-left:.8rem}
+.timeline-item::before{content:'❋';position:absolute;left:-2.15rem;top:.1rem;
+  color:var(--gold);font-size:.85rem;background:var(--stone);padding:0 2px}
+.timeline-year{font-family:'Cinzel Decorative',serif;font-size:.72rem;
+  color:var(--gold);letter-spacing:.1em}
+.timeline-desc{font-family:'Lora',serif;font-size:.85rem;color:var(--cream-dim);
+  opacity:.85;margin-top:.15rem}
+
+/* ══════════════════════════════════
+   SECTION 3 — SERVICES
+══════════════════════════════════ */
+#services{padding:6rem 2rem;
+  background:linear-gradient(180deg,#0d0500 0%,#1a0a00 100%)}
+.services-inner{max-width:1100px;margin:0 auto;position:relative;z-index:2}
+.section-header{text-align:center;margin-bottom:3.5rem}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem}
+.service-card{background:linear-gradient(135deg,#2a1505 0%,#3d2b1f 60%,#2a1810 100%);
+  border:1px solid rgba(212,160,23,.18);border-radius:4px;padding:2.2rem 1.8rem;
+  text-align:center;position:relative;overflow:hidden;cursor:pointer;
+  transform-style:preserve-3d;transition:box-shadow .3s,transform .3s;
+  box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.service-card::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(212,160,23,.12) 0%,transparent 60%);
+  opacity:0;transition:opacity .3s;pointer-events:none}
+.service-card:hover::before{opacity:1}
+.service-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity .3s}
+.service-card:hover::after{opacity:1}
+.card-icon{margin-bottom:1.2rem}
+.card-icon svg{width:56px;height:56px;filter:drop-shadow(0 0 8px rgba(212,160,23,.4))}
+.card-title-tamil{font-family:'Tiro Tamil',serif;font-size:1.1rem;color:var(--gold);margin-bottom:.2rem}
+.card-title-english{font-family:'Cinzel Decorative',serif;font-size:.6rem;
+  color:var(--cream-dim);letter-spacing:.15em;opacity:.7}
+.card-desc{font-family:'Lora',serif;font-size:.82rem;color:var(--cream-dim);
+  line-height:1.7;margin-top:.8rem;opacity:.8}
+
+/* ══════════════════════════════════
+   SECTION 4 — STATS
+══════════════════════════════════ */
+#stats{padding:5rem 2rem;background:var(--deep);position:relative;overflow:hidden}
+.stats-inner{max-width:1100px;margin:0 auto;position:relative;z-index:2}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-top:3rem}
+.stat-item{text-align:center}
+.stat-ring{width:130px;height:130px;border-radius:50%;border:2px dashed rgba(212,160,23,.35);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  margin:0 auto 1rem;animation:spin-ring 10s linear infinite}
+@keyframes spin-ring{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.stat-inner{animation:spin-rev 10s linear infinite;
+  display:flex;flex-direction:column;align-items:center}
+@keyframes spin-rev{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
+.stat-num{font-family:'Cinzel Decorative',serif;font-size:clamp(1.3rem,2.5vw,1.8rem);
+  color:var(--gold);text-shadow:0 0 20px rgba(212,160,23,.5);line-height:1}
+.stat-label-tamil{font-family:'Tiro Tamil',serif;font-size:.92rem;
+  color:var(--cream);margin-top:.5rem}
+.stat-label-english{font-family:'Lora',serif;font-size:.7rem;color:var(--cream-dim);
+  opacity:.55;letter-spacing:.08em}
+
+/* ══════════════════════════════════
+   SECTION 5 — EVENTS
+══════════════════════════════════ */
+#events{padding:5rem 0;background:linear-gradient(180deg,#1a0a00,#0d0500)}
+.events-header{padding:0 2rem;text-align:center;margin-bottom:2rem}
+.scroll-progress-bar{height:3px;background:rgba(212,160,23,.12);
+  margin:0 2rem 2rem;border-radius:2px;overflow:hidden}
+.scroll-progress-fill{height:100%;width:0%;
+  background:linear-gradient(90deg,var(--gold-dim),var(--gold));
+  border-radius:2px;transition:width .1s}
+.events-scroll-wrap{overflow-x:scroll;scroll-snap-type:x mandatory;
+  padding:1rem 2rem 2.5rem;display:flex;gap:2rem;
+  scrollbar-width:thin;scrollbar-color:var(--gold-dim) transparent}
+.event-card{flex:0 0 min(290px,78vw);scroll-snap-align:start;background:var(--carved);
+  padding:1.2rem;position:relative;transform:rotate(var(--rot,-1deg));
+  box-shadow:6px 6px 0 rgba(0,0,0,.5),0 20px 50px rgba(0,0,0,.4);
+  border:1px solid rgba(212,160,23,.15);border-radius:2px;
+  transition:transform .3s,box-shadow .3s}
+.event-card:hover{transform:rotate(0deg) translateY(-8px);
+  box-shadow:12px 12px 0 rgba(0,0,0,.6),0 30px 60px rgba(0,0,0,.5)}
+.event-img{width:100%;aspect-ratio:4/3;
+  background:linear-gradient(135deg,#2a1505,#3d2b1f);
+  border:1px solid rgba(212,160,23,.2);display:flex;align-items:center;
+  justify-content:center;font-size:2.8rem;margin-bottom:1rem;
+  position:relative;overflow:hidden}
+.event-img::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 60%,rgba(0,0,0,.4))}
+.event-tag{display:inline-block;background:var(--gold-dim);color:var(--cream);
+  font-family:'Tiro Tamil',serif;font-size:.68rem;padding:.2rem .7rem;
+  border-radius:1px;margin-bottom:.6rem;letter-spacing:.05em}
+.event-title-tamil{font-family:'Tiro Tamil',serif;font-size:1rem;color:var(--gold);margin-bottom:.2rem}
+.event-title-english{font-family:'Cinzel Decorative',serif;font-size:.55rem;
+  color:var(--cream-dim);opacity:.55;letter-spacing:.1em}
+.event-date{font-family:'Lora',serif;font-style:italic;font-size:.73rem;
+  color:var(--lotus);margin-top:.5rem}
+.event-card-corners::before,.event-card-corners::after{
+  content:'✦';position:absolute;color:var(--gold);opacity:.4;font-size:.65rem}
+
+/* ══════════════════════════════════
+   SECTION 6 — TESTIMONIALS
+══════════════════════════════════ */
+#testimonials{padding:6rem 2rem;
+  background:linear-gradient(135deg,#0d0500 0%,#1a0800 50%,#0d0500 100%);
+  position:relative;overflow:hidden}
+.thirukkural-banner{text-align:center;
+  background:linear-gradient(90deg,transparent,rgba(212,160,23,.1),transparent);
+  border-top:1px solid rgba(212,160,23,.2);border-bottom:1px solid rgba(212,160,23,.2);
+  padding:1.2rem 2rem;margin-bottom:3rem}
+.tkb-tamil{font-family:'Tiro Tamil',serif;font-size:clamp(.95rem,2.5vw,1.35rem);color:var(--gold)}
+.tkb-english{font-family:'Lora',serif;font-style:italic;font-size:.8rem;
+  color:var(--cream-dim);opacity:.65;margin-top:.3rem}
+.carousel-3d-wrap{perspective:1200px;height:260px;position:relative;
+  margin:0 auto;max-width:900px}
+.carousel-3d{width:100%;height:100%;transform-style:preserve-3d;
+  position:relative;transition:transform .8s cubic-bezier(.4,0,.2,1)}
+.quote-card{position:absolute;width:320px;top:0;left:50%;margin-left:-160px;
+  background:linear-gradient(135deg,#2a1505,#3d2b1f);
+  border:1px solid rgba(212,160,23,.25);border-radius:4px;padding:2rem;
+  backface-visibility:hidden;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+  transition:transform .5s,filter .5s}
+.quote-text-tamil{font-family:'Tiro Tamil',serif;font-size:.95rem;
+  color:var(--gold);line-height:1.75;margin-bottom:.6rem}
+.quote-text-transliteration{font-family:'Lora',serif;font-style:italic;
+  font-size:.76rem;color:var(--cream-dim);opacity:.62;margin-bottom:.8rem}
+.quote-author{font-family:'Cinzel Decorative',serif;font-size:.6rem;
+  color:var(--lotus);letter-spacing:.12em}
+.carousel-nav{display:flex;justify-content:center;gap:.8rem;margin-top:2rem}
+.carousel-dot{width:10px;height:10px;border-radius:50%;
+  background:rgba(212,160,23,.22);border:none;cursor:pointer;
+  transition:background .3s,transform .3s}
+.carousel-dot.active{background:var(--gold);transform:scale(1.35)}
+
+/* ══════════════════════════════════
+   SECTION 7 — CONTACT / FOOTER
+══════════════════════════════════ */
+#contact{padding:6rem 2rem 0;background:var(--deep);position:relative;overflow:hidden}
+.contact-inner{max-width:900px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;position:relative;z-index:2}
+.contact-info-label{font-family:'Tiro Tamil',serif;font-size:.95rem;
+  color:var(--gold);margin-bottom:.25rem}
+.contact-info-val{font-family:'Lora',serif;font-size:.85rem;
+  color:var(--cream-dim);opacity:.8;margin-bottom:1.2rem}
+.contact-form{display:flex;flex-direction:column;gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem}
+.form-label{font-family:'Tiro Tamil',serif;font-size:.82rem;color:var(--gold);opacity:.8}
+.form-input,.form-textarea{background:#1a0a00;border:1px solid rgba(212,160,23,.25);
+  color:var(--cream);padding:.8rem 1rem;font-family:'Lora',serif;font-size:.88rem;
+  border-radius:2px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,.4);
+  transition:border-color .3s,box-shadow .3s}
+.form-input:focus,.form-textarea:focus{border-color:var(--gold);
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.4),0 0 0 2px rgba(212,160,23,.15)}
+.form-textarea{min-height:120px;resize:vertical}
+.submit-btn{padding:1rem 2rem;background:transparent;border:2px solid var(--gold);
+  color:var(--gold);font-family:'Cinzel Decorative',serif;font-size:.78rem;
+  letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;
+  position:relative;overflow:hidden;transition:color .3s,background .3s;
+  animation:btn-glow 2.5s ease-in-out infinite}
+@keyframes btn-glow{
+  0%,100%{box-shadow:0 0 10px rgba(212,160,23,.3)}
+  50%{box-shadow:0 0 30px rgba(212,160,23,.7),0 0 60px rgba(212,160,23,.2)}}
+.submit-btn:hover{background:var(--gold);color:var(--stone)}
+.contact-gopuram-bg{position:absolute;bottom:0;right:0;width:260px;opacity:.05;z-index:0;pointer-events:none}
+footer{margin-top:4rem;border-top:1px solid rgba(212,160,23,.18);
+  background:var(--deep);padding:2rem;text-align:center;position:relative;z-index:2}
+.footer-date{font-family:'Tiro Tamil',serif;font-size:.88rem;color:var(--gold);opacity:.65;margin-bottom:.5rem}
+.footer-social{display:flex;justify-content:center;gap:2rem;margin-bottom:1rem}
+.footer-social a{color:var(--gold);font-size:1.25rem;opacity:.55;
+  text-decoration:none;transition:opacity .3s,transform .3s}
+.footer-social a:hover{opacity:1;transform:scale(1.2)}
+.footer-credits{font-family:'Tiro Tamil',serif;font-size:.78rem;color:var(--cream-dim);opacity:.38}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-toggle{display:flex}
+  .nav-links.open{display:flex;flex-direction:column;position:fixed;
+    top:60px;left:0;right:0;background:rgba(13,5,0,.97);
+    padding:2rem;gap:1.5rem;border-bottom:1px solid rgba(212,160,23,.2)}
+  .about-inner{grid-template-columns:1fr;gap:2rem}
+  .cards-grid{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .contact-inner{grid-template-columns:1fr;gap:2rem}
+  .flip-card-wrap{height:260px}
+}
+@media(max-width:480px){
+  .cards-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="main-nav">
+  <a href="#hero" class="nav-brand">நற்பணி மன்றம்</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#stats">Impact</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#testimonials">Voices</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-toggle" id="nav-toggle"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ═══ SECTION 1: HERO ═══ -->
+<section id="hero" class="section-wrap">
+  <div id="hero-sky"></div>
+
+  <!-- Kolam bg -->
+  <svg class="hero-kolam-bg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <pattern id="kolam-pat" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+        <circle cx="5" cy="5" r="1.5" fill="#d4a017"/>
+        <circle cx="30" cy="5" r="1.5" fill="#d4a017"/>
+        <circle cx="55" cy="5" r="1.5" fill="#d4a017"/>
+        <circle cx="5" cy="30" r="1.5" fill="#d4a017"/>
+        <circle cx="30" cy="30" r="2" fill="#d4a017"/>
+        <circle cx="55" cy="30" r="1.5" fill="#d4a017"/>
+        <circle cx="5" cy="55" r="1.5" fill="#d4a017"/>
+        <circle cx="30" cy="55" r="1.5" fill="#d4a017"/>
+        <circle cx="55" cy="55" r="1.5" fill="#d4a017"/>
+        <path d="M5,5 Q17,17 30,5 Q43,17 55,5" stroke="#d4a017" stroke-width=".6" fill="none"/>
+        <path d="M5,55 Q17,43 30,55 Q43,43 55,55" stroke="#d4a017" stroke-width=".6" fill="none"/>
+        <path d="M5,5 Q17,17 5,30 Q17,43 5,55" stroke="#d4a017" stroke-width=".6" fill="none"/>
+        <path d="M55,5 Q43,17 55,30 Q43,43 55,55" stroke="#d4a017" stroke-width=".6" fill="none"/>
+      </pattern>
+    </defs>
+    <rect width="600" height="600" fill="url(#kolam-pat)"/>
+  </svg>
+
+  <!-- Animated kolam stroke -->
+  <svg id="hero-kolam-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100,10 Q135,28 185,28 Q162,80 185,102 Q135,92 100,134 Q65,92 15,102 Q38,80 15,28 Q65,28 100,10 Z
+             M100,32 L118,55 L145,55 L125,70 L133,96 L100,82 L67,96 L75,70 L55,55 L82,55 Z"
+          stroke="#d4a017" stroke-width="1.5" fill="none"/>
+  </svg>
+
+  <!-- Gopuram -->
+  <div id="gopuram-wrap">
+    <svg viewBox="0 0 360 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow-g">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feComposite in="SourceGraphic" in2="b" operator="over"/>
+        </filter>
+        <linearGradient id="glow-line" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stop-color="#d4a017" stop-opacity="0"/>
+          <stop offset="50%" stop-color="#d4a017" stop-opacity=".6"/>
+          <stop offset="100%" stop-color="#d4a017" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Base plinth -->
+      <rect x="30" y="460" width="300" height="60" rx="2" fill="#2a1505" stroke="#d4a017" stroke-width=".8"/>
+      <line x1="30" y1="475" x2="330" y2="475" stroke="url(#glow-line)" stroke-width=".6"/>
+      <!-- Tier 1 -->
+      <polygon points="20,460 340,460 315,408 45,408" fill="#3d2b1f" stroke="#d4a017" stroke-width=".7"/>
+      <line x1="25" y1="435" x2="335" y2="435" stroke="url(#glow-line)" stroke-width=".5"/>
+      <!-- Tier 2 -->
+      <polygon points="50,408 310,408 288,360 72,360" fill="#2a1808" stroke="#d4a017" stroke-width=".7"/>
+      <!-- Tier 3 -->
+      <polygon points="78,360 282,360 262,316 98,316" fill="#3d2b1f" stroke="#d4a017" stroke-width=".7"/>
+      <!-- Tier 4 -->
+      <polygon points="102,316 258,316 240,276 120,276" fill="#2a1808" stroke="#d4a017" stroke-width=".7"/>
+      <!-- Tier 5 -->
+      <polygon points="124,276 236,276 220,240 140,240" fill="#3d2b1f" stroke="#d4a017" stroke-width=".7"/>
+      <!-- Tier 6 -->
+      <polygon points="142,240 218,240 208,207 152,207" fill="#2a1808" stroke="#d4a017" stroke-width=".7"/>
+      <!-- Tier 7 -->
+      <polygon points="155,207 205,207 198,177 162,177" fill="#3d2b1f" stroke="#d4a017" stroke-width=".7"/>
+      <!-- Finial -->
+      <ellipse cx="180" cy="167" rx="20" ry="13" fill="#d4a017" opacity=".9"/>
+      <line x1="180" y1="154" x2="180" y2="136" stroke="#d4a017" stroke-width="2.5"/>
+      <circle cx="180" cy="130" r="8" fill="#d4a017" filter="url(#glow-g)"/>
+      <!-- Arch windows -->
+      <path d="M162,440 Q180,424 198,440 L198,460 L162,460 Z" fill="#1a0a00" stroke="#d4a017" stroke-width=".5"/>
+      <path d="M106,386 Q122,370 138,386 L138,408 L106,408 Z" fill="#1a0a00" stroke="#d4a017" stroke-width=".5"/>
+      <path d="M222,386 Q238,370 254,386 L254,408 L222,408 Z" fill="#1a0a00" stroke="#d4a017" stroke-width=".5"/>
+      <path d="M126,294 Q140,280 154,294 L154,316 L126,316 Z" fill="#1a0a00" stroke="#d4a017" stroke-width=".4"/>
+      <path d="M206,294 Q220,280 234,294 L234,316 L206,316 Z" fill="#1a0a00" stroke="#d4a017" stroke-width=".4"/>
+      <path d="M152,218 Q164,206 176,218 L176,240 L152,240 Z" fill="#1a0a00" stroke="#d4a017" stroke-width=".4"/>
+      <path d="M184,218 Q196,206 208,218 L208,240 L184,240 Z" fill="#1a0a00" stroke="#d4a017" stroke-width=".4"/>
+      <!-- Decorative horizontal lines -->
+      <line x1="50" y1="425" x2="310" y2="425" stroke="#d4a017" stroke-width=".4" opacity=".25"/>
+      <line x1="78" y1="380" x2="282" y2="380" stroke="#d4a017" stroke-width=".4" opacity=".2"/>
+      <!-- Ambient glow -->
+      <ellipse cx="180" cy="130" rx="80" ry="40" fill="#d4a017" opacity=".04" filter="url(#glow-g)"/>
+    </svg>
+  </div>
+
+  <!-- Flames -->
+  <div id="flames-container"></div>
+
+  <!-- Hero text -->
+  <div class="hero-content">
+    <div class="hero-org-tamil">நற்பணி மன்றம்</div>
+    <div class="hero-org-english">NARPANI MANDRAM</div>
+    <div class="hero-sub">— Serving with Heart · Rooted in Tamil Tradition —</div>
+  </div>
+
+  <!-- Scroll lotus -->
+  <div class="scroll-lotus" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+    <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".8"/>
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".55" transform="rotate(45,19,19)"/>
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".55" transform="rotate(90,19,19)"/>
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".5" transform="rotate(135,19,19)"/>
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".8" transform="rotate(180,19,19)"/>
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".5" transform="rotate(225,19,19)"/>
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".55" transform="rotate(270,19,19)"/>
+      <ellipse cx="19" cy="13" rx="4.5" ry="8" fill="#d4a017" opacity=".55" transform="rotate(315,19,19)"/>
+      <circle cx="19" cy="19" r="4.5" fill="#d4a017"/>
+      <path d="M19 27 L16 23 L22 23 Z" fill="#e8927c" opacity=".85"/>
+    </svg>
+  </div>
+</section>
+
+<!-- LOTUS DIVIDER -->
+<div class="lotus-divider">
+  <svg viewBox="0 0 320 60" fill="none"><line x1="0" y1="30" x2="108" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><line x1="212" y1="30" x2="320" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".7"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(-40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(80,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(-80,160,30)"/><circle cx="160" cy="30" r="5" fill="#d4a017"/></svg>
+</div>
+
+<!-- ═══ SECTION 2: ABOUT ═══ -->
+<section id="about" class="section-wrap">
+  <div class="about-inner">
+    <div>
+      <!-- Flip Card -->
+      <div class="flip-card-wrap fade-up">
+        <div class="flip-card">
+          <div class="flip-front">
+            <div class="kural-tamil">"அன்பின் வழியது உயிர்நிலை<br>அஃதிலார்க்கு என்புதோல் போர்த்த உடம்பு"</div>
+            <div class="kural-ref">— திருக்குறள் · குறள் 80</div>
+            <div class="flip-hint">↻ Hover to reveal meaning</div>
+          </div>
+          <div class="flip-back">
+            <div class="kural-english">"The life of one who loves is a life indeed;<br>those without love are mere bones covered with skin."</div>
+            <div class="kural-ref" style="color:#1a0a00;margin-top:.8rem">— Thirukkural · Verse 80</div>
+          </div>
+        </div>
+      </div>
+      <!-- Timeline -->
+      <div class="timeline">
+        <div class="timeline-item fade-left delay-1"><div class="timeline-year">2005</div><div class="timeline-desc">Founded by community elders in Salem, Tamil Nadu</div></div>
+        <div class="timeline-item fade-left delay-2"><div class="timeline-year">2008</div><div class="timeline-desc">First free medical camp serving 500+ villagers</div></div>
+        <div class="timeline-item fade-left delay-3"><div class="timeline-year">2012</div><div class="timeline-desc">Education scholarship program launched</div></div>
+        <div class="timeline-item fade-left delay-4"><div class="timeline-year">2018</div><div class="timeline-desc">Expanded to 50 villages across 3 districts</div></div>
+        <div class="timeline-item fade-left delay-5"><div class="timeline-year">2024</div><div class="timeline-desc">2000+ active volunteers — 20 years of service</div></div>
+      </div>
+    </div>
+    <div class="about-text">
+      <div class="section-label">எங்களைப் பற்றி</div>
+      <div class="section-heading-tamil fade-up">நற்பணி மன்றம்</div>
+      <div class="section-heading-english fade-up delay-1">About Our Mandram</div>
+      <p class="fade-up delay-2">நற்பணி மன்றம் என்பது தமிழ் மண்ணில் தோன்றிய ஒரு தொண்டு நிறுவனம். அன்பும், பண்பும், உழைப்பும் நிறைந்த இம்மன்றம் கடந்த இரண்டு தசாப்தங்களாக சமுதாயத்திற்கு சேவை செய்து வருகிறது.</p>
+      <p class="fade-up delay-3">Narpani Mandram is a grassroots Tamil social organization dedicated to uplifting communities through education, healthcare, cultural preservation, and compassionate service — rooted in the eternal values of Sangam literature and Tamil dharma.</p>
+      <p class="fade-up delay-4">Our work is guided by the spirit of <em style="color:var(--gold)">"ஊருக்காக உழைப்பவனே உண்மையான மனிதன்"</em> — he who toils for his community is the truest human being. Every act of service is our offering to this ancient land.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LOTUS DIVIDER -->
+<div class="lotus-divider"><svg viewBox="0 0 320 60" fill="none"><line x1="0" y1="30" x2="108" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><line x1="212" y1="30" x2="320" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".7"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(-40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(80,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(-80,160,30)"/><circle cx="160" cy="30" r="5" fill="#d4a017"/></svg></div>
+
+<!-- ═══ SECTION 3: SERVICES ═══ -->
+<section id="services" class="section-wrap">
+  <div class="services-inner">
+    <div class="section-header">
+      <div class="section-label">எங்கள் பணிகள்</div>
+      <div class="section-heading-tamil fade-up">நாம் செய்வது</div>
+      <div class="section-heading-english fade-up delay-1">Our Sacred Work</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="service-card scale-in delay-1" data-tilt>
+        <div class="card-icon">
+          <svg viewBox="0 0 56 56" fill="none">
+            <ellipse cx="28" cy="38" rx="16" ry="5" fill="#d4a017" opacity=".25"/>
+            <path d="M14,40 Q16,50 28,52 Q40,50 42,40 L40,38 Q36,46 28,48 Q20,46 16,38 Z" fill="#2a1505" stroke="#d4a017" stroke-width="1"/>
+            <ellipse cx="28" cy="38" rx="12" ry="4" fill="#d4a017" opacity=".75"/>
+            <line x1="28" y1="34" x2="28" y2="16" stroke="#d4a017" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="28" cy="13" rx="4" ry="6" fill="#e8927c" opacity=".9"/>
+            <ellipse cx="28" cy="12" rx="2.5" ry="4" fill="#f0c040"/>
+          </svg>
+        </div>
+        <div class="card-title-tamil">கல்வி</div>
+        <div class="card-title-english">EDUCATION</div>
+        <div class="card-desc">Scholarships, tuition support, and free books for rural children across Tamil Nadu.</div>
+      </div>
+
+      <div class="service-card scale-in delay-2" data-tilt>
+        <div class="card-icon">
+          <svg viewBox="0 0 56 56" fill="none">
+            <ellipse cx="28" cy="34" rx="8" ry="12" fill="#e8927c" opacity=".75"/>
+            <ellipse cx="28" cy="34" rx="8" ry="12" fill="#d4a017" opacity=".55" transform="rotate(45,28,38)"/>
+            <ellipse cx="28" cy="34" rx="8" ry="12" fill="#d4a017" opacity=".55" transform="rotate(-45,28,38)"/>
+            <ellipse cx="28" cy="34" rx="8" ry="12" fill="#d4a017" opacity=".35" transform="rotate(90,28,38)"/>
+            <ellipse cx="28" cy="34" rx="8" ry="12" fill="#d4a017" opacity=".35" transform="rotate(-90,28,38)"/>
+            <circle cx="28" cy="38" r="5" fill="#d4a017"/>
+          </svg>
+        </div>
+        <div class="card-title-tamil">சுகாதாரம்</div>
+        <div class="card-title-english">HEALTHCARE</div>
+        <div class="card-desc">Free medical camps, medicine distribution, and health awareness drives in villages.</div>
+      </div>
+
+      <div class="service-card scale-in delay-3" data-tilt>
+        <div class="card-icon">
+          <svg viewBox="0 0 56 56" fill="none">
+            <rect x="20" y="46" width="16" height="8" fill="#d4a017" opacity=".55"/>
+            <polygon points="16,46 40,46 38,40 18,40" fill="#d4a017" opacity=".65"/>
+            <polygon points="18,40 38,40 36,34 20,34" fill="#d4a017" opacity=".75"/>
+            <polygon points="20,34 36,34 34,28 22,28" fill="#d4a017" opacity=".85"/>
+            <polygon points="22,28 34,28 32,23 24,23" fill="#d4a017" opacity=".95"/>
+            <circle cx="28" cy="19" r="5" fill="#f0c040"/>
+            <line x1="28" y1="14" x2="28" y2="10" stroke="#d4a017" stroke-width="1.5"/>
+            <circle cx="28" cy="8" r="2.5" fill="#d4a017"/>
+          </svg>
+        </div>
+        <div class="card-title-tamil">கலாச்சாரம்</div>
+        <div class="card-title-english">CULTURE</div>
+        <div class="card-desc">Preserving Tamil heritage through festivals, classical arts, and temple traditions.</div>
+      </div>
+
+      <div class="service-card scale-in delay-4" data-tilt>
+        <div class="card-icon">
+          <svg viewBox="0 0 56 56" fill="none">
+            <ellipse cx="28" cy="32" rx="22" ry="9" fill="#2a4a1a" opacity=".75" transform="rotate(-8,28,32)"/>
+            <ellipse cx="28" cy="32" rx="19" ry="7" fill="#3a6a2a" opacity=".55" transform="rotate(-8,28,32)"/>
+            <line x1="10" y1="32" x2="46" y2="29" stroke="#d4a017" stroke-width=".8" opacity=".5"/>
+            <circle cx="18" cy="27" r="3" fill="#d4a017" opacity=".7"/>
+            <circle cx="28" cy="25" r="3" fill="#e8927c" opacity=".75"/>
+            <circle cx="38" cy="24" r="3" fill="#d4a017" opacity=".7"/>
+          </svg>
+        </div>
+        <div class="card-title-tamil">அன்னதானம்</div>
+        <div class="card-title-english">FOOD & FEEDING</div>
+        <div class="card-desc">Daily meal distribution, annadhanam events, and feeding the hungry during festivals.</div>
+      </div>
+
+      <div class="service-card scale-in delay-5" data-tilt>
+        <div class="card-icon">
+          <svg viewBox="0 0 56 56" fill="none">
+            <circle cx="18" cy="40" r="9" fill="none" stroke="#d4a017" stroke-width="1.2" opacity=".6"/>
+            <circle cx="18" cy="40" r="5" fill="#d4a017" opacity=".3"/>
+            <circle cx="38" cy="24" r="5" fill="none" stroke="#d4a017" stroke-width=".8" opacity=".5"/>
+            <line x1="24" y1="34" x2="34" y2="26" stroke="#d4a017" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="16" y1="32" x2="42" y2="12" stroke="#f0c040" stroke-width="1.2"/>
+            <line x1="18" y1="30" x2="40" y2="14" stroke="#d4a017" stroke-width=".7" opacity=".5"/>
+            <circle cx="42" cy="12" r="3.5" fill="#d4a017"/>
+          </svg>
+        </div>
+        <div class="card-title-tamil">கலை</div>
+        <div class="card-title-english">ARTS & MUSIC</div>
+        <div class="card-desc">Classical Carnatic music, Bharatanatyam training, and folk art workshops.</div>
+      </div>
+
+      <div class="service-card scale-in delay-6" data-tilt>
+        <div class="card-icon">
+          <svg viewBox="0 0 56 56" fill="none">
+            <path d="M18,40 Q13,29 18,22 Q22,17 25,22 L25,31" stroke="#d4a017" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M38,40 Q43,29 38,22 Q34,17 31,22 L31,31" stroke="#d4a017" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M21,31 Q28,26 35,31 L38,40 Q28,46 18,40 Z" fill="#d4a017" opacity=".35" stroke="#d4a017" stroke-width="1"/>
+            <circle cx="28" cy="15" r="5" fill="#e8927c" opacity=".7"/>
+          </svg>
+        </div>
+        <div class="card-title-tamil">சமூகம்</div>
+        <div class="card-title-english">COMMUNITY</div>
+        <div class="card-desc">Women empowerment, youth leadership, and environmental seva activities.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LOTUS DIVIDER -->
+<div class="lotus-divider"><svg viewBox="0 0 320 60" fill="none"><line x1="0" y1="30" x2="108" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><line x1="212" y1="30" x2="320" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".7"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(-40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(80,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(-80,160,30)"/><circle cx="160" cy="30" r="5" fill="#d4a017"/></svg></div>
+
+<!-- ═══ SECTION 4: STATS ═══ -->
+<section id="stats" class="section-wrap">
+  <div class="stats-inner">
+    <div class="section-header" style="text-align:center">
+      <div class="section-label">எங்கள் தாக்கம்</div>
+      <div class="section-heading-tamil fade-up">நாம் அடைந்தது</div>
+      <div class="section-heading-english fade-up delay-1">Our Impact in Numbers</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-item fade-up delay-1">
+        <div class="stat-ring"><div class="stat-inner">
+          <svg width="22" height="28" viewBox="0 0 22 28" fill="none" style="margin-bottom:.3rem"><ellipse cx="11" cy="22" rx="7" ry="3" fill="#d4a017" opacity=".3"/><path d="M11,24 Q4,19 5,12 Q8,7 11,5 Q11,10 14,8 Q17,10 16,15 Q15,19 11,24 Z" fill="#e8927c"/><path d="M11,22 Q7,18 8,13 Q10,9 11,8 Q11,12 13,11 Q15,13 14,17 Q13,19 11,22 Z" fill="#f0c040"/></svg>
+          <div class="stat-num" data-target="2000" data-suffix="+">0</div>
+        </div></div>
+        <div class="stat-label-tamil">உறுப்பினர்கள்</div>
+        <div class="stat-label-english">Members</div>
+      </div>
+      <div class="stat-item fade-up delay-2">
+        <div class="stat-ring"><div class="stat-inner">
+          <svg width="22" height="28" viewBox="0 0 22 28" fill="none" style="margin-bottom:.3rem"><ellipse cx="11" cy="22" rx="7" ry="3" fill="#d4a017" opacity=".3"/><path d="M11,24 Q4,19 5,12 Q8,7 11,5 Q11,10 14,8 Q17,10 16,15 Q15,19 11,24 Z" fill="#e8927c"/><path d="M11,22 Q7,18 8,13 Q10,9 11,8 Q11,12 13,11 Q15,13 14,17 Q13,19 11,22 Z" fill="#f0c040"/></svg>
+          <div class="stat-num" data-target="350" data-suffix="+">0</div>
+        </div></div>
+        <div class="stat-label-tamil">நிகழ்வுகள்</div>
+        <div class="stat-label-english">Events Held</div>
+      </div>
+      <div class="stat-item fade-up delay-3">
+        <div class="stat-ring"><div class="stat-inner">
+          <svg width="22" height="28" viewBox="0 0 22 28" fill="none" style="margin-bottom:.3rem"><ellipse cx="11" cy="22" rx="7" ry="3" fill="#d4a017" opacity=".3"/><path d="M11,24 Q4,19 5,12 Q8,7 11,5 Q11,10 14,8 Q17,10 16,15 Q15,19 11,24 Z" fill="#e8927c"/><path d="M11,22 Q7,18 8,13 Q10,9 11,8 Q11,12 13,11 Q15,13 14,17 Q13,19 11,22 Z" fill="#f0c040"/></svg>
+          <div class="stat-num" data-target="75" data-suffix="+">0</div>
+        </div></div>
+        <div class="stat-label-tamil">கிராமங்கள்</div>
+        <div class="stat-label-english">Villages Served</div>
+      </div>
+      <div class="stat-item fade-up delay-4">
+        <div class="stat-ring"><div class="stat-inner">
+          <svg width="22" height="28" viewBox="0 0 22 28" fill="none" style="margin-bottom:.3rem"><ellipse cx="11" cy="22" rx="7" ry="3" fill="#d4a017" opacity=".3"/><path d="M11,24 Q4,19 5,12 Q8,7 11,5 Q11,10 14,8 Q17,10 16,15 Q15,19 11,24 Z" fill="#e8927c"/><path d="M11,22 Q7,18 8,13 Q10,9 11,8 Q11,12 13,11 Q15,13 14,17 Q13,19 11,22 Z" fill="#f0c040"/></svg>
+          <div class="stat-num" data-target="20" data-suffix=" Yrs">0</div>
+        </div></div>
+        <div class="stat-label-tamil">ஆண்டுகள்</div>
+        <div class="stat-label-english">Years of Service</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOTUS DIVIDER -->
+<div class="lotus-divider"><svg viewBox="0 0 320 60" fill="none"><line x1="0" y1="30" x2="108" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><line x1="212" y1="30" x2="320" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".7"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(-40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(80,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(-80,160,30)"/><circle cx="160" cy="30" r="5" fill="#d4a017"/></svg></div>
+
+<!-- ═══ SECTION 5: EVENTS ═══ -->
+<section id="events" class="section-wrap">
+  <div class="events-header">
+    <div class="section-label">நிகழ்வுகள்</div>
+    <div class="section-heading-tamil fade-up">நமது நிகழ்வுகள்</div>
+    <div class="section-heading-english fade-up delay-1">Events & Gallery</div>
+  </div>
+  <div class="scroll-progress-bar"><div class="scroll-progress-fill" id="events-progress"></div></div>
+  <div class="events-scroll-wrap" id="events-scroll">
+    <div class="event-card" style="--rot:-1.5deg"><div class="event-img">🏮</div><div class="event-tag">கல்வி · Education</div><div class="event-title-tamil">புத்தக விழா 2024</div><div class="event-title-english">BOOK FAIR & SCHOLARSHIP CEREMONY</div><div class="event-date">ஆடி மாதம் · July 2024</div></div>
+    <div class="event-card" style="--rot:1.2deg"><div class="event-img">🪔</div><div class="event-tag">சுகாதாரம் · Health</div><div class="event-title-tamil">இலவச மருத்துவ முகாம்</div><div class="event-title-english">FREE MEDICAL CAMP — RURAL SEVA</div><div class="event-date">கார்த்திகை மாதம் · Nov 2024</div></div>
+    <div class="event-card" style="--rot:-2deg"><div class="event-img">🎭</div><div class="event-tag">கலை · Culture</div><div class="event-title-tamil">தமிழ் கலை விழா</div><div class="event-title-english">CLASSICAL ARTS FESTIVAL</div><div class="event-date">பங்குனி மாதம் · Mar 2024</div></div>
+    <div class="event-card" style="--rot:0.8deg"><div class="event-img">🍃</div><div class="event-tag">அன்னதானம் · Food</div><div class="event-title-tamil">அன்னதானம் திருவிழா</div><div class="event-title-english">MASS ANNADHANAM EVENT</div><div class="event-date">ஐப்பசி மாதம் · Oct 2023</div></div>
+    <div class="event-card" style="--rot:-1deg"><div class="event-img">🌸</div><div class="event-tag">சமூகம் · Community</div><div class="event-title-tamil">பெண்கள் சக்தி தினம்</div><div class="event-title-english">WOMEN EMPOWERMENT DAY</div><div class="event-date">சித்திரை மாதம் · Apr 2023</div></div>
+    <div class="event-card" style="--rot:1.5deg"><div class="event-img">🌿</div><div class="event-tag">சூழல் · Environment</div><div class="event-title-tamil">மரம் வளர்க்கும் திட்டம்</div><div class="event-title-english">TREE PLANTING INITIATIVE</div><div class="event-date">வைகாசி மாதம் · May 2023</div></div>
+  </div>
+</section>
+
+<!-- LOTUS DIVIDER -->
+<div class="lotus-divider"><svg viewBox="0 0 320 60" fill="none"><line x1="0" y1="30" x2="108" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><line x1="212" y1="30" x2="320" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".7"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(-40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(80,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(-80,160,30)"/><circle cx="160" cy="30" r="5" fill="#d4a017"/></svg></div>
+
+<!-- ═══ SECTION 6: TESTIMONIALS ═══ -->
+<section id="testimonials" class="section-wrap">
+  <div class="thirukkural-banner fade-up">
+    <div class="tkb-tamil">"அன்பே சிவம் — அன்புடைய ஆன்மாவே இறைவன்"</div>
+    <div class="tkb-english">Love itself is God — the soul filled with love is divine</div>
+  </div>
+  <div style="text-align:center;margin-bottom:2rem">
+    <div class="section-label">குரல்கள்</div>
+    <div class="section-heading-tamil fade-up">மக்கள் சொல்கிறார்கள்</div>
+    <div class="section-heading-english fade-up delay-1">Voices from the Community</div>
+  </div>
+  <div class="carousel-3d-wrap" id="carousel-wrap">
+    <div class="carousel-3d" id="carousel-3d"></div>
+  </div>
+  <div class="carousel-nav" id="carousel-nav"></div>
+</section>
+
+<!-- LOTUS DIVIDER -->
+<div class="lotus-divider"><svg viewBox="0 0 320 60" fill="none"><line x1="0" y1="30" x2="108" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><line x1="212" y1="30" x2="320" y2="30" stroke="#d4a017" stroke-width=".5" opacity=".25"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".7"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".5" transform="rotate(-40,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(80,160,30)"/><ellipse cx="160" cy="22" rx="8" ry="13" fill="#d4a017" opacity=".35" transform="rotate(-80,160,30)"/><circle cx="160" cy="30" r="5" fill="#d4a017"/></svg></div>
+
+<!-- ═══ SECTION 7: CONTACT ═══ -->
+<section id="contact" class="section-wrap">
+  <div class="contact-inner">
+    <div>
+      <div class="section-label">தொடர்பு கொள்ளுங்கள்</div>
+      <div class="section-heading-tamil fade-left">நம்மை அடையுங்கள்</div>
+      <div class="section-heading-english fade-left delay-1">Reach Us</div>
+      <div style="margin-top:2rem">
+        <div class="contact-info-label fade-left delay-2">📍 முகவரி</div>
+        <div class="contact-info-val fade-left delay-2">நற்பணி மன்றம், சேலம், தமிழ்நாடு — 636 001</div>
+        <div class="contact-info-label fade-left delay-3">📞 தொலைபேசி</div>
+        <div class="contact-info-val fade-left delay-3">+91 98765 43210</div>
+        <div class="contact-info-label fade-left delay-4">✉️ மின்னஞ்சல்</div>
+        <div class="contact-info-val fade-left delay-4">info@narpanimandram.org</div>
+      </div>
+      <div style="margin-top:2rem" class="fade-left delay-5">
+        <div class="footer-social" style="justify-content:flex-start;margin-bottom:0">
+          <a href="#" title="Om">ॐ</a>
+          <a href="#" title="Lotus">✿</a>
+          <a href="#" title="Sun">☀</a>
+          <a href="#" title="Star">✦</a>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form fade-right delay-2">
+      <div class="form-group">
+        <label class="form-label">உங்கள் பெயர் / Your Name</label>
+        <input type="text" class="form-input" placeholder="உங்கள் பெயரை உள்ளிடுங்கள்...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">மின்னஞ்சல் / Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">செய்தி / Message</label>
+        <textarea class="form-textarea" placeholder="உங்கள் செய்தியை இங்கே எழுதுங்கள்..."></textarea>
+      </div>
+      <button class="submit-btn" id="submit-btn">அனுப்பு — Send Message</button>
+    </div>
+  </div>
+
+  <!-- BG Gopuram -->
+  <svg class="contact-gopuram-bg" viewBox="0 0 260 400" fill="none">
+    <rect x="20" y="365" width="220" height="35" fill="#d4a017"/>
+    <polygon points="10,365 250,365 230,318 30,318" fill="#d4a017"/>
+    <polygon points="35,318 225,318 205,275 55,275" fill="#d4a017"/>
+    <polygon points="58,275 202,275 184,235 76,235" fill="#d4a017"/>
+    <polygon points="78,235 182,235 168,198 92,198" fill="#d4a017"/>
+    <polygon points="94,198 166,198 155,164 105,164" fill="#d4a017"/>
+    <polygon points="107,164 153,164 145,132 115,132" fill="#d4a017"/>
+    <circle cx="130" cy="118" r="18" fill="#d4a017"/>
+    <line x1="130" y1="100" x2="130" y2="82" stroke="#d4a017" stroke-width="3.5"/>
+    <circle cx="130" cy="76" r="8" fill="#d4a017"/>
+  </svg>
+
+  <footer>
+    <div style="height:28px;margin-bottom:1.5rem;overflow:hidden">
+      <svg viewBox="0 0 800 28" preserveAspectRatio="none" width="100%" height="28">
+        <defs><pattern id="fp2" x="0" y="0" width="40" height="28" patternUnits="userSpaceOnUse"><circle cx="5" cy="14" r="2" fill="#d4a017" opacity=".28"/><circle cx="20" cy="7" r="1.5" fill="#d4a017" opacity=".18"/><circle cx="20" cy="21" r="1.5" fill="#d4a017" opacity=".18"/><circle cx="35" cy="14" r="2" fill="#d4a017" opacity=".28"/><path d="M5,14 Q12,7 20,7 Q28,7 35,14" stroke="#d4a017" stroke-width=".5" fill="none" opacity=".18"/><path d="M5,14 Q12,21 20,21 Q28,21 35,14" stroke="#d4a017" stroke-width=".5" fill="none" opacity=".18"/></pattern></defs>
+        <rect width="800" height="28" fill="url(#fp2)"/>
+      </svg>
+    </div>
+    <div class="footer-date">வைகாசி மாதம் 2025 · Vaikasi 2025</div>
+    <div class="footer-social">
+      <a href="#" title="Om">ॐ</a>
+      <a href="#" title="Lotus">✿</a>
+      <a href="#" title="Sun">☀</a>
+      <a href="#" title="Star">✦</a>
+    </div>
+    <div class="footer-credits">அன்போடு உருவாக்கப்பட்டது · நற்பணி மன்றம் · தமிழ்நாடு</div>
+    <div style="margin-top:.5rem;font-family:'Lora',serif;font-size:.68rem;color:var(--cream-dim);opacity:.28">© 2025 Narpani Mandram. All Rights Reserved.</div>
+  </footer>
+</section>
+
+<!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+/* ─── NAV ─── */
+const nav=document.getElementById('main-nav');
+const navToggle=document.getElementById('nav-toggle');
+const navLinks=document.getElementById('nav-links');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+navToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
+
+/* ─── PARALLAX ─── */
+window.addEventListener('scroll',()=>{
+  const sky=document.getElementById('hero-sky');
+  if(sky) sky.style.transform=`translateY(${window.scrollY*0.28}px)`;
+});
+
+/* ─── FLAME PARTICLES ─── */
+const fc=document.getElementById('flames-container');
+const NFLAMES=24;
+const fdata=[];
+const flameSVG=()=>{
+  const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('viewBox','0 0 16 22');
+  const w=Math.random()*10+7;
+  s.setAttribute('width',w+'px');
+  s.setAttribute('height',(w*1.4)+'px');
+  s.innerHTML=`<ellipse cx="8" cy="18" rx="5" ry="2.5" fill="#d4a017" opacity=".25"/>
+    <path d="M8,20 Q3,16 4,10 Q6,5 8,3 Q8,8 11,6 Q14,8 13,13 Q12,17 8,20Z" fill="#e8927c" opacity=".9"/>
+    <path d="M8,18 Q5,15 6,10 Q7,7 8,6 Q8,10 10,9 Q12,11 11,15 Q10,17 8,18Z" fill="#f0c040"/>`;
+  s.style.cssText='position:absolute;pointer-events:none;filter:drop-shadow(0 0 4px rgba(240,192,64,.55))';
+  fc.appendChild(s);
+  return s;
+};
+for(let i=0;i<NFLAMES;i++){
+  const el=flameSVG();
+  fdata.push({el,x:Math.random()*100,y:Math.random()*15,
+    speed:Math.random()*.35+.12,drift:(Math.random()-.5)*.07,
+    life:Math.random(),phase:Math.random()*Math.PI*2,sc:Math.random()*.5+.7});
+}
+let lt=0;
+(function af(ts){
+  const dt=ts-lt;lt=ts;
+  fdata.forEach(f=>{
+    f.life+=.003*f.speed;
+    if(f.life>1){f.life=0;f.x=Math.random()*100;f.y=0;f.drift=(Math.random()-.5)*.07;}
+    f.y+=f.speed*.12; f.x+=f.drift;
+    const op=f.life<.2?f.life/.2:f.life>.8?(1-f.life)/.2:1;
+    const fl=Math.sin(ts*.006+f.phase)*.14+1;
+    f.el.style.left=f.x+'%';f.el.style.bottom=f.y+'%';
+    f.el.style.opacity=op*.72;f.el.style.transform=`scaleX(${fl}) scale(${f.sc})`;
+  });
+  requestAnimationFrame(af);
+})(0);
+
+/* ─── INTERSECTION OBSERVER ─── */
+const aels=document.querySelectorAll('.fade-up,.fade-left,.fade-right,.scale-in,.rotate-in,.blur-in');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');obs.unobserve(e.target);}});
+},{threshold:.14});
+aels.forEach(el=>obs.observe(el));
+
+/* ─── COUNTERS ─── */
+document.querySelectorAll('.stat-num[data-target]').forEach(el=>{
+  new IntersectionObserver(entries=>{
+    if(!entries[0].isIntersecting)return;
+    const target=+el.dataset.target, suf=el.dataset.suffix||'';
+    const step=target/112;let cur=0;
+    const iv=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=Math.floor(cur)+suf;if(cur>=target)clearInterval(iv);},16);
+    entries[0].target.__obs?.unobserve(entries[0].target);
+  },{threshold:.5}).observe(el);
+});
+
+/* ─── 3D CARD TILT ─── */
+document.querySelectorAll('[data-tilt]').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const dx=(e.clientX-r.left-r.width/2)/(r.width/2);
+    const dy=(e.clientY-r.top-r.height/2)/(r.height/2);
+    card.style.transform=`perspective(800px) rotateX(${-dy*11}deg) rotateY(${dx*11}deg) scale(1.04)`;
+    card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+    card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+  });
+  card.addEventListener('mouseleave',()=>card.style.transform='perspective(800px) rotateX(0) rotateY(0) scale(1)');
+});
+
+/* ─── EVENTS SCROLL PROGRESS ─── */
+const esc=document.getElementById('events-scroll');
+const epf=document.getElementById('events-progress');
+if(esc)esc.addEventListener('scroll',()=>{
+  epf.style.width=(esc.scrollLeft/(esc.scrollWidth-esc.clientWidth)*100)+'%';
+});
+
+/* ─── CAROUSEL ─── */
+const quotes=[
+  {t:'"நற்பணி மன்றம் என் குழந்தைக்கு கல்வி வழங்கியது. இந்த மன்றம் என் குடும்பத்திற்கு ஒரு ஆசீர்வாதம்."',
+   tr:'"Narpani Mandram gave my child education. This mandram is a blessing to my family."',au:'— ரத்னம், விவசாயி, ஈரோடு'},
+  {t:'"இலவச மருத்துவ முகாம் என் தந்தையை காத்தது. நற்பணி மன்றத்தினர் இறைவனின் தூதர்கள்."',
+   tr:'"The free medical camp saved my father. The members of Narpani Mandram are messengers of God."',au:'— முருகன், ஆசிரியர், சேலம்'},
+  {t:'"இந்த மன்றம் தமிழ் கலையையும் பண்பாட்டையும் காக்கிறது. எங்கள் தலைமுறைக்கு ஒரு பெரும் கொடை."',
+   tr:'"This mandram preserves Tamil art and culture. A great gift to our generation."',au:'— லலிதா, நடனக் கலைஞர், நாமக்கல்'},
+  {t:'"அன்னதானம் நிகழ்வில் ஆயிரம் பேர் சாப்பிட்டார்கள். இது தான் உண்மையான தொண்டு."',
+   tr:'"A thousand people ate at the annadhanam event. This is true service."',au:'— கார்த்திக், தொழிலதிபர், திருச்சி'},
+];
+const c3d=document.getElementById('carousel-3d');
+const cnav=document.getElementById('carousel-nav');
+const N=quotes.length;
+const RAD=340;
+let ci=0,autoplay;
+quotes.forEach((q,i)=>{
+  const card=document.createElement('div');
+  card.className='quote-card';
+  card.style.transform=`rotateY(${i*(360/N)}deg) translateZ(${RAD}px)`;
+  card.innerHTML=`<div class="quote-text-tamil">${q.t}</div><div class="quote-text-transliteration">${q.tr}</div><div class="quote-author">${q.au}</div>`;
+  c3d.appendChild(card);
+  const dot=document.createElement('button');
+  dot.className='carousel-dot'+(i===0?' active':'');
+  dot.addEventListener('click',()=>goTo(i));
+  cnav.appendChild(dot);
+});
+function goTo(idx){
+  ci=idx;
+  c3d.style.transform=`rotateY(${-idx*(360/N)}deg)`;
+  document.querySelectorAll('.carousel-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  document.querySelectorAll('.quote-card').forEach((c,i)=>{
+    const active=i===idx;
+    c.style.transform=`rotateY(${i*(360/N)}deg) translateZ(${RAD}px) scale(${active?1.08:.82})`;
+    c.style.filter=`brightness(${active?1:.5})`;
+  });
+}
+const startAuto=()=>{autoplay=setInterval(()=>goTo((ci+1)%N),3800);};
+const stopAuto=()=>clearInterval(autoplay);
+document.getElementById('carousel-wrap').addEventListener('mouseenter',stopAuto);
+document.getElementById('carousel-wrap').addEventListener('mouseleave',startAuto);
+goTo(0);startAuto();
+
+/* ─── SUBMIT ─── */
+document.getElementById('submit-btn').addEventListener('click',function(){
+  this.textContent='✓ அனுப்பப்பட்டது — Sent!';
+  this.style.background='var(--gold)';this.style.color='var(--stone)';
+  setTimeout(()=>{this.textContent='அனுப்பு — Send Message';this.style.background='transparent';this.style.color='var(--gold)';},3200);
+});
+</script>
+</body>
+</html>

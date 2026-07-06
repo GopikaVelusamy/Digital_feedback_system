@@ -1,0 +1,25 @@
+# Python virtual environments and caches
+backend_api/venv/
+backend_api/__pycache__/
+backend_api/backend/__pycache__/
+backend_api/backend/utils/__pycache__/
+backend_api/uploads/
+*.pyc
+
+# IDEs
+.idea/
+.vscode/
+
+# Node dependencies and build files
+frontend/node_modules/
+frontend/build/
+frontend/build.zip
+backend_api.zip
+
+# Environment files with secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env

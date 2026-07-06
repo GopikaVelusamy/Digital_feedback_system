@@ -1,0 +1,15 @@
+openai
+python-dotenv
+pymongo
+streamlit
+bcrypt
+pandas
+openpyxl
+dnspython
+fastapi
+uvicorn
+python-multipart
+requests
+Pillow
+piexif
+imagehash

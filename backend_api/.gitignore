@@ -1,0 +1,15 @@
+# Python virtual environments and caches
+venv/
+__pycache__/
+backend/__pycache__/
+backend/utils/__pycache__/
+uploads/
+*.pyc
+
+# IDEs
+.idea/
+.vscode/
+
+# Environment files with secrets
+.env
+*.env

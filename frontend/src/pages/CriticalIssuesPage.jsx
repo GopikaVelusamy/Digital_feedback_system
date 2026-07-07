@@ -348,7 +348,12 @@ export default function CriticalIssuesPage() {
     if (filter === 'flagged')  return (f.image_validation?.overall_risk || 0) >= 65;
     if (filter === 'verified') return f.image_validation?.overall_status === 'verified';
     return true;
-  });  return (
+  });
+
+  const totalPages = Math.ceil(filteredFeed.length / PER_PAGE);
+  const pageFeed = filteredFeed.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
+
+  return (
     <div 
       className="min-h-screen text-[#064e3b] flex flex-col lg:flex-row relative"
       style={{

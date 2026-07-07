@@ -12,6 +12,7 @@ import React, {
   useEffect, useRef, useState, useCallback
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
 import { translationData, getLanguage, setLanguage } from '../utils/translations';
 
 import { API } from '../config';
@@ -653,74 +654,65 @@ export default function DashboardPage() {
     loadDashboard(distRef.current, constiRef.current, ''); loadStatuses();
   }
 
-  const sbW = sidebarOpen ? 280 : 0;
-  const mlW = sidebarOpen ? 320 : 40;
-
   return (
-    <div style={{
-      fontFamily:"'Manrope',sans-serif", minHeight:'100vh', overflowX:'hidden',
-      background:`radial-gradient(circle at 20% 30%,rgba(22, 163, 74, 0.12) 0%,transparent 40%),
-        radial-gradient(circle at 80% 70%,rgba(16, 185, 129, 0.12) 0%,transparent 40%),
-        linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)`,
-      backgroundAttachment:'fixed',
-    }}>
+    <div 
+      className="min-h-screen text-[#064e3b] flex flex-col lg:flex-row relative"
+      style={{
+        fontFamily:"'Manrope',sans-serif",
+        background: 'linear-gradient(135deg, #f0fdf4 0%, #e8fbf0 50%, #dcfce7 100%)',
+        backgroundAttachment:'fixed',
+      }}
+    >
+      <Sidebar variant="admin" />
 
       <style>{`
         .bar-block:hover .bar-stack-container {
           transform: scale(1.04) translateY(-6px) !important;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.18) !important;
-          border: 1px solid rgba(255,255,255,0.6) !important;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+          border: 1px solid rgba(16,185,129,0.3) !important;
         }
         .bar-block-3d:hover .bar-stack-container-3d {
           transform: scale(1.06) translateY(-8px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        .nav-link-item { transition: all 0.3s ease; color: #4b6b58; }
-        .nav-link-item:hover {
-          background: rgba(22, 163, 74, 0.08);
-          box-shadow: 0 10px 25px rgba(22, 163, 74, 0.05);
-          transform: translateX(4px);
-        }
-        .nav-link-item.active {
-          background: rgba(34, 197, 94, 0.15);
-          border: 1px solid rgba(34, 197, 94, 0.25);
-          color: #166534; font-weight: 600;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
         .glass-card-dash {
-          background: rgba(255,255,255,0.28);
-          backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
-          border: 1px solid rgba(255,255,255,0.55);
-          box-shadow: 0 25px 60px rgba(0,0,0,0.06);
+          background: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(16, 185, 129, 0.2);
+          box-shadow: 0 25px 60px rgba(22, 163, 74, 0.05);
           transition: transform 0.35s ease, box-shadow 0.35s ease;
           border-radius: 24px;
         }
-        .glass-card-dash:hover { transform: translateY(-3px); box-shadow: 0 30px 60px rgba(0,0,0,0.08); }
+        .glass-card-dash:hover { transform: translateY(-3px); box-shadow: 0 30px 60px rgba(22, 163, 74, 0.1); }
         .stat-card-dash {
-          background: rgba(255,255,255,0.28); backdrop-filter: blur(50px);
-          border: 1px solid rgba(255,255,255,0.55);
-          box-shadow: 0 25px 60px rgba(0,0,0,0.06);
+          background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(24px);
+          border: 1px solid rgba(16, 185, 129, 0.2);
+          box-shadow: 0 25px 60px rgba(22, 163, 74, 0.05);
           border-radius: 20px; padding: 24px;
           transition: transform 0.35s ease, box-shadow 0.35s ease;
         }
-        .stat-card-dash:hover { transform: translateY(-4px); box-shadow: 0 30px 60px rgba(0,0,0,0.1); }
+        .stat-card-dash:hover { transform: translateY(-4px); box-shadow: 0 30px 60px rgba(22, 163, 74, 0.1); }
         .filter-pill {
-          background: rgba(255,255,255,0.28); backdrop-filter: blur(50px);
-          border: 1px solid rgba(255,255,255,0.55); border-radius: 12px;
+          background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(24px);
+          border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px;
           padding: 8px 14px; display: flex; align-items: center; gap: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
         .filter-pill select, .filter-pill input {
           background: transparent !important; border: none; outline: none;
-          font-family: 'Manrope',sans-serif; font-size: 13px; font-weight: 600; color: #374151;
+          font-family: 'Manrope',sans-serif; font-size: 13px; font-weight: 600; color: #064e3b;
+        }
+        .filter-pill select option {
+          background-color: #ffffff !important; color: #064e3b !important;
         }
         #sentimentChart3D .apexcharts-canvas { margin: 0 auto; }
-        .time-btn { color: #1F2937 !important; }
-        .time-btn:hover { background: rgba(0,0,0,0.05) !important; transform: translateY(-1px); }
+        .time-btn { color: #064e3b !important; }
+        .time-btn:hover { background: rgba(16,185,129,0.05) !important; transform: translateY(-1px); }
         .glass-shimmer {
           position: absolute; inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+          background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%);
           pointer-events: none; border-radius: 14px;
         }
-        @keyframes slideInLeft { from{transform:translateX(-320px);opacity:0} to{transform:translateX(0);opacity:1} }
         @keyframes fadeInUp    { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
         .fade-in-up   { animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
         .fade-in-up-1 { animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
@@ -729,234 +721,6 @@ export default function DashboardPage() {
         .fade-in-up-4 { animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.4s both; }
         .fade-in-up-5 { animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.5s both; }
       `}</style>
-
-      <aside style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        width: '320px',
-        zIndex: 999,
-        overflow: 'hidden',
-        transform: sidebarOpen ? 'translateX(0)' : 'translateX(-340px)',
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 253, 244, 0.85) 100%)',
-        backdropFilter: 'blur(30px)',
-        borderRight: '1px solid rgba(22, 163, 74, 0.16)',
-        boxShadow: '15px 0 45px rgba(22, 163, 74, 0.04)',
-        borderRadius: '0px 30px 30px 0px',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '36px 24px',
-      }}>
-        {/* Sidebar Header */}
-        <div style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'20px', borderBottom:'1px solid rgba(16, 185, 129, 0.15)', paddingBottom:'24px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '48px',
-            height: '48px',
-            borderRadius: '50%',
-            background: '#ffffff',
-            border: '2px solid #15803d',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-            overflow: 'hidden',
-            flexShrink: 0,
-          }}>
-            <img src="/irratai_ellai.png" alt="logo" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1px' }} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#ffffff', fontFamily: 'serif', lineHeight: '1.2' }}>
-              <span style={{ color: '#ff4d4d', marginRight: '3px' }}>அனைத்திந்திய</span>
-              <span style={{ color: '#ffffff', marginRight: '3px' }}>அண்ணா திராவிட</span>
-              <span style={{ color: '#10b981' }}>முன்னேற்றக் கழகம்</span>
-            </div>
-            <span style={{ 
-              fontSize: '9px', 
-              color: '#cbd5e1', 
-              fontWeight: 600, 
-              textTransform: 'uppercase', 
-              letterSpacing: '0.04em', 
-              marginTop: '2px'
-            }}>
-              All India Anna Dravida Munnetra Kazhagam
-            </span>
-          </div>
-        </div>
-
-        {/* Slogan / Motto */}
-        <div style={{
-          padding: '10px 14px',
-          background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.05) 0%, rgba(22, 163, 74, 0.01) 100%)',
-          borderRadius: '12px',
-          border: '1px dashed rgba(22, 163, 74, 0.18)',
-          textAlign: 'center',
-          marginBottom: '24px'
-        }}>
-          <div style={{ fontSize: '10px', fontWeight: 800, color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
-            Peace · Prosperity · Progress
-          </div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: '#4b6b58', opacity: 0.9, fontFamily: 'sans-serif' }}>
-            அமைதி · வளம் · வளர்ச்சி
-          </div>
-        </div>
-
-        {/* Language Selector Capsule */}
-        <div style={{
-          display: 'flex',
-          background: 'rgba(22, 163, 74, 0.05)',
-          borderRadius: '12px',
-          padding: '4px',
-          border: '1px solid rgba(22, 163, 74, 0.12)',
-          marginBottom: '20px',
-          gap: '4px'
-        }}>
-          {['English', 'Tamil'].map((lang) => {
-            const isSelected = language === lang;
-            return (
-              <button
-                key={lang}
-                onClick={() => setLanguage(lang)}
-                style={{
-                  flex: 1,
-                  border: 'none',
-                  background: isSelected ? '#166534' : 'transparent',
-                  color: isSelected ? '#ffffff' : '#4b6b58',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                  boxShadow: isSelected ? '0 4px 10px rgba(22, 163, 74, 0.2)' : 'none',
-                }}
-              >
-                {lang === 'English' ? 'English' : 'தமிழ்'}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Navigation links */}
-        <nav style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
-          {[
-            { path:'/dashboard',       icon:'dashboard',            label: t.dashboard,       active: location.pathname === '/dashboard', badge: <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }}></span> },
-            { path:'/critical-issues', icon:'warning',              label: t.criticalIssues, active: location.pathname === '/critical-issues', badge: <span style={{ background: '#ef4444', color: '#ffffff', fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: '999px', boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)' }}>2</span> },
-            { path:'/super-login',     icon:'admin_panel_settings', label: t.superAdmin,     active: false },
-          ].map(({ path, icon, label, active, badge }) => (
-            <a key={path} href="#"
-              onClick={e => { e.preventDefault(); navigate(path); }}
-              className={`nav-link-item${active ? ' active' : ''}`}
-              style={{
-                display:'flex',
-                alignItems:'center',
-                gap:'14px',
-                padding:'14px 18px',
-                borderRadius:'14px',
-                textDecoration:'none',
-                fontSize:'14px',
-                fontWeight: active ? 700 : 500,
-                border: active ? '1px solid rgba(34, 197, 94, 0.25)' : '1px solid transparent',
-                background: active ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
-                color: active ? '#166534' : '#4b6b58',
-                boxShadow: active ? '0 4px 12px rgba(22, 163, 74, 0.05)' : 'none',
-                transition: 'all 0.2s ease',
-                borderLeft: active ? '4px solid #166534' : '4px solid transparent',
-                paddingLeft: active ? '14px' : '18px'
-              }}>
-              <span className="material-symbols-outlined" style={{ fontSize:'22px', color: active ? '#166534' : '#4b6b58' }}>{icon}</span>
-              <span style={{ letterSpacing: '0.01em' }}>{label}</span>
-              {badge && <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>{badge}</div>}
-              {!badge && active && (
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', marginLeft: 'auto', color: '#166534' }}>
-                  chevron_right
-                </span>
-              )}
-            </a>
-          ))}
-        </nav>
-
-        {/* Live System Health Widget */}
-        <div style={{
-          margin: '24px 0',
-          padding: '20px',
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(240, 253, 244, 0.3) 100%)',
-          borderRadius: '20px',
-          border: '1px solid rgba(22, 163, 74, 0.12)',
-          boxShadow: '0 4px 15px rgba(22, 163, 74, 0.02)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#166534' }}>analytics</span>
-            <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f291b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t.systemHealth}</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 500 }}>{t.liveFeed}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#166534', fontWeight: 700 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }}></span>
-                {t.active}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 500 }}>{t.unresolved}</span>
-              <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 800 }}>{t.issuesCount}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 500 }}>{t.lastSync}</span>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 700 }}>{t.justNow}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Profile bottom block */}
-        <div style={{ marginTop:'auto', padding:'16px', background:'rgba(255, 255, 255, 0.8)',
-          borderRadius:'16px', border:'1px solid rgba(22, 163, 74, 0.15)',
-          boxShadow: '0 4px 15px rgba(22, 163, 74, 0.05)',
-          display:'flex', alignItems:'center', justifyContent: 'space-between', gap:'10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ 
-              width: 40, 
-              height: 40, 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #15803d 0%, #0d5c2c 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff',
-              fontWeight: 900,
-              fontSize: '14px',
-              border: '2px solid rgba(22, 163, 74, 0.25)',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.08)'
-            }}>
-              VS
-            </div>
-            <div style={{ overflow:'hidden' }}>
-              <div style={{ fontSize:'12px', fontWeight:800, color:'#0f291b', textTransform:'uppercase', letterSpacing:'0.05em' }}>Varun S.</div>
-              <div style={{ fontSize:'10px', color:'#4b6b58', fontWeight: 600, opacity:0.8 }}>Admin</div>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate('/super-login')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#4b6b58',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '6px',
-              borderRadius: '8px',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#4b6b58'; e.currentTarget.style.background = 'none'; }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>logout</span>
-          </button>
-        </div>
-      </aside>
 
       {/* MAIN CONTENT */}
       <main id="mainContent" style={{
@@ -967,19 +731,26 @@ export default function DashboardPage() {
         transition:'margin-left 0.4s cubic-bezier(0.16,1,0.3,1)'
       }}>
 
-        {/* HEADER — your exact original */}
+        {/* HEADER */}
         <header className="fade-in-up" style={{
           display:'flex', alignItems:'center', justifyContent:'space-between',
           gap:'16px', marginBottom:'32px', flexWrap:'wrap',
         }}>
           <div style={{ display:'flex', alignItems:'center' }}>
-            <h2 style={{ fontSize:'44px', fontWeight:900, color:'#0f291b', letterSpacing:'-0.04em', margin:0 }}>
+            <h2 style={{ fontSize:'40px', fontWeight:900, color:'#064e3b', letterSpacing:'-0.04em', margin:0 }}>
               {t.feedbackAnalytics}
             </h2>
           </div>
           <div style={{ display:'flex', gap:'10px', flexWrap:'wrap', alignItems:'center' }}>
             <div className="filter-pill">
-              <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#C6B7A6' }}>location_on</span>
+              <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#10b981' }}>translate</span>
+              <select value={language} onChange={e=>setLanguage(e.target.value)} style={{ width:'100px' }}>
+                <option value="English">English</option>
+                <option value="Tamil">தமிழ்</option>
+              </select>
+            </div>
+            <div className="filter-pill">
+              <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#10b981' }}>location_on</span>
               <select value={district} onChange={e=>onDistrict(e.target.value)} style={{ width:'140px' }}>
                 <option value="">{t.allDistricts}</option>
                 {Object.keys(DISTRICT_DATA).map(d=><option key={d} value={d}>{d}</option>)}
@@ -992,36 +763,29 @@ export default function DashboardPage() {
               </select>
             </div>
             <div className="filter-pill">
-              <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#15803d' }}>calendar_month</span>
+              <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#10b981' }}>calendar_month</span>
               <input id="fpDateRange" readOnly placeholder={t.selectDates} style={{ width:'140px', cursor:'pointer' }} />
               {dateRange && (
-                <button onClick={clearDates} style={{ background:'none', border:'none', cursor:'pointer', color:'#9CA3AF', fontSize:'13px', fontWeight:700, padding:'0 2px' }}
+                <button onClick={clearDates} style={{ background:'none', border:'none', cursor:'pointer', color:'#047857', fontSize:'13px', fontWeight:700, padding:'0 2px' }}
                   onMouseEnter={e=>e.target.style.color='#EF4444'}
-                  onMouseLeave={e=>e.target.style.color='#9CA3AF'}>✕</button>
+                  onMouseLeave={e=>e.target.style.color='#047857'}>✕</button>
               )}
             </div>
           </div>
         </header>
 
-        {/* TOP 3 STAT CARDS — rich solid green theme */}
+        {/* TOP 3 STAT CARDS */}
         <div className="fade-in-up-1" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'20px', marginBottom:'24px' }}>
           {[
-            { label: t.totalReceived,       val:totalAnim,  icon:'inbox',    bg:'rgba(21, 128, 61, 0.08)', color:'#15803d', badge:'+12%', bColor:'#15803d', borderLeft:'5px solid #15803d', trendIcon:'trending_up' },
-            { label: t.totalResolved,       val:solvedAnim, icon:'task_alt', bg:'rgba(16, 185, 129, 0.08)', color:'#10b981', badge:'+8%',  bColor:'#10b981', borderLeft:'5px solid #10b981', trendIcon:'trending_up' },
-            { label: t.avgResolutionTime,   val:'0',        icon:'timer',    bg:'rgba(15, 118, 110, 0.08)', color:'#0f766e', badge:'-5%',  bColor:'#0f766e', borderLeft:'5px solid #0f766e', trendIcon:'trending_down' },
+            { label: t.totalReceived,       val:totalAnim,  icon: 'inbox',    bg: 'rgba(21, 128, 61, 0.1)', color: '#10b981', badge: '+12%', bColor: '#047857', borderLeft: '5px solid #10b981', trendIcon: 'trending_up' },
+            { label: t.totalResolved,       val:solvedAnim, icon: 'task_alt', bg: 'rgba(16, 185, 129, 0.1)', color: '#16a34a', badge: '+8%',  bColor: '#16a34a', borderLeft: '5px solid #16a34a', trendIcon: 'trending_up' },
+            { label: t.avgResolutionTime,   val: '0',        icon: 'timer',    bg: 'rgba(15, 118, 110, 0.1)', color: '#0d9488', badge: '-5%',  bColor: '#0d9488', borderLeft: '5px solid #0d9488', trendIcon: 'trending_down' },
           ].map(({ label, val, icon, bg, color, badge, bColor, borderLeft, trendIcon }, i) => (
             <div key={i} className="stat-card-dash" style={{
-              background: 'rgba(255, 255, 255, 0.75)',
-              backdropFilter: 'blur(16px)',
-              borderRadius:'20px',
-              border:'1px solid rgba(22, 163, 74, 0.25)',
               borderLeft: borderLeft,
               padding: '20px 24px',
-              boxShadow:'0 10px 25px rgba(21,128,61,0.05)',
               transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(21,128,61,0.1)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(21,128,61,0.05)'; }}>
+            }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'20px' }}>
                 <div style={{ width:46, height:46, borderRadius:'12px', background:bg, display:'flex', alignItems:'center', justifyContent:'center' }}>
                   <span className="material-symbols-outlined" style={{ color, fontSize:'22px' }}>{icon}</span>
@@ -1030,22 +794,22 @@ export default function DashboardPage() {
                   <span className="material-symbols-outlined" style={{ fontSize:'14px' }}>{trendIcon}</span>{badge}
                 </span>
               </div>
-              <div style={{ color:'#4b6b58', fontSize:'12px', fontWeight:600, marginBottom:'4px' }}>{label}</div>
-              <div style={{ fontSize:'28px', fontWeight:900, color:'#0f291b' }}>{val}</div>
+              <div style={{ color:'#047857', fontSize:'12px', fontWeight:700, marginBottom:'4px' }}>{label}</div>
+              <div style={{ fontSize:'28px', fontWeight:900, color:'#064e3b' }}>{val}</div>
             </div>
           ))}
         </div>
 
-        {/* DONUT CHART — your exact original */}
+        {/* DONUT CHART */}
         <div id="sentimentCard" className="glass-card-dash fade-in-up-2" style={{ padding:'40px', marginBottom:'24px' }}>
-          <h4 style={{ textAlign:'center', fontSize:'20px', fontWeight:600, color:'#0f291b', marginBottom:'0px', letterSpacing:'-0.01em' }}>
+          <h4 style={{ textAlign:'center', fontSize:'20px', fontWeight:800, color:'#064e3b', marginBottom:'0px', letterSpacing:'-0.01em' }}>
             {t.overallSentiment}
           </h4>
           <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'center', minHeight:'360px' }}>
             <div id="sentimentChart3D" ref={chartRef} style={{ width:'100%', maxWidth:'500px' }}></div>
             <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', pointerEvents:'none', zIndex:10 }}>
-              <span style={{ fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.25em', fontWeight:700, color:'#4b6b58' }}>TOTAL</span>
-              <span style={{ fontSize:'52px', fontWeight:900, color:'#0f291b', lineHeight:1.1 }}>{sentPct}</span>
+              <span style={{ fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.25em', fontWeight:700, color:'#047857' }}>TOTAL</span>
+              <span style={{ fontSize:'52px', fontWeight:900, color:'#064e3b', lineHeight:1.1 }}>{sentPct}</span>
             </div>
           </div>
           <div style={{ display:'flex', justifyContent:'center', gap:'48px', marginTop:'8px' }}>
@@ -1056,7 +820,7 @@ export default function DashboardPage() {
             ].map(({ dot, label, val }) => (
               <div key={label} style={{ textAlign:'center' }}>
                 <div style={{ width:10, height:10, borderRadius:'50%', background:dot, margin:'0 auto 6px' }}></div>
-                <div style={{ fontSize:'10px', textTransform:'uppercase', color:'#6B7280', fontWeight:600, letterSpacing:'0.08em' }}>{label}</div>
+                <div style={{ fontSize:'10px', textTransform:'uppercase', color:'#047857', fontWeight:750, letterSpacing:'0.08em' }}>{label}</div>
                 <div style={{ fontSize:'16px', fontWeight:700, color:dot, marginTop:'2px' }}>{val}</div>
               </div>
             ))}
@@ -1066,66 +830,70 @@ export default function DashboardPage() {
         {/* BAR CHART CARD */}
         <div id="barCard" className="glass-card-dash fade-in-up-3" style={{ padding:'36px', marginBottom:'24px' }}>
 
-          {/* Header — your exact original */}
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'20px' }}>
+          {/* Header */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent: 'space-between', marginBottom:'20px', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <h4 style={{ fontSize:'17px', fontWeight:700, color:'#0f291b', margin:0 }}>{language === 'English' ? 'Department Feedback Analytics' : 'துறை கருத்து பகுப்பாய்வு'}</h4>
-              <p style={{ fontSize:'11px', fontWeight:600, color:'#9CA3AF', textTransform:'uppercase', letterSpacing:'0.08em', margin:'4px 0 0' }}>
+              <h4 style={{ fontSize:'17px', fontWeight:850, color:'#064e3b', margin:0 }}>{language === 'English' ? 'Department Feedback Analytics' : 'துறை கருத்து பகுப்பாய்வு'}</h4>
+              <p style={{ fontSize:'11px', fontWeight:700, color:'#047857', textTransform:'uppercase', letterSpacing:'0.08em', margin:'4px 0 0' }}>
                 {language === 'English' ? 'Resolve Rate vs. Volume' : 'தீர்வு விகிதம் மற்றும் அளவு'}
               </p>
             </div>
-            <div style={{ background:'rgba(255,255,255,0.3)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.4)', borderRadius:'999px', padding:'4px', display:'flex', gap:'2px' }}>
+            <div style={{ background:'rgba(16, 185, 129, 0.08)', backdropFilter:'blur(10px)', border:'1px solid rgba(16, 185, 129, 0.15)', borderRadius:'999px', padding:'4px', display:'flex', gap:'2px' }}>
               {['Weekly','Monthly','Yearly'].map((timeLabel, i) => (
-                <button key={timeLabel} className="time-btn" style={{
+                <button key={timeLabel} className="time-btn font-bold" style={{
                   padding:'8px 18px', borderRadius:'999px', fontSize:'12px',
-                  fontWeight: i===1 ? 700 : 500, border:'none', cursor:'pointer',
-                  background: i===1 ? 'rgba(255,255,255,0.8)' : 'transparent',
-                  boxShadow: i===1 ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                  border:'none', cursor:'pointer',
+                  background: i===1 ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                  color: '#064e3b',
+                  boxShadow: i===1 ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
                   transition:'all 0.2s ease',
                 }}>{language === 'English' ? timeLabel : (timeLabel === 'Weekly' ? 'வாரம்' : (timeLabel === 'Monthly' ? 'மாதம்' : 'ஆண்டு'))}</button>
               ))}
             </div>
           </div>
 
-          {/* Stat mini strip — your exact original */}
-          <div style={{
-            display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr 1fr', gap:'12px',
-            borderTop:'1px solid rgba(255,255,255,0.3)', borderBottom:'1px solid rgba(255,255,255,0.3)',
-            padding:'16px 0', marginBottom:'32px',
-          }}>
+          {/* Stat mini strip */}
+          <div 
+            className="grid grid-cols-2 sm:grid-cols-5 gap-3"
+            style={{
+              borderTop:'1px solid rgba(16, 185, 129, 0.15)', borderBottom:'1px solid rgba(16, 185, 129, 0.15)',
+              padding:'16px 0', marginBottom:'32px',
+            }}
+          >
             <div>
-              <div style={{ fontSize:'10px', fontWeight:600, color:'#9CA3AF', textTransform:'uppercase', letterSpacing:'0.08em' }}>{language === 'English' ? 'Feedback Total' : 'மொத்த கருத்துக்கள்'}</div>
-              <div style={{ fontSize:'26px', fontWeight:900, color:'#111827', marginTop:'4px' }}>{totalAnim}</div>
+              <div style={{ fontSize:'10px', fontWeight:700, color:'#047857', textTransform:'uppercase', letterSpacing:'0.08em' }}>{language === 'English' ? 'Feedback Total' : 'மொத்த கருத்துக்கள்'}</div>
+              <div style={{ fontSize:'26px', fontWeight:950, color:'#064e3b', marginTop:'4px' }}>{totalAnim}</div>
             </div>
             {[
-              { id:'solvedStat', val:solved,   color:'#059669', label: language === 'English' ? 'Solved' : 'தீர்க்கப்பட்டது' },
-              { id:'pendStat',   val:pending,  color:'#D97706', label: language === 'English' ? 'Pending' : 'நிலுவையில்' },
-              { id:'solvStat',   val:solving,  color:'#374151', label: language === 'English' ? 'Solving' : 'செயல்முறை' },
-              { id:'usersStat',  val:totalRaw, color:'#374151', label: language === 'English' ? 'Users Send' : 'அனுப்பியவர்கள்' },
+              { id:'solvedStat', val:solved,   color:'#16a34a', label: language === 'English' ? 'Solved' : 'தீர்க்கப்பட்டது' },
+              { id:'pendStat',   val:pending,  color:'#EF4444', label: language === 'English' ? 'Pending' : 'நிலுவையில்' },
+              { id:'solvStat',   val:solving,  color:'#D97706', label: language === 'English' ? 'Solving' : 'செயல்முறை' },
+              { id:'usersStat',  val:totalRaw, color:'#047857', label: language === 'English' ? 'Users Send' : 'அனுப்பியவர்கள்' },
             ].map(({ id, val, color, label }) => (
-              <div key={id} style={{ textAlign:'center', padding:'10px', background:'rgba(255,255,255,0.15)', borderRadius:'14px', border:'1px solid rgba(255,255,255,0.3)' }}>
-                <div style={{ fontSize:'20px', fontWeight:700, color }}>{val}</div>
-                <div style={{ fontSize:'11px', color:'#6B7280', marginTop:'2px', fontWeight:500 }}>{label}</div>
+              <div key={id} style={{ textAlign:'center', padding:'10px', background:'rgba(255, 255, 255, 0.8)', borderRadius:'14px', border:'1px solid rgba(16, 185, 129, 0.15)' }}>
+                <div style={{ fontSize:'20px', fontWeight:850, color }}>{val}</div>
+                <div style={{ fontSize:'11px', color:'#047857', marginTop:'2px', fontWeight:600 }}>{label}</div>
               </div>
             ))}
           </div>
 
-          {/* ADDITION 4 — flex row wrapping [TN map | bars] */}
-          <div style={{ display:'flex', gap:'28px', alignItems:'flex-start' }}>
+          {/* flex row wrapping [TN map | bars] */}
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
 
             {/* TN MAP PANEL */}
             <div style={{
               width:'200px', flexShrink:0,
-              background:'rgba(240, 253, 244, 0.65)', backdropFilter:'blur(24px)',
-              border:'1px solid rgba(22, 163, 74, 0.25)', borderRadius:'20px',
+              background:'rgba(255, 255, 255, 0.75)', backdropFilter:'blur(24px)',
+              border:'1px solid rgba(16, 185, 129, 0.2)', borderRadius:'20px',
               padding:'14px 10px 36px', position:'relative',
-              boxShadow:'0 8px 32px rgba(0,0,0,0.07)',
+              boxShadow:'0 8px 32px rgba(16, 185, 129, 0.03)',
+              alignSelf: 'center',
             }}>
               <div style={{ textAlign:'center', marginBottom:'6px' }}>
-                <div style={{ fontSize:'9px', fontWeight:800, color:'#0f291b', textTransform:'uppercase', letterSpacing:'0.14em', fontFamily:'Manrope,sans-serif' }}>
+                <div style={{ fontSize:'9px', fontWeight:900, color:'#064e3b', textTransform:'uppercase', letterSpacing:'0.14em', fontFamily:'Manrope,sans-serif' }}>
                   {language === 'English' ? 'Live Feedback Map' : 'நேரடி கருத்து வரைபடம்'}
                 </div>
-                <div style={{ fontSize:'8px', color:'#4b6b58', fontWeight:600, marginTop:'2px', fontFamily:'Manrope,sans-serif' }}>
+                <div style={{ fontSize:'8px', color:'#047857', fontWeight:700, marginTop:'2px', fontFamily:'Manrope,sans-serif' }}>
                   {language === 'English' ? 'Top 5 districts · hover to see' : 'முதல் 5 மாவட்டங்கள் · பார்க்க நகர்த்தவும்'}
                 </div>
               </div>
@@ -1135,21 +903,21 @@ export default function DashboardPage() {
               <div style={{ position:'absolute', bottom:'10px', left:0, right:0, display:'flex', justifyContent:'center', alignItems:'center', gap:'5px' }}>
                 <span style={{
                   width:6, height:6, borderRadius:'50%', background:'#22c55e',
-                  display:'inline-block', boxShadow:'0 0 6px rgba(34,197,94,0.7)',
-                  animation:'tnr1 2s ease-out infinite',
+                  display:'inline-block', boxShadow: '0 0 6px #22c55e',
                 }}/>
-                <span style={{ fontSize:'8px', fontWeight:700, color:'#4b6b58', fontFamily:'Manrope,sans-serif', letterSpacing:'0.06em' }}>
+                <span style={{ fontSize:'8px', fontWeight:750, color:'#047857', fontFamily:'Manrope,sans-serif', letterSpacing:'0.06em' }}>
                   High feedback zone
                 </span>
               </div>
             </div>
 
-            {/* BARS — your exact original bar layout */}
-            <div style={{ flex:1, display:'flex', flexDirection:'column' }}>
+            {/* BARS */}
+            <div className="flex-1 w-full flex flex-col overflow-x-auto">
               <div ref={barRef} style={{
                 display:'flex', alignItems:'flex-end',
                 gap:'20px', padding:'0 8px',
                 height: BAR_H + 50 + 'px',
+                minWidth: '320px',
               }}>
                 {DEPTS.map(({ key, label }) => {
                   const d = deptData[key] || { pos:0, neu:0, neg:0, posPx:0, neuPx:0, negPx:0 };
@@ -1162,30 +930,28 @@ export default function DashboardPage() {
                 })}
               </div>
 
-              {/* Bar legend — your exact original */}
-              <div style={{ display:'flex', gap:'24px', justifyContent:'center', marginTop:'20px' }}>
+              {/* Bar legend */}
+              <div style={{ display:'flex', gap:'24px', justifyContent:'center', marginTop:'20px', flexWrap: 'wrap' }}>
                 {[['#10B981','Positive'],['#FBBF24','Neutral'],['#EF4444','Negative']].map(([c,l]) => (
-                  <span key={l} style={{ display:'flex', alignItems:'center', gap:'7px', fontSize:'12px', fontWeight:700, color:'#6B7280' }}>
+                  <span key={l} style={{ display:'flex', alignItems:'center', gap:'7px', fontSize:'12px', fontWeight:850, color:'#047857' }}>
                     <span style={{ width:10, height:10, borderRadius:'50%', background:c, display:'inline-block' }}></span>{l}
                   </span>
                 ))}
               </div>
             </div>
           </div>
-          {/* End ADDITION 4 */}
-
         </div>
 
-        {/* BOTTOM 4 STAT CARDS — your exact original */}
-        <div className="fade-in-up-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'16px', marginBottom:'32px' }}>
+        {/* BOTTOM 4 STAT CARDS */}
+        <div className="fade-in-up-4 grid grid-cols-2 md:grid-cols-4 gap-4" style={{ marginBottom:'32px' }}>
           {[
             { label:'SOLVED',      val:solved,   color:'#10B981' },
             { label:'PENDING',     val:pending,  color:'#EF4444' },
             { label:'IN PROGRESS', val:solving,  color:'#FBBF24' },
-            { label:'TOTAL VOLUME',val:totalRaw, color:'#15803d' },
+            { label:'TOTAL VOLUME',val:totalRaw, color:'#10b981' },
           ].map(({ label, val, color }) => (
             <div key={label} className="stat-card-dash" style={{ textAlign:'center' }}>
-              <div style={{ fontSize:'10px', fontWeight:900, color:'#9CA3AF', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'8px' }}>{label}</div>
+              <div style={{ fontSize:'10px', fontWeight:900, color:'#a7f3d0', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:'8px' }}>{label}</div>
               <div style={{ fontSize:'36px', fontWeight:900, color }}>{val}</div>
             </div>
           ))}

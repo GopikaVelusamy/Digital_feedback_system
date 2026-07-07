@@ -348,42 +348,26 @@ export default function CriticalIssuesPage() {
     if (filter === 'flagged')  return (f.image_validation?.overall_risk || 0) >= 65;
     if (filter === 'verified') return f.image_validation?.overall_status === 'verified';
     return true;
-  });
-
-  const totalPages    = Math.ceil(filteredFeed.length / PER_PAGE);
-  const pageFeed      = filteredFeed.slice(page * PER_PAGE, (page+1) * PER_PAGE);
-
-  // stats for left panel
-  const total         = allFeedbacks.length;
-  const pending       = allFeedbacks.filter(f => f.status === 'Pending').length;
-  const solved        = allFeedbacks.filter(f => f.status === 'Solved').length;
-  const flagged       = allFeedbacks.filter(f => (f.image_validation?.overall_risk||0) >= 65).length;
-  const critCount     = allFeedbacks.filter(f => (f.feedback?.rating||f.rating||5) <= 2).length;
-
-  const districts = [...new Set(allFeedbacks.map(f => f.location?.district || f.district).filter(Boolean))].sort();
-
-  const mlW = sidebarOpen ? 300 : 40;
-  const sbW = sidebarOpen ? 260 : 0;
-
-  return (
-    <div style={{
-      fontFamily:"'Manrope',sans-serif", minHeight:'100vh',
-      background:`radial-gradient(circle at 20% 30%,rgba(22, 163, 74, 0.12) 0%,transparent 40%),
-        radial-gradient(circle at 80% 70%,rgba(16, 185, 129, 0.12) 0%,transparent 40%),
-        linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)`,
-      backgroundAttachment:'fixed', overflowX:'hidden',
-    }}>
+  });  return (
+    <div 
+      className="min-h-screen text-[#064e3b] flex flex-col lg:flex-row relative"
+      style={{
+        fontFamily:"'Manrope',sans-serif",
+        background: 'linear-gradient(135deg, #f0fdf4 0%, #e8fbf0 50%, #dcfce7 100%)',
+        backgroundAttachment:'fixed',
+      }}
+    >
+      <Sidebar variant="admin" />
       <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Manrope...');
 
-  /* --- INGA PASTE PANNUM --- */
   .glass-symbol {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.03);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -402,412 +386,175 @@ export default function CriticalIssuesPage() {
     opacity: 0.2;
     z-index: -1;
   }
-  /* ------------------------ */
         @keyframes ciExpand { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes slideInLeft { from{transform:translateX(-300px);opacity:0} to{transform:translateX(0);opacity:1} }
         @keyframes spin { to{transform:rotate(360deg)} }
-        .ci-nav-link { transition:all 0.3s ease; color:#4b6b58; border:1px solid transparent; }
-        .ci-nav-link:hover { background:rgba(22, 163, 74, 0.08); transform:translateX(4px); border-color:rgba(22, 163, 74, 0.1); }
-        .ci-nav-active { background:rgba(34, 197, 94, 0.15)!important; border:1px solid rgba(34, 197, 94, 0.25)!important; color:#166534!important; font-weight:700!important; }
-        .glass-ci { background:rgba(255, 255, 255, 0.28); backdrop-filter:blur(50px); -webkit-backdrop-filter:blur(50px); border:1px solid rgba(255, 255, 255, 0.55); box-shadow:0 8px 32px rgba(0, 0, 0, 0.05); }
-        .filter-tab { padding:7px 16px; border-radius:999px; font-size:11px; font-weight:700; cursor:pointer; border:1px solid transparent; transition:all 0.25s; letter-spacing:0.04em; font-family:Manrope,sans-serif; }
-        .filter-tab-active { background:#15803d!important; color:#fff!important; border-color:#15803d!important; box-shadow:0 4px 12px rgba(22, 101, 52, 0.25); }
+        .glass-ci {
+          background: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(16, 185, 129, 0.2);
+          box-shadow: 0 8px 32px rgba(22, 163, 74, 0.04);
+        }
+        .filter-tab { padding:7px 16px; border-radius:999px; font-size:11px; font-weight:700; cursor:pointer; border:1px solid rgba(16, 185, 129, 0.2); background: rgba(255, 255, 255, 0.8); transition:all 0.25s; letter-spacing:0.04em; font-family:Manrope,sans-serif; color: #047857; }
+        .filter-tab-active { background:#16a34a!important; color:#fff!important; border-color:#16a34a!important; box-shadow:0 4px 12px rgba(16, 185, 129, 0.15); }
         .dept-bar { height:5px; border-radius:999px; transition:width 0.9s cubic-bezier(0.22,1,0.36,1); }
-        .pagination-btn { padding:7px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.5); background:rgba(255,255,255,0.3); font-size:12px; font-weight:700; cursor:pointer; font-family:Manrope,sans-serif; color:#4B5563; transition:all 0.2s; }
-        .pagination-btn:hover { background:rgba(255,255,255,0.6); }
-        .pagination-btn-active { background:#15803d!important; color:#fff!important; border-color:#15803d!important; }
+        .pagination-btn { padding:7px 14px; border-radius:8px; border:1px solid rgba(16,185,129,0.2); background:rgba(255,255,255,0.8); font-size:12px; font-weight:700; cursor:pointer; font-family:Manrope,sans-serif; color:#047857; transition:all 0.2s; }
+        .pagination-btn:hover { background:rgba(16,185,129,0.15); color: #064e3b; }
+        .pagination-btn-active { background:#16a34a!important; color:#fff!important; border-color:#16a34a!important; }
         .pagination-btn:disabled { opacity:0.35; cursor:default; }
       `}
-      
       </style>
+      
+      <main id="mainContent" className="flex-1 min-h-screen p-6 md:p-10 box-sizing-border-box overflow-x-hidden min-w-0">
 
-      <aside style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        width: '320px',
-        zIndex: 999,
-        overflow: 'hidden',
-        transform: sidebarOpen ? 'translateX(0)' : 'translateX(-340px)',
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 253, 244, 0.85) 100%)',
-        backdropFilter: 'blur(30px)',
-        borderRight: '1px solid rgba(22, 163, 74, 0.16)',
-        boxShadow: '15px 0 45px rgba(22, 163, 74, 0.04)',
-        borderRadius: '0px 30px 30px 0px',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '36px 24px',
-      }}>
-        {/* Sidebar Header */}
-        <div style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'20px', borderBottom:'1px solid rgba(16, 185, 129, 0.15)', paddingBottom:'24px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '48px',
-            height: '48px',
-            borderRadius: '50%',
-            background: '#ffffff',
-            border: '2px solid #15803d',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-            overflow: 'hidden',
-            flexShrink: 0,
-          }}>
-            <img src="/irratai_ellai.png" alt="logo" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1px' }} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#ffffff', fontFamily: 'serif', lineHeight: '1.2' }}>
-              <span style={{ color: '#ff4d4d', marginRight: '3px' }}>அனைத்திந்திய</span>
-              <span style={{ color: '#ffffff', marginRight: '3px' }}>அண்ணா திராவிட</span>
-              <span style={{ color: '#10b981' }}>முன்னேற்றக் கழகம்</span>
-            </div>
-            <span style={{ 
-              fontSize: '9px', 
-              color: '#cbd5e1', 
-              fontWeight: 600, 
-              textTransform: 'uppercase', 
-              letterSpacing: '0.04em', 
-              marginTop: '2px'
-            }}>
-              All India Anna Dravida Munnetra Kazhagam
-            </span>
-          </div>
-        </div>
-
-        {/* Slogan / Motto */}
-        <div style={{
-          padding: '10px 14px',
-          background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.05) 0%, rgba(22, 163, 74, 0.01) 100%)',
-          borderRadius: '12px',
-          border: '1px dashed rgba(22, 163, 74, 0.18)',
-          textAlign: 'center',
-          marginBottom: '24px'
-        }}>
-          <div style={{ fontSize: '10px', fontWeight: 800, color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
-            Peace · Prosperity · Progress
-          </div>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: '#4b6b58', opacity: 0.9, fontFamily: 'sans-serif' }}>
-            அமைதி · வளம் · வளர்ச்சி
-          </div>
-        </div>
-
-        {/* Language Selector Capsule */}
-        <div style={{
-          display: 'flex',
-          background: 'rgba(22, 163, 74, 0.05)',
-          borderRadius: '12px',
-          padding: '4px',
-          border: '1px solid rgba(22, 163, 74, 0.12)',
-          marginBottom: '20px',
-          gap: '4px'
-        }}>
-          {['English', 'Tamil'].map((lang) => {
-            const isSelected = language === lang;
-            return (
-              <button
-                key={lang}
-                onClick={() => setLanguage(lang)}
-                style={{
-                  flex: 1,
-                  border: 'none',
-                  background: isSelected ? '#166534' : 'transparent',
-                  color: isSelected ? '#ffffff' : '#4b6b58',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                  boxShadow: isSelected ? '0 4px 10px rgba(22, 163, 74, 0.2)' : 'none',
-                }}
-              >
-                {lang === 'English' ? 'English' : 'தமிழ்'}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Navigation links */}
-        <nav style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
-          {[
-            { path:'/dashboard',       icon:'dashboard',            label: t.dashboard,       active: location.pathname === '/dashboard', badge: <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }}></span> },
-            { path:'/critical-issues', icon:'warning',              label: t.criticalIssues, active: location.pathname === '/critical-issues', badge: <span style={{ background: '#ef4444', color: '#ffffff', fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: '999px', boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)' }}>2</span> },
-            { path:'/super-login',     icon:'admin_panel_settings', label: t.superAdmin,     active: false },
-          ].map(({ path, icon, label, active, badge }) => (
-            <a key={path} href="#"
-              onClick={e => { e.preventDefault(); navigate(path); }}
-              className={`nav-link-item${active ? ' active' : ''}`}
-              style={{
-                display:'flex',
-                alignItems:'center',
-                gap:'14px',
-                padding:'14px 18px',
-                borderRadius:'14px',
-                textDecoration:'none',
-                fontSize:'14px',
-                fontWeight: active ? 700 : 500,
-                border: active ? '1px solid rgba(34, 197, 94, 0.25)' : '1px solid transparent',
-                background: active ? 'rgba(34, 197, 94, 0.12)' : 'transparent',
-                color: active ? '#166534' : '#4b6b58',
-                boxShadow: active ? '0 4px 12px rgba(22, 163, 74, 0.05)' : 'none',
-                transition: 'all 0.2s ease',
-                borderLeft: active ? '4px solid #166534' : '4px solid transparent',
-                paddingLeft: active ? '14px' : '18px'
-              }}>
-              <span className="material-symbols-outlined" style={{ fontSize:'22px', color: active ? '#166534' : '#4b6b58' }}>{icon}</span>
-              <span style={{ letterSpacing: '0.01em' }}>{label}</span>
-              {badge && <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>{badge}</div>}
-              {!badge && active && (
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', marginLeft: 'auto', color: '#166534' }}>
-                  chevron_right
-                </span>
-              )}
-            </a>
-          ))}
-        </nav>
-
-        {/* Live System Health Widget */}
-        <div style={{
-          margin: '24px 0',
-          padding: '20px',
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(240, 253, 244, 0.3) 100%)',
-          borderRadius: '20px',
-          border: '1px solid rgba(22, 163, 74, 0.12)',
-          boxShadow: '0 4px 15px rgba(22, 163, 74, 0.02)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#166534' }}>analytics</span>
-            <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f291b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t.systemHealth}</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 500 }}>{t.liveFeed}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#166534', fontWeight: 700 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }}></span>
-                {t.active}
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 500 }}>{t.unresolved}</span>
-              <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 800 }}>{t.issuesCount}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 500 }}>{t.lastSync}</span>
-              <span style={{ fontSize: '12px', color: '#4b6b58', fontWeight: 700 }}>{t.justNow}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Profile bottom block */}
-        <div style={{ marginTop:'auto', padding:'16px', background:'rgba(255, 255, 255, 0.8)',
-          borderRadius:'16px', border:'1px solid rgba(22, 163, 74, 0.15)',
-          boxShadow: '0 4px 15px rgba(22, 163, 74, 0.05)',
-          display:'flex', alignItems:'center', justifyContent: 'space-between', gap:'10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ 
-              width: 40, 
-              height: 40, 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #15803d 0%, #0d5c2c 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff',
-              fontWeight: 900,
-              fontSize: '14px',
-              border: '2px solid rgba(22, 163, 74, 0.25)',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.08)'
-            }}>
-              VS
-            </div>
-            <div style={{ overflow:'hidden' }}>
-              <div style={{ fontSize:'12px', fontWeight:800, color:'#0f291b', textTransform:'uppercase', letterSpacing:'0.05em' }}>Varun S.</div>
-              <div style={{ fontSize:'10px', color:'#4b6b58', fontWeight: 600, opacity:0.8 }}>Admin</div>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate('/super-login')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#4b6b58',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '6px',
-              borderRadius: '8px',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#4b6b58'; e.currentTarget.style.background = 'none'; }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* ── MAIN ─────────────────────────────────────────────── */}
-      <main style={{
-        minHeight:'100vh', padding:'28px 36px',
-        maxWidth: '1280px',
-        boxSizing:'border-box', width: 'auto',
-        marginLeft: sidebarOpen ? '320px' : '0px',
-        transition:'margin-left 0.4s cubic-bezier(0.16,1,0.3,1)'
-      }}>
-
-        {/* ── HEADER ROW ─────────────────────────────────────── */}
-        <header style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, marginBottom:24, flexWrap:'wrap', animation:'fadeInUp 0.5s both' }}>
+        <header style={{ display:'flex', alignItems:'center', justify: 'space-between', gap:16, marginBottom:24, flexWrap:'wrap', animation:'fadeInUp 0.5s both' }}>
           <div style={{ display:'flex', alignItems:'center' }}>
             <div>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
                 <span style={{ width:7, height:7, borderRadius:'50%', background:'#EF4444', display:'inline-block', boxShadow:'0 0 0 0 rgba(239,68,68,0.4)', animation:'pulse 2s infinite' }}/>
-                <span style={{ fontSize:10, fontWeight:700, color:'#4b6b58', letterSpacing:'0.12em', textTransform:'uppercase' }}>{t.liveMonitoringSystem}</span>
+                <span style={{ fontSize:10, fontWeight:700, color:'#047857', letterSpacing:'0.12em', textTransform:'uppercase' }}>{t.liveMonitoringSystem}</span>
               </div>
-              <h2 style={{ fontSize:44, fontWeight:900, color:'#0f291b', letterSpacing:'-0.04em', margin:0 }}>{t.criticalIssuesTitle}</h2>
+              <h2 style={{ fontSize:40, fontWeight:900, color:'#064e3b', letterSpacing:'-0.04em', margin:0 }}>{t.criticalIssuesTitle}</h2>
             </div>
           </div>
 
-          {/* Right: district filter + refresh */}
-          <div style={{ display:'flex', gap:10, alignItems:'center' }}>
+          <div style={{ display:'flex', gap:10, alignItems:'center', flexWrap: 'wrap' }}>
             <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
-              <span className="material-symbols-outlined" style={{ fontSize:15, color:'#15803d' }}>location_on</span>
+              <span className="material-symbols-outlined" style={{ fontSize:15, color:'#10b981' }}>translate</span>
+              <select value={language} onChange={e=>setLanguageState(e.target.value)}
+                style={{ background:'transparent', border:'none', outline:'none', fontSize:12, fontWeight:700, color:'#064e3b', fontFamily:'Manrope,sans-serif', width:100 }}>
+                <option value="English" className="bg-white text-[#064e3b]">English</option>
+                <option value="Tamil" className="bg-white text-[#064e3b]">தமிழ்</option>
+              </select>
+            </div>
+            <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
+              <span className="material-symbols-outlined" style={{ fontSize:15, color:'#10b981' }}>location_on</span>
               <select value={districtFilter} onChange={e=>{setDistrictFilter(e.target.value);setPage(0);}}
-                style={{ background:'transparent', border:'none', outline:'none', fontSize:12, fontWeight:700, color:'#0f291b', fontFamily:'Manrope,sans-serif', width:130 }}>
-                <option value="">{t.allDistricts}</option>
-                {districts.map(d=><option key={d} value={d}>{d}</option>)}
+                style={{ background:'transparent', border:'none', outline:'none', fontSize:12, fontWeight:700, color:'#064e3b', fontFamily:'Manrope,sans-serif', width:130 }}>
+                <option value="" className="bg-white text-[#047857]">{t.allDistricts}</option>
+                {districts.map(d=><option key={d} value={d} className="bg-white text-[#064e3b]">{d}</option>)}
               </select>
             </div>
             <button onClick={()=>{loadCriticalData();setPage(0);}}
-              className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:700, color:'#0f291b', fontFamily:'Manrope,sans-serif', transition:'all 0.2s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.5)'}
+              className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:700, color:'#064e3b', fontFamily:'Manrope,sans-serif', transition:'all 0.2s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(16,185,129,0.15)'}
               onMouseLeave={e=>e.currentTarget.style.background=''}>
-              <span className="material-symbols-outlined" style={{ fontSize:16, animation: loading ? 'spin 1s linear infinite' : 'none' }}>refresh</span>
+              <span className="material-symbols-outlined" style={{ fontSize:16, animation: loading ? 'spin 1s linear infinite' : 'none', color: '#16a34a' }}>refresh</span>
               {t.refresh}
             </button>
           </div>
         </header>
 
-        {/* ── QUICK STATS ROW ────────────────────────────────── */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:12, marginBottom:24, animation:'fadeInUp 0.5s 0.05s both' }}>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6" style={{ animation:'fadeInUp 0.5s 0.05s both' }}>
           {[
-            { label: t.totalReports, val:total,     badgeColor:'#ffffff', icon:'inbox',          bgCard:'linear-gradient(135deg, #15803d 0%, #0f5127 100%)' },
-            { label: t.pending,       val:pending,   badgeColor:'#ffffff', icon:'pending',        bgCard:'linear-gradient(135deg, #b45309 0%, #78350f 100%)' },
-            { label: t.resolved,      val:solved,    badgeColor:'#ffffff', icon:'check_circle',   bgCard:'linear-gradient(135deg, #059669 0%, #046e4d 100%)' },
-            { label: t.critical,      val:critCount, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)' },
-            { label: t.aiFlagged,    val:flagged,   badgeColor:'#ffffff', icon:'smart_toy',       bgCard:'linear-gradient(135deg, #0f766e 0%, #0d5c56 100%)' },
-          ].map(({ label, val, badgeColor, icon, bgCard }) => (
-            <div key={label} className="glass-ci" style={{ borderRadius:16, padding:'16px 18px', display:'flex', alignItems:'center', gap:12, transition:'all 0.3s', background: bgCard, border:'1px solid rgba(255,255,255,0.15)' }}
+            { label: t.totalReports, val:allFeedbacks.length,     badgeColor:'#064e3b', icon:'inbox',          bgCard:'linear-gradient(135deg, #e8fbf0 0%, #dcfce7 100%)', textC: '#064e3b', labelC: '#047857' },
+            { label: t.pending,       val:allFeedbacks.filter(f => f.status === 'Pending').length,   badgeColor:'#78350f', icon:'pending',        bgCard:'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', textC: '#78350f', labelC: '#92400e' },
+            { label: t.resolved,      val:allFeedbacks.filter(f => f.status === 'Solved').length,    badgeColor:'#065f46', icon:'check_circle',   bgCard:'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', textC: '#065f46', labelC: '#047857' },
+            { label: t.critical,      val:allFeedbacks.filter(f => (f.feedback?.rating||f.rating||5) <= 2).length, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)', textC: '#ffffff', labelC: '#fecaca' },
+            { label: t.aiFlagged,    val:allFeedbacks.filter(f => (f.image_validation?.overall_risk||0) >= 65).length,   badgeColor:'#ffffff', icon:'smart_toy',       bgCard:'linear-gradient(135deg, #0f766e 0%, #0d5c56 100%)', textC: '#ffffff', labelC: '#a7f3d0' },
+          ].map(({ label, val, badgeColor, icon, bgCard, textC, labelC }) => (
+            <div key={label} className="glass-ci" style={{ borderRadius:16, padding:'16px 18px', display:'flex', alignItems:'center', gap:12, transition:'all 0.3s', background: bgCard, border:'1px solid rgba(16,185,129,0.2)' }}
               onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}
               onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}>
-              <div style={{ width:36, height:36, borderRadius:10, background:'rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize:18, color:'#ffffff' }}>{icon}</span>
+              <div style={{ width:36, height:36, borderRadius:10, background:'rgba(0,0,0,0.05)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <span className="material-symbols-outlined" style={{ fontSize:18, color:textC }}>{icon}</span>
               </div>
               <div>
-                <div style={{ fontSize:20, fontWeight:900, color:'#ffffff', lineHeight:1 }}>{val}</div>
-                <div style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.85)', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:2 }}>{label}</div>
+                <div style={{ fontSize:20, fontWeight:900, color:textC, lineHeight:1 }}>{val}</div>
+                <div style={{ fontSize:9, fontWeight:700, color:labelC, textTransform:'uppercase', letterSpacing:'0.08em', marginTop:2 }}>{label}</div>
               </div>
             </div>
           ))}
         </div>
 
         {/* ── MAIN TWO-COLUMN BODY ────────────────────────────── */}
-        <div style={{ display:'grid', gridTemplateColumns:'260px 1fr', gap:20, alignItems:'start' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 items-start">
 
           {/* ── LEFT PANEL: dept ranks + urgency ── */}
           <div style={{ display:'flex', flexDirection:'column', gap:16, animation:'fadeInUp 0.5s 0.1s both' }}>
 
             {/* Dept Rankings */}
             <div className="glass-ci" style={{ borderRadius:18, padding:'18px 20px' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#9CA3AF', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:14 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:'#047857', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:14 }}>
                 {t.deptRankings}
               </div>
               {departmentCounts.length === 0 && (
-                <div style={{ fontSize:12, color:'#CBD5E1', textAlign:'center', padding:'12px 0' }}>Loading...</div>
+                <div style={{ fontSize:12, color:'#064e3b', textAlign:'center', padding:'12px 0' }}>Loading...</div>
               )}
               {departmentCounts.map(([cat, count], i) => {
-  const maxCount = departmentCounts[0]?.[1] || 1;
-  const pct = (count / maxCount) * 100;
-  const ic = DEPT_ICONS[cat.toLowerCase()] || 'report';
-  const isHot = count > 5;
-  const deptColor = isHot ? '#EF4444' : '#6B7280'; // Color variable for the glass glow
+                const maxCount = departmentCounts[0]?.[1] || 1;
+                const pct = (count / maxCount) * 100;
+                const ic = DEPT_ICONS[cat.toLowerCase()] || 'report';
+                const isHot = count > 5;
+                const deptColor = isHot ? '#EF4444' : '#10b981';
 
-  return (
-    <div key={cat} style={{ marginBottom: 18 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          
-          {/* --- NEW GLASS SYMBOL START --- */}
-          <div 
-            className="glass-symbol" 
-            style={{ 
-              width: '32px', 
-              height: '32px', 
-              '--dept-color': deptColor 
-            }}
-          >
-            <span 
-              className="material-symbols-outlined" 
-              style={{ 
-                fontSize: '18px', 
-                color: deptColor,
-                fontVariationSettings: "'FILL' 1, 'wght' 400" // Premium filled look
-              }}
-            >
-              {ic}
-            </span>
-          </div>
-          {/* --- NEW GLASS SYMBOL END --- */}
+                return (
+                  <div key={cat} style={{ marginBottom: 18 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div 
+                          className="glass-symbol" 
+                          style={{ 
+                            width: '32px', 
+                            height: '32px', 
+                            '--dept-color': deptColor 
+                          }}
+                        >
+                          <span 
+                            className="material-symbols-outlined" 
+                            style={{ 
+                              fontSize: '18px', 
+                              color: deptColor,
+                              fontVariationSettings: "'FILL' 1, 'wght' 400"
+                            }}
+                          >
+                            {ic}
+                          </span>
+                        </div>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#064e3b', textTransform: 'capitalize' }}>
+                          {cat.length > 14 ? cat.slice(0, 13) + '…' : cat}
+                        </span>
+                      </div>
+                      <span style={{ fontSize: 15, fontWeight: 900, color: deptColor }}>{count}</span>
+                    </div>
 
-          <span style={{ fontSize: 13, fontWeight: 800, color: '#0f291b', textTransform: 'capitalize' }}>
-            {cat.length > 14 ? cat.slice(0, 13) + '…' : cat}
-          </span>
-        </div>
-        
-        <span style={{ fontSize: 15, fontWeight: 900, color: deptColor }}>{count}</span>
-      </div>
-
-      {/* Progress Bar with smooth transition */}
-      <div style={{ height: 6, borderRadius: 999, background: 'rgba(107,114,128,0.08)', overflow: 'hidden' }}>
-        <div 
-          className="dept-bar" 
-          style={{ 
-            width: `${pct}%`, 
-            height: '100%',
-            background: isHot 
-              ? 'linear-gradient(90deg, #EF4444, #F87171)' 
-              : 'linear-gradient(90deg, #6B7280, #9CA3AF)',
-            boxShadow: isHot ? '0 0 10px rgba(239, 68, 68, 0.3)' : 'none'
-          }}
-        />
-      </div>
-    </div>
-  );
-})}
+                    <div style={{ height: 6, borderRadius: 999, background: 'rgba(16,185,129,0.08)', overflow: 'hidden' }}>
+                      <div 
+                        className="dept-bar" 
+                        style={{ 
+                          width: `${pct}%`, 
+                          height: '100%',
+                          background: isHot 
+                            ? 'linear-gradient(90deg, #EF4444, #F87171)' 
+                            : 'linear-gradient(90deg, #10b981, #34d399)',
+                          boxShadow: isHot ? '0 0 10px rgba(239, 68, 68, 0.2)' : '0 0 10px rgba(16,185,129,0.1)'
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Urgency Gauge */}
             <div className="glass-ci" style={{ borderRadius:18, padding:'18px 20px' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#9CA3AF', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:12 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:'#047857', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:12 }}>
                 {t.urgencyIndex}
               </div>
-              <div style={{ fontSize:36, fontWeight:900, color:'#0f291b', lineHeight:1, marginBottom:6 }}>
-                {urgencyScore}<span style={{ fontSize:14, color:'#4b6b58', fontWeight:400 }}>/10</span>
+              <div style={{ fontSize:36, fontWeight:900, color:'#064e3b', lineHeight:1, marginBottom:6 }}>
+                {urgencyScore}<span style={{ fontSize:14, color:'#047857', fontWeight:400 }}>/10</span>
               </div>
-              <div style={{ height:8, borderRadius:999, background:'rgba(107,114,128,0.1)', overflow:'hidden', marginBottom:6 }}>
-                <div style={{ height:'100%', width:urgencyWidth, background:'linear-gradient(90deg,#F59E0B,#EF4444)', borderRadius:999, transition:'width 1.2s cubic-bezier(0.22,1,0.36,1)', boxShadow:'0 0 8px rgba(239,68,68,0.4)' }}/>
+              <div style={{ height:8, borderRadius:999, background:'rgba(16,185,129,0.08)', overflow:'hidden', marginBottom:6 }}>
+                <div style={{ height:'100%', width:urgencyWidth, background:'linear-gradient(90deg,#FBBF24,#EF4444)', borderRadius:999, transition:'width 1.2s cubic-bezier(0.22,1,0.36,1)', boxShadow:'0 0 8px rgba(239,68,68,0.2)' }}/>
               </div>
-              <div style={{ fontSize:10, color:'#9CA3AF', fontWeight:600 }}>
+              <div style={{ fontSize:10, color:'#047857', fontWeight:600 }}>
                 {language === 'English' ? `${critCount} critical of ${total} total` : `${total}-இல் ${critCount} அவசரமானவை`}
               </div>
             </div>
 
             {/* Filter by risk */}
             <div className="glass-ci" style={{ borderRadius:18, padding:'18px 20px' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#9CA3AF', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:12 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:'#047857', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:12 }}>
                 {t.filterFeed}
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
@@ -823,16 +570,16 @@ export default function CriticalIssuesPage() {
                       borderRadius:10, border:'1px solid transparent', cursor:'pointer',
                       fontFamily:'Manrope,sans-serif', fontSize:12, fontWeight:600,
                       textAlign:'left', transition:'all 0.2s',
-                      background: filter===key ? '#15803d' : 'rgba(255,255,255,0.3)',
-                      color: filter===key ? '#fff' : '#4B5563',
-                      borderColor: filter===key ? '#15803d' : 'rgba(255,255,255,0.4)',
+                      background: filter===key ? '#16a34a' : 'rgba(255, 255, 255, 0.8)',
+                      color: filter===key ? '#fff' : '#047857',
+                      borderColor: filter===key ? '#16a34a' : 'rgba(16, 185, 129, 0.15)',
                     }}>
                     <span className="material-symbols-outlined" style={{ fontSize:16 }}>{icon}</span>
                     <span style={{ flex:1 }}>{label}</span>
                     <span style={{
                       fontSize:10, fontWeight:800, padding:'1px 7px', borderRadius:999,
-                      background: filter===key ? 'rgba(255,255,255,0.15)' : 'rgba(107,114,128,0.1)',
-                      color: filter===key ? '#fff' : '#9CA3AF',
+                      background: filter===key ? 'rgba(255,255,255,0.15)' : 'rgba(16, 185, 129, 0.08)',
+                      color: filter===key ? '#fff' : '#047857',
                     }}>{count}</span>
                   </button>
                 ))}
@@ -844,11 +591,11 @@ export default function CriticalIssuesPage() {
           <div style={{ animation:'fadeInUp 0.5s 0.15s both' }}>
 
             {/* Feed header */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14, flexWrap:'wrap', gap:10 }}>
+            <div style={{ display:'flex', alignItems:'center', justify: 'space-between', marginBottom:14, flexWrap:'wrap', gap:10 }}>
               <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                <span className="material-symbols-outlined" style={{ fontSize:18, color:'#6B7280' }}>priority_high</span>
-                <span style={{ fontSize:14, fontWeight:700, color:'#374151' }}>{t.livePriorityFeed}</span>
-                <span style={{ fontSize:10, fontWeight:700, padding:'2px 10px', borderRadius:999, background:'rgba(239,68,68,0.1)', color:'#EF4444', border:'1px solid rgba(239,68,68,0.2)' }}>
+                <span className="material-symbols-outlined" style={{ fontSize:18, color:'#10b981' }}>priority_high</span>
+                <span style={{ fontSize:14, fontWeight:700, color:'#064e3b' }}>{t.livePriorityFeed}</span>
+                <span style={{ fontSize:10, fontWeight:700, padding:'2px 10px', borderRadius:999, background:'rgba(239,68,68,0.12)', color:'#EF4444', border:'1px solid rgba(239,68,68,0.2)' }}>
                   {filteredFeed.length} {t.reportsCountSuffix}
                 </span>
               </div>
@@ -878,8 +625,8 @@ export default function CriticalIssuesPage() {
               </div>
             ) : filteredFeed.length === 0 ? (
               <div className="glass-ci" style={{ borderRadius:18, padding:'40px', textAlign:'center' }}>
-                <span className="material-symbols-outlined" style={{ fontSize:40, color:'#CBD5E1', display:'block', marginBottom:12 }}>check_circle</span>
-                <div style={{ fontSize:14, fontWeight:700, color:'#9CA3AF' }}>No issues match this filter</div>
+                <span className="material-symbols-outlined" style={{ fontSize:40, color:'#10b981', display:'block', marginBottom:12 }}>check_circle</span>
+                <div style={{ fontSize:14, fontWeight:700, color:'#a7f3d0' }}>No issues match this filter</div>
               </div>
             ) : (
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
@@ -895,7 +642,7 @@ export default function CriticalIssuesPage() {
             {totalPages > 1 && !loading && (
               <div style={{ display:'flex', justifyContent:'center', gap:8, marginTop:20, alignItems:'center' }}>
                 <button className="pagination-btn" disabled={page===0} onClick={()=>setPage(p=>p-1)}>‹ Prev</button>
-                <span style={{ fontSize:11, color:'#9CA3AF', fontWeight:600 }}>Page {page+1} of {totalPages}</span>
+                <span style={{ fontSize:11, color:'#a7f3d0', fontWeight:600 }}>Page {page+1} of {totalPages}</span>
                 <button className="pagination-btn" disabled={page>=totalPages-1} onClick={()=>setPage(p=>p+1)}>Next ›</button>
               </div>
             )}

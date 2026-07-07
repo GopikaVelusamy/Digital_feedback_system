@@ -66,51 +66,47 @@ export default function CreateAdminPage() {
   return (
     // ─── createadmin.html body structure — exact ─────────────────
     <div
-      className="min-h-screen relative flex items-center justify-center p-4"
+      className="min-h-screen relative flex items-center justify-center p-4 text-[#064e3b]"
       style={{
         fontFamily: "'Manrope', sans-serif",
-        background: 'linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)',
-        color: '#0f291b',
+        background: 'linear-gradient(135deg, #f0fdf4 0%, #e8fbf0 50%, #dcfce7 100%)',
         overflowX: 'hidden',
       }}
     >
-      {/* Grid Background — exact from createadmin.html */}
+      {/* Grid Background */}
       <div className="fixed inset-0 grid-bg pointer-events-none"></div>
 
-      {/* Floating blobs — exact from createadmin.html */}
+      {/* Floating blobs */}
       <div
-        className="absolute top-20 left-20 w-32 h-32 bg-green-200/30 rounded-full blur-3xl animate-float"
+        className="absolute top-20 left-20 w-32 h-32 bg-emerald-800/8 rounded-full blur-3xl animate-float"
       ></div>
       <div
-        className="absolute bottom-20 right-20 w-48 h-48 bg-emerald-200/30 rounded-full blur-3xl animate-float"
+        className="absolute bottom-20 right-20 w-48 h-48 bg-emerald-800/8 rounded-full blur-3xl animate-float"
         style={{ animationDelay: '-3s' }}
       ></div>
 
-      {/* ── Success Modal — exact from createadmin.html ── */}
+      {/* ── Success Modal ── */}
       {showModal && (
         <div
           id="successModal"
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm"
         >
           <div
-            className="p-8 rounded-[2.5rem] max-w-sm w-full text-center"
+            className="p-8 rounded-[2.5rem] max-w-sm w-full text-center border border-emerald-250/20 bg-white text-[#064e3b]"
             style={{
-              background: 'rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(40px)',
-              border: '1px solid rgba(255, 255, 255, 0.7)',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 25px 50px -12px rgba(22, 163, 74, 0.04)',
             }}
           >
-            <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-emerald-100 text-[#10b981] border border-emerald-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-4xl">verified_user</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Admin Created</h3>
-            <p className="text-gray-500 mb-6 text-sm">
+            <h3 className="text-2xl font-bold text-[#064e3b] mb-2">Admin Created</h3>
+            <p className="text-[#047857] mb-6 text-sm font-semibold">
               Credentials have been saved and notification sent successfully.
             </p>
             <button
               onClick={() => navigate('/super-admin')}
-              className="w-full py-4 bg-gray-800 text-white rounded-2xl font-bold hover:bg-black transition"
+              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-all"
             >
               Return to Panel
             </button>
@@ -118,35 +114,35 @@ export default function CreateAdminPage() {
         </div>
       )}
 
-      {/* ── Main Form — exact from createadmin.html ── */}
+      {/* ── Main Form ── */}
       <main className="relative z-10 w-full max-w-2xl">
 
-        {/* Header — exact from createadmin.html */}
+        {/* Header */}
         <header className="text-center mb-10">
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); navigate('/super-admin'); }}
-            className="inline-flex items-center text-gray-400 hover:text-gray-800 transition mb-4 text-sm font-bold uppercase tracking-widest"
+            className="inline-flex items-center text-[#047857] hover:text-[#064e3b] transition mb-4 text-sm font-bold uppercase tracking-widest"
           >
             <span className="material-symbols-outlined text-base mr-2">arrow_back</span>
             Back to Panel
           </a>
-          <h1 className="text-5xl font-extrabold text-gray-900 tracking-tighter">
+          <h1 className="text-5xl font-extrabold text-[#064e3b] tracking-tighter">
             Assign New Admin
           </h1>
-          <p className="text-gray-500 mt-2 font-medium">
+          <p className="text-[#047857] mt-2 font-medium">
             Grant specialized access to district authorities
           </p>
         </header>
 
-        {/* Card with Form — exact from createadmin.html */}
+        {/* Card with Form */}
         <div
           className="rounded-[3rem] p-8 lg:p-12"
           style={{
-            background: 'rgba(255, 255, 255, 0.6)',
-            backdropFilter: 'blur(40px)',
-            border: '1px solid rgba(255, 255, 255, 0.7)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+            background: 'rgba(255, 255, 255, 0.75)',
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            boxShadow: '0 25px 50px -12px rgba(22, 163, 74, 0.04)',
           }}
         >
           <form
@@ -155,9 +151,9 @@ export default function CreateAdminPage() {
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
 
-            {/* Full Name — exact from createadmin.html */}
+            {/* Full Name */}
             <div className="md:col-span-2">
-              <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest ml-2">
+              <label className="block text-xs font-black text-[#047857] mb-2 uppercase tracking-widest ml-2">
                 Full Name
               </label>
               <input
@@ -167,13 +163,35 @@ export default function CreateAdminPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Enter full name"
-                className="input-field w-full p-5 rounded-2xl font-semibold"
+                style={{
+                  width: '100%',
+                  padding: '1.25rem',
+                  borderRadius: '1rem',
+                  outline: 'none',
+                  fontWeight: 600,
+                  color: '#064e3b',
+                  background: '#ffffff',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#10b981';
+                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(-2px)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                  e.target.style.boxShadow = 'none';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(0)';
+                }}
               />
             </div>
 
-            {/* Official Email — exact from createadmin.html */}
+            {/* Official Email */}
             <div>
-              <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest ml-2">
+              <label className="block text-xs font-black text-[#047857] mb-2 uppercase tracking-widest ml-2">
                 Official Email
               </label>
               <input
@@ -183,13 +201,35 @@ export default function CreateAdminPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="admin@tn.gov.in"
-                className="input-field w-full p-5 rounded-2xl font-semibold"
+                style={{
+                  width: '100%',
+                  padding: '1.25rem',
+                  borderRadius: '1rem',
+                  outline: 'none',
+                  fontWeight: 600,
+                  color: '#064e3b',
+                  background: '#ffffff',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#10b981';
+                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(-2px)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                  e.target.style.boxShadow = 'none';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(0)';
+                }}
               />
             </div>
 
-            {/* Access Password — exact from createadmin.html */}
+            {/* Access Password */}
             <div>
-              <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest ml-2">
+              <label className="block text-xs font-black text-[#047857] mb-2 uppercase tracking-widest ml-2">
                 Access Password
               </label>
               <input
@@ -199,32 +239,76 @@ export default function CreateAdminPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="input-field w-full p-5 rounded-2xl font-semibold"
+                style={{
+                  width: '100%',
+                  padding: '1.25rem',
+                  borderRadius: '1rem',
+                  outline: 'none',
+                  fontWeight: 600,
+                  color: '#064e3b',
+                  background: '#ffffff',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#10b981';
+                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(-2px)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                  e.target.style.boxShadow = 'none';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(0)';
+                }}
               />
             </div>
 
-            {/* Assigned District — exact from createadmin.html (all 38 districts) */}
+            {/* Assigned District */}
             <div className="md:col-span-2">
-              <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest ml-2">
+              <label className="block text-xs font-black text-[#047857] mb-2 uppercase tracking-widest ml-2">
                 Assigned District
               </label>
               <select
                 id="district"
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
-                className="input-field w-full p-5 rounded-2xl font-semibold appearance-none"
+                style={{
+                  width: '100%',
+                  padding: '1.25rem',
+                  borderRadius: '1rem',
+                  outline: 'none',
+                  fontWeight: 600,
+                  color: '#064e3b',
+                  background: '#ffffff',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#10b981';
+                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(-2px)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                  e.target.style.boxShadow = 'none';
+                  e.target.style.background = '#ffffff';
+                  e.target.style.transform = 'translateY(0)';
+                }}
               >
                 {TN_DISTRICTS.map((d) => (
-                  <option key={d} value={d}>{d}</option>
+                  <option key={d} value={d} className="bg-white text-emerald-950">{d}</option>
                 ))}
               </select>
             </div>
 
-            {/* Submit Button — exact from createadmin.html */}
+            {/* Submit Button */}
             <div className="md:col-span-2 pt-4">
               <button
                 type="submit"
-                className="w-full py-5 bg-gray-900 text-white rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl hover:bg-black transition transform active:scale-95"
+                className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-lg transition transform active:scale-95"
               >
                 {btnText}
               </button>

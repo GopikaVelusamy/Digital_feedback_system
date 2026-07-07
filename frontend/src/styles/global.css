@@ -1068,407 +1068,92 @@ img, video, canvas, svg {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   GLOBAL DARK EMERALD PARTY THEME OVERRIDES
-   Automatically converts all light green pages, dashboards, 
-   sidebars, inputs, tables, and texts into a premium dark theme.
-═══════════════════════════════════════════════════════════ */
+   PREMIUM GLASSMORPHIC AND DARK THEME UTILITIES
+   Provides clean utility classes for cards, buttons, scrollbars,
+   and layout spacing.
+   ═══════════════════════════════════════════════════════════ */
 
-/* 1. Global Container Background Overrides */
-div[style*="bbf7d0"],
-div[style*="rgb(187, 247, 208)"],
-div[style*="187, 247, 208"],
-.sidebar-page,
-.bg-background-light {
-  background: linear-gradient(135deg, #050f07 0%, #0c2010 50%, #030a04 100%) !important;
-  background-attachment: fixed !important;
-  color: #f8fafc !important;
+/* Custom Scrollbar for modern feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-
-/* Hide background blobs if they create clutter on dark layout */
-.sidebar-page .blob,
-.sidebar-page .blob-1,
-.sidebar-page .blob-2 {
-  opacity: 0.12 !important;
+::-webkit-scrollbar-track {
+  background: rgba(4, 13, 6, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
 }
 
-/* 2. Aside / Sidebar Overrides */
-aside {
-  background: linear-gradient(135deg, rgba(13, 27, 18, 0.96) 0%, rgba(5, 14, 8, 0.94) 100%) !important;
-  border-right: 1px solid rgba(16, 185, 129, 0.2) !important;
-  box-shadow: 15px 0 45px rgba(0, 0, 0, 0.4) !important;
+/* Glassmorphic Panel (Emerald Accent) */
+.glass-panel-dark {
+  background: rgba(12, 32, 18, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
-/* Aside Inner Headers & Dividers */
-aside div {
-  border-bottom-color: rgba(16, 185, 129, 0.15) !important;
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
-/* Aside text & labels */
-aside span,
-aside p,
-aside h2,
-aside h3,
-aside h4,
-aside div:not([style*="background"]) {
-  color: #f8fafc !important;
+/* Hover glow states */
+.glow-on-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glow-on-hover:hover {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
 }
 
-/* Navigation link text coloring */
-aside a,
-.nav-link-item {
-  color: #94a3b8 !important;
-  transition: all 0.3s ease;
+/* Typography styles */
+.text-glow {
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
 }
 
-aside a:hover,
-.nav-link-item:hover {
-  background: rgba(16, 185, 129, 0.12) !important;
-  color: #10b981 !important;
+.text-gold {
+  color: #d4a017;
+  text-shadow: 0 0 8px rgba(212, 160, 23, 0.2);
 }
 
-/* Active navigation item highlighting */
-aside a[style*="background"],
-aside a.active-link,
-.active-link {
-  background: #15803d !important;
-  color: #ffffff !important;
+/* Table styling for dark theme */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-/* 3. Glass Card & Panel Theme Overrides */
-.glass-card,
-.glass {
-  background: rgba(10, 27, 15, 0.75) !important;
-  backdrop-filter: blur(40px) !important;
-  -webkit-backdrop-filter: blur(40px) !important;
-  border: 1px solid rgba(16, 185, 129, 0.25) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-  color: #ffffff !important;
+.custom-table th {
+  background: rgba(13, 35, 20, 0.95);
+  color: #a7f3d0;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 2px solid rgba(16, 185, 129, 0.2);
 }
 
-.glass-card:hover,
-.glass:hover {
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4) !important;
-  transform: translateY(-4px) !important;
+.custom-table td {
+  padding: 14px 16px;
+  color: #f8fafc;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+  background: rgba(8, 22, 12, 0.4);
 }
 
-/* Light white card wrappers styled as dark glass cards */
-div[style*="rgba(240, 253, 244"],
-div[style*="rgba(255, 255, 255, 0.75)"],
-div[style*="rgba(255, 255, 255, 0.92)"],
-div[style*="rgba(255, 255, 255, 0.8)"],
-.stat-card-dash {
-  background: rgba(10, 27, 15, 0.75) !important;
-  backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(16, 185, 129, 0.25) !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
-  color: #ffffff !important;
+.custom-table tr:hover td {
+  background: rgba(16, 185, 129, 0.08);
 }
 
-/* Form headers and titles */
-div[style*="background:#15803d"] {
-  background: #0f3d1e !important;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.2) !important;
-}
-
-/* 4. Text Contrast Overrides */
-div[style*="bbf7d0"] h1,
-div[style*="bbf7d0"] h2,
-div[style*="bbf7d0"] h3,
-div[style*="bbf7d0"] h4,
-div[style*="bbf7d0"] h5,
-div[style*="bbf7d0"] h6,
-div[style*="bbf7d0"] p,
-div[style*="bbf7d0"] label,
-div[style*="bbf7d0"] b,
-div[style*="bbf7d0"] strong,
-div[style*="bbf7d0"] span:not(.material-symbols-outlined):not([class*="text-yellow"]):not([class*="text-red"]):not([class*="text-emerald"]):not([style*="color"]),
-.sidebar-page h1,
-.sidebar-page h2,
-.sidebar-page h3,
-.sidebar-page h4,
-.sidebar-page h5,
-.sidebar-page h6,
-.sidebar-page p,
-.sidebar-page label,
-.sidebar-page b,
-.sidebar-page strong,
-.sidebar-page span:not(.material-symbols-outlined):not([class*="text-yellow"]):not([class*="text-red"]):not([class*="text-emerald"]):not([style*="color"]),
-.bg-background-light h1,
-.bg-background-light h2,
-.bg-background-light h3,
-.bg-background-light h4,
-.bg-background-light h5,
-.bg-background-light h6,
-.bg-background-light p,
-.bg-background-light label,
-.bg-background-light b,
-.bg-background-light strong,
-.bg-background-light span:not(.material-symbols-outlined):not([class*="text-yellow"]):not([class*="text-red"]):not([class*="text-emerald"]):not([style*="color"]) {
-  color: #f1f5f9 !important;
-}
-
-/* Target specific Tailwind text colors that were set to dark green/grey */
-.text-\[\#0f291b\],
-.text-\[\#052e16\],
-.text-\[\#4b6b58\],
-.text-gray-900,
-.text-gray-800,
-.text-gray-700,
-.text-gray-600,
-.text-slate-900,
-.text-slate-800,
-.text-slate-700 {
-  color: #e2e8f0 !important;
-}
-
-.text-\[\#4b6b58\]\/60 {
-  color: rgba(226, 232, 240, 0.6) !important;
-}
-
-/* Custom styled text overrides */
-[style*="color:#0f291b"],
-[style*="color: '#0f291b'"],
-[style*="color: rgb(15, 41, 27)"],
-[style*="color:#374151"],
-[style*="color: '#374151'"],
-[style*="color: rgb(55, 65, 81)"] {
-  color: #ffffff !important;
-}
-
-[style*="color:#4b6b58"],
-[style*="color: '#4b6b58'"],
-[style*="color: rgb(75, 107, 88)"] {
-  color: #a7f3d0 !important;
-}
-
-/* Force loading admins / text states in super admin dashboard to be visible */
-div[id="adminList"] {
-  color: #f8fafc !important;
-}
-
-/* 5. Inputs, Selects, and Textareas */
-.sidebar-page input,
-.sidebar-page select,
-.sidebar-page textarea,
-div[style*="bbf7d0"] input,
-div[style*="bbf7d0"] select,
-div[style*="bbf7d0"] textarea {
-  background-color: rgba(8, 22, 12, 0.75) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-  color: #f8fafc !important;
-}
-
-.sidebar-page input::placeholder,
-.sidebar-page textarea::placeholder {
-  color: #64748b !important;
-}
-
-.sidebar-page select option,
-div[style*="bbf7d0"] select option {
-  background-color: #08160c !important;
-  color: #f8fafc !important;
-}
-
-/* 6. Table Cell Dark Overrides */
-table th,
-.sidebar-page table th {
-  background-color: rgba(13, 35, 20, 0.95) !important;
-  color: #a7f3d0 !important;
-  font-weight: 700 !important;
-  border-bottom: 2px solid rgba(16, 185, 129, 0.25) !important;
-}
-
-table td,
-.sidebar-page table td {
-  background-color: rgba(8, 22, 12, 0.75) !important;
-  color: #f8fafc !important;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.15) !important;
-}
-
-table tr:hover td {
-  background-color: rgba(16, 185, 129, 0.15) !important;
-}
-
-/* 7. FeedbackDetailPage.jsx Details */
-.sidebar-page .fd-meta-label {
-  color: #a7f3d0 !important;
-}
-.sidebar-page .fd-meta-value {
-  color: #f8fafc !important;
-}
-.sidebar-page .fd-layer-row {
-  background: rgba(16, 185, 129, 0.1) !important;
-  border-color: rgba(16, 185, 129, 0.2) !important;
-  color: #f8fafc !important;
-}
-.sidebar-page .fd-layer-row:hover {
-  background: rgba(16, 185, 129, 0.18) !important;
-  border-color: rgba(16, 185, 129, 0.3) !important;
-}
-
-/* 8. Filter Pills */
-.filter-pill {
-  background: rgba(10, 27, 15, 0.75) !important;
-  border: 1px solid rgba(16, 185, 129, 0.25) !important;
-}
-.filter-pill select,
-.filter-pill input {
-  color: #f8fafc !important;
-}
-
-/* 9. Sidebar Logo Circle Override */
-aside div[style*="width: 52px"],
-aside div[style*="width:52px"],
-aside div[style*="width: 42px"],
-aside div[style*="width:42px"] {
-  border-radius: 50% !important;
-  border: 2.5px solid #15803d !important;
-  padding: 2px !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   FINAL CONTRAST & COLLISION OVERRIDES
-   Ensures 100% visibility for specific inputs, chart text labels,
-   location selector inputs, password fields, and map panels.
-═══════════════════════════════════════════════════════════ */
-
-/* 1. Date Picker Text Input */
-#fpDateRange {
-  color: #ffffff !important;
-}
-#fpDateRange::placeholder {
-  color: #94a3b8 !important;
-}
-
-/* 2. Sentiment Donut Chart Labels under Chart */
-[style*="color:#6B7280"],
-[style*="color: '#6B7280'"],
-[style*="color: rgb(107, 114, 128)"] {
-  color: #a7f3d0 !important;
-}
-
-/* 3. Location Dropdown Box (glass-ci) in Critical Issues */
-.glass-ci {
-  background: rgba(10, 27, 15, 0.75) !important;
-  backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(16, 185, 129, 0.25) !important;
-  color: #f8fafc !important;
-}
-
-.glass-ci select,
-.glass-ci button,
-.glass-ci input {
-  color: #f8fafc !important;
-  background: transparent !important;
-}
-
-.glass-ci select option {
-  background-color: #0b1e10 !important;
-  color: #f8fafc !important;
-}
-
-/* 4. Department Stat Strip Cards and TN Map Panel */
-div[style*="background:rgba(255,255,255,0.15)"],
-div[style*="rgba(255, 255, 255, 0.15)"] {
-  background: rgba(10, 27, 15, 0.85) !important;
-  border-color: rgba(16, 185, 129, 0.3) !important;
-}
-
-div[style*="background:rgba(255,255,255,0.15)"] div,
-div[style*="rgba(255, 255, 255, 0.15)"] div {
-  color: #f8fafc !important;
-}
-
-div[style*="color:#059669"], div[style*="color: rgb(5, 150, 105)"] {
-  color: #10b981 !important;
-}
-div[style*="color:#D97706"], div[style*="color: rgb(217, 119, 6)"] {
-  color: #f59e0b !important;
-}
-div[style*="color:#374151"], div[style*="color: rgb(55, 65, 81)"] {
-  color: #cbd5e1 !important;
-}
-
-/* TN Map Panel */
-div[style*="background:rgba(240, 253, 244, 0.65)"],
-div[style*="rgba(240, 253, 244, 0.65)"] {
-  background: rgba(10, 27, 15, 0.75) !important;
-  border-color: rgba(16, 185, 129, 0.25) !important;
-}
-
-/* 5. Language Option Dropdown in Login Cards */
-.glass-card select {
-  background-color: rgba(10, 27, 15, 0.75) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-  color: #f8fafc !important;
-}
-
-.glass-card select option {
-  background-color: #0b1e10 !important;
-  color: #f8fafc !important;
-}
-
-/* 6. Form Inputs & Password Fields (Fix White-on-White dots/text collision) */
-.glass-card input,
-.glass-card textarea,
-form input,
-form textarea {
-  background-color: rgba(8, 22, 12, 0.85) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-  color: #f8fafc !important;
-}
-
-.glass-card input:focus,
-form input:focus {
-  background-color: rgba(13, 35, 20, 0.95) !important;
-  border-color: #10b981 !important;
-  color: #ffffff !important;
-}
-
-/* 7. Sidebar Spacing Adjustments (Prevents Bottom Clipping) */
-aside {
-  padding: 20px 16px !important;
-}
-
-aside div[style*="borderBottom"],
-aside div[style*="border-bottom"] {
-  margin-bottom: 12px !important;
-  padding-bottom: 16px !important;
-}
-
-/* Target slogan/motto box */
-aside div[style*="dashed"] {
-  margin-bottom: 12px !important;
-  padding: 8px 10px !important;
-}
-
-/* Target language capsule selector */
-aside div[style*="gap: '4px'"],
-aside div[style*="gap: 4px"] {
-  margin-bottom: 12px !important;
-}
-
-/* Target navigation links */
-aside nav {
-  gap: 4px !important;
-}
-
-aside nav a {
-  padding: 10px 14px !important;
-}
-
-/* Target Live System Health Widget */
-aside div[style*="linear-gradient(135deg, rgba(255, 255, 255"],
-aside div[style*="linear-gradient(135deg,rgba(255,255,255"] {
-  margin: 12px 0 !important;
-  padding: 14px !important;
-}
-
-/* Target Profile bottom block */
-aside div[style*="margin-top: auto"],
-aside div[style*="marginTop: 'auto'"],
-aside div[style*="marginTop:auto"] {
-  padding: 10px !important;
-}
 
 

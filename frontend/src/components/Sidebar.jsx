@@ -1,7 +1,6 @@
 // ============================================================
-// Sidebar.jsx — Shared Sidebar Component
-// Used in: Dashboard, CriticalIssues, SuperAdmin pages
-// Exact HTML structure from original files preserved
+// Sidebar.jsx — Premium Glassmorphic Shared Sidebar
+// Cohesive Theme: Emerald, Crimson, and Gold accents on Dark Forest
 // ============================================================
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -9,152 +8,169 @@ import { useNavigate, useLocation } from 'react-router-dom';
 export default function Sidebar({ variant = 'admin' }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [closed, setClosed] = useState(false);
+  const [isOpenMobile, setIsOpenMobile] = useState(false);
+  const [isCollapsedDesktop, setIsCollapsedDesktop] = useState(false);
 
   const isDashboard = location.pathname === '/dashboard';
   const isCritical = location.pathname === '/critical-issues';
   const isSuperAdmin = location.pathname === '/super-admin';
 
-  // Toggle sidebar open/closed (mirrors original JS toggle)
-  const toggleSidebar = () => setClosed((prev) => !prev);
+  const toggleMobileSidebar = () => setIsOpenMobile(prev => !prev);
+  const toggleDesktopCollapse = () => setIsCollapsedDesktop(prev => !prev);
 
-  if (variant === 'superadmin') {
-    return (
-      <>
-        {/* Super Admin Sidebar — mirrors superadmin.html aside */}
-        <aside className="w-72 min-w-[288px] glass-card h-screen sticky top-0 flex flex-col p-6 m-4 rounded-2xl">
-          <div className="flex items-center gap-3 mb-10 border-b border-green-800/10 pb-5">
-            <div className="size-10 bg-gradient-to-br from-emerald-600 to-green-800 rounded-xl flex items-center justify-center text-white border border-white/25 shadow-md flex-shrink-0">
-              <span className="material-symbols-outlined text-[20px]">insights</span>
-            </div>
-            <div>
-              <h1 className="font-bold text-lg text-[#0f291b] leading-tight tracking-tight">InsightFlow</h1>
-              <p className="text-xs font-bold text-[#4b6b58] uppercase tracking-wider mt-0.5" style={{ fontSize: '9px' }}>Super Admin</p>
-            </div>
-          </div>
+  const handleLogoutSuper = () => {
+    localStorage.removeItem('VERIFIED_VARUN');
+    navigate('/super-login');
+  };
 
-          <nav className="flex-1 space-y-2">
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-200/40 transition"
-            >
-              <span className="material-symbols-outlined">dashboard</span>
-              <span className="font-medium">Dashboard</span>
-            </a>
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); navigate('/critical-issues'); }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-200/40 transition"
-            >
-              <span className="material-symbols-outlined">warning</span>
-              <span className="font-medium">Critical Issues</span>
-            </a>
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); navigate('/super-admin'); }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white font-semibold shadow-md shadow-primary/20"
-            >
-              <span className="material-symbols-outlined">admin_panel_settings</span>
-              <span>Super Admin</span>
-            </a>
-          </nav>
+  const menuItemsSuper = [
+    { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
+    { path: '/critical-issues', icon: 'warning', label: 'Critical Issues' },
+    { path: '/super-admin', icon: 'admin_panel_settings', label: 'Super Admin', active: true },
+  ];
 
-          <div className="mt-auto pt-6 border-t border-white/40">
-            <div className="glass-card rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-gray-800">Varun S.</p>
-                <p className="text-xs text-gray-500 uppercase">Master Admin</p>
-              </div>
-              <button
-                onClick={() => {
-                  localStorage.removeItem('VERIFIED_VARUN');
-                  navigate('/super-login');
-                }}
-                className="material-symbols-outlined text-gray-500 hover:text-red-500"
-              >
-                logout
-              </button>
-            </div>
-          </div>
-        </aside>
-      </>
-    );
-  }
+  const menuItemsAdmin = [
+    { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', active: isDashboard },
+    { path: '/critical-issues', icon: 'warning', label: 'Critical Issues', active: isCritical },
+    { path: '/super-login', icon: 'admin_panel_settings', label: 'Super Admin' },
+  ];
 
-  // ─── Admin Sidebar (Dashboard / Critical Issues) ───────────
+  const menuItems = variant === 'superadmin' ? menuItemsSuper : menuItemsAdmin;
+
   return (
     <>
-      {/* Menu button — mirrors original ☰ button */}
-      <button
-        id="menuBtn"
-        onClick={toggleSidebar}
-        className="text-2xl text-[#9CA3AF] hover:text-[#1F2937] transition fixed top-6 left-6 z-[200]"
-        style={{ position: 'relative', zIndex: 200, display: 'block' }}
-      >
-        ☰
-      </button>
+      {/* ── MOBILE NAVBAR/MENU BUTTON ── */}
+      <div className="lg:hidden fixed top-4 left-4 z-50 flex items-center gap-3">
+        <button
+          onClick={toggleMobileSidebar}
+          className="p-3 bg-emerald-950/90 border border-emerald-800/40 rounded-xl text-emerald-400 hover:text-white transition shadow-lg backdrop-blur-md"
+        >
+          <span className="material-symbols-outlined text-[24px]">
+            {isOpenMobile ? 'close' : 'menu'}
+          </span>
+        </button>
+      </div>
 
-      {/* Sidebar — mirrors original aside#sidebar */}
+      {/* ── MOBILE DRAWER BACKDROP ── */}
+      {isOpenMobile && (
+        <div
+          onClick={toggleMobileSidebar}
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+        />
+      )}
+
+      {/* ── SIDEBAR CONTAINER (DESKTOP & MOBILE SIDEBAR) ── */}
       <aside
-        id="sidebar"
-        className={`w-72 transition-transform duration-300 flex flex-col glass-panel border-r border-white/20 m-4 rounded-xl${closed ? ' closed' : ''}`}
-        style={closed ? { width: 0, padding: 0, overflow: 'hidden' } : {}}
+        className={`
+          fixed lg:sticky top-0 left-0 h-screen z-40 flex flex-col p-5
+          border-r border-emerald-200/60 shadow-2xl transition-all duration-300 ease-out
+          ${isOpenMobile ? 'translate-x-0 w-72' : '-translate-x-full lg:translate-x-0'}
+          ${isCollapsedDesktop ? 'lg:w-20' : 'lg:w-72'}
+          bg-[#ffffff]/90 lg:bg-white/80 backdrop-blur-2xl
+        `}
       >
-        <div className="p-6 flex items-center gap-3 border-b border-green-800/10 pb-5">
-          <div className="size-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-white/20">
-            <img src="/irratai_ellai.png" className="w-8 h-8 object-contain" alt="Logo" />
+        {/* Brand Header */}
+        <div className="flex items-center justify-between pb-6 mb-6 border-b border-emerald-200/50">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-10 h-10 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
+              <img src="/irratai_ellai.png" className="w-full h-full object-contain" alt="Logo" />
+            </div>
+            {!isCollapsedDesktop && (
+              <div className="flex flex-col transition-all duration-300">
+                <h1 className="font-extrabold text-[15px] text-[#064e3b] tracking-tight leading-tight">ADMK Feedback</h1>
+                <p className="text-[9px] font-bold text-emerald-700 uppercase tracking-widest mt-0.5">
+                  {variant === 'superadmin' ? 'Super Admin Portal' : 'Admin Workspace'}
+                </p>
+              </div>
+            )}
           </div>
-          <div>
-            <h1 className="font-bold text-lg text-[#0f291b] leading-tight tracking-tight">ADMK Feedback</h1>
-            <p className="text-xs font-bold text-[#4b6b58] uppercase tracking-wider mt-0.5" style={{ fontSize: '9px' }}>Admin Portal</p>
-          </div>
+          {/* Desktop Collapse Toggle */}
+          <button
+            onClick={toggleDesktopCollapse}
+            className="hidden lg:flex p-1.5 hover:bg-emerald-100/50 rounded-lg text-emerald-700 hover:text-[#064e3b] transition"
+          >
+            <span className="material-symbols-outlined text-sm">
+              {isCollapsedDesktop ? 'chevron_right' : 'chevron_left'}
+            </span>
+          </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          {/* Dashboard */}
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}
-            className={`nav-link flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300${isDashboard ? ' active-link' : ''}`}
-          >
-            <span className="material-symbols-outlined">dashboard</span>
-            <span className="font-medium">Dashboard</span>
-          </a>
+        {/* Navigation Menu */}
+        <nav className="flex-1 space-y-2.5">
+          {menuItems.map((item, idx) => {
+            const isActive = item.active || (variant === 'superadmin' && item.path === '/super-admin' && isSuperAdmin) || (variant === 'admin' && item.path === '/dashboard' && isDashboard) || (variant === 'admin' && item.path === '/critical-issues' && isCritical);
+            return (
+              <a
+                key={idx}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(item.path);
+                  setIsOpenMobile(false);
+                }}
+                className={`
+                  flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-300 group relative
+                  ${isActive
+                    ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 text-white font-bold shadow-lg shadow-emerald-700/20'
+                    : 'text-emerald-800 hover:text-emerald-950 hover:bg-emerald-100/40'
+                  }
+                `}
+              >
+                {/* Active Indicator */}
+                {isActive && (
+                  <div className="absolute left-0 top-3 bottom-3 w-1 bg-[#15803d] rounded-r-md" />
+                )}
+                <span className={`material-symbols-outlined text-[20px] transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-white' : 'text-emerald-600'}`}>
+                  {item.icon}
+                </span>
+                {(!isCollapsedDesktop || isOpenMobile) && (
+                  <span className="text-sm tracking-wide">{item.label}</span>
+                )}
 
-          {/* Critical Issues */}
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); navigate('/critical-issues'); }}
-            className={`nav-link flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300${isCritical ? ' active-link' : ''}`}
-          >
-            <span className="material-symbols-outlined">warning</span>
-            <span className="font-medium">Critical Issues</span>
-          </a>
-
-          {/* Super Admin */}
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); navigate('/super-login'); }}
-            className="nav-link flex items-center gap-3 px-4 py-3 rounded-xl"
-          >
-            <span className="material-symbols-outlined">admin_panel_settings</span>
-            <span className="font-medium">Super Admin</span>
-          </a>
+                {/* Collapsed tooltip for desktop */}
+                {isCollapsedDesktop && !isOpenMobile && (
+                  <div className="absolute left-16 bg-white border border-emerald-200/80 text-emerald-800 text-xs px-3 py-1.5 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-xl">
+                    {item.label}
+                  </div>
+                )}
+              </a>
+            );
+          })}
         </nav>
 
-        <div className="p-4 mt-auto">
-          <div className="glass-panel p-4 rounded-xl flex items-center gap-3">
-            <img
-              className="size-10 rounded-full border-2 border-primary/20"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnvRLL0IXpl7oX9kYEhuo6N3aVqBGyuqW-DWDIImkz7wT6Y7KWecYC8vPNyjSS9ncF1_QQNDxZ7p7zW5ohISVlqqh97r-p-k4RMakxC6zt2d6YFI-hZrvJw7dnyrnzUSdtGqGjQarLGlDcB85IjzH9rbgZY6yt4Nvw1L3UnU4tV_pVILS2i0MZCwXVOOfHVuu8MXoEamd71CtJ6X-F6H60LUfs6-wZL_rctOhHnqpriy4zh8qbbrt46lCaJGCqu5fXdBYCTr3Xfw"
-              alt="User profile avatar"
-            />
-            <div className="overflow-hidden">
-              <p className="text-xs uppercase tracking-wider font-bold truncate">Varun</p>
-              <p className="text-xs opacity-60 truncate">Admin</p>
+        {/* User profile / Logout footer */}
+        <div className="pt-6 border-t border-emerald-200/50">
+          {variant === 'superadmin' ? (
+            <div className={`flex items-center justify-between rounded-xl bg-emerald-100/20 border border-emerald-200/50 ${isCollapsedDesktop ? 'p-1.5' : 'p-3.5'}`}>
+              {(!isCollapsedDesktop || isOpenMobile) && (
+                <div className="overflow-hidden">
+                  <p className="text-xs font-bold text-[#064e3b] tracking-wide truncate">Varun S.</p>
+                  <p className="text-[9px] text-emerald-700 uppercase tracking-widest mt-0.5">Master Admin</p>
+                </div>
+              )}
+              <button
+                onClick={handleLogoutSuper}
+                className="p-2 hover:bg-red-100/40 rounded-lg text-slate-500 hover:text-red-600 transition"
+                title="Logout Super Admin"
+              >
+                <span className="material-symbols-outlined text-[18px]">logout</span>
+              </button>
             </div>
-          </div>
+          ) : (
+            <div className={`flex items-center gap-3 rounded-xl bg-emerald-100/20 border border-emerald-200/50 ${isCollapsedDesktop ? 'p-1.5 justify-center' : 'p-3.5'}`}>
+              <img
+                className="size-9 rounded-full border-2 border-emerald-200"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnvRLL0IXpl7oX9kYEhuo6N3aVqBGyuqW-DWDIImkz7wT6Y7KWecYC8vPNyjSS9ncF1_QQNDxZ7p7zW5ohISVlqqh97r-p-k4RMakxC6zt2d6YFI-hZrvJw7dnyrnzUSdtGqGjQarLGlDcB85IjzH9rbgZY6yt4Nvw1L3UnU4tV_pVILS2i0MZCwXVOOfHVuu8MXoEamd71CtJ6X-F6H60LUfs6-wZL_rctOhHnqpriy4zh8qbbrt46lCaJGCqu5fXdBYCTr3Xfw"
+                alt="Profile"
+              />
+              {(!isCollapsedDesktop || isOpenMobile) && (
+                <div className="overflow-hidden flex-1">
+                  <p className="text-xs font-bold text-[#064e3b] tracking-wide truncate">Varun</p>
+                  <p className="text-[9px] text-emerald-700 uppercase tracking-widest mt-0.5">Constituency Admin</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </aside>
     </>

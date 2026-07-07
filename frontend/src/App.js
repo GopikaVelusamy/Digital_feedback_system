@@ -60,6 +60,7 @@ export default function App() {
 
         {/* super-login.html → Super Admin login */}
         <Route path="/super-login" element={<SuperLoginPage />} />
+        <Route path="/super_login" element={<Navigate to="/super-login" replace />} />
 
         {/* Dashboard.html → Admin analytics dashboard */}
         <Route

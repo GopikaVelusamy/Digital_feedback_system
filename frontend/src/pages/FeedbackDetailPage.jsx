@@ -13,23 +13,23 @@ import { API } from '../config';
 
 // ── Same glass style used across the whole app ───────────────
 const glass = {
-  background:    'rgba(255,255,255,0.28)',
-  backdropFilter:'blur(50px)',
-  WebkitBackdropFilter:'blur(50px)',
-  border:        '1px solid rgba(255,255,255,0.55)',
-  boxShadow:     '0 8px 32px rgba(0,0,0,0.05)',
+  background:    'rgba(255, 255, 255, 0.75)',
+  backdropFilter:'blur(24px)',
+  WebkitBackdropFilter:'blur(24px)',
+  border:        '1px solid rgba(16, 185, 129, 0.2)',
+  boxShadow:     '0 8px 32px rgba(22, 163, 74, 0.04)',
 };
 
 function getRisk(score) {
-  if (score >= 65) return { color:'#EF4444', bg:'rgba(239,68,68,0.08)',  border:'rgba(239,68,68,0.2)',  label:'HIGH RISK',  dot:'#EF4444' };
-  if (score >= 35) return { color:'#F59E0B', bg:'rgba(245,158,11,0.08)', border:'rgba(245,158,11,0.2)', label:'MODERATE',   dot:'#F59E0B' };
-  return            { color:'#10B981', bg:'rgba(16,185,129,0.08)',  border:'rgba(16,185,129,0.2)',  label:'VERIFIED',   dot:'#10B981' };
+  if (score >= 65) return { color:'#EF4444', bg:'rgba(239,68,68,0.2)',  border:'rgba(239,68,68,0.4)',  label:'HIGH RISK',  dot:'#EF4444' };
+  if (score >= 35) return { color:'#F59E0B', bg:'rgba(245,158,11,0.2)', border:'rgba(245,158,11,0.4)', label:'MODERATE',   dot:'#F59E0B' };
+  return            { color:'#10B981', bg:'rgba(16,185,129,0.2)',  border:'rgba(16,185,129,0.4)',  label:'VERIFIED',   dot:'#10B981' };
 }
 
 function layerColor(val) {
-  if (!val) return '#9CA3AF';
+  if (!val) return '#a7f3d0';
   if (['pass','authentic','unique','verified'].includes(val)) return '#10B981';
-  if (['warning','similar','suspicious','no_gps'].includes(val)) return '#F59E0B';
+  if (['warning','similar','suspicious','no_gps'].includes(val)) return '#FBBF24';
   return '#EF4444';
 }
 
@@ -82,13 +82,9 @@ export default function FeedbackDetailPage() {
   return (
     <div className="sidebar-page" style={{
       minHeight:'100vh', fontFamily:"'Manrope',sans-serif", overflowX:'hidden',
-      background:`
-        radial-gradient(circle at 20% 30%,rgba(22, 163, 74, 0.12) 0%,transparent 40%),
-        radial-gradient(circle at 80% 70%,rgba(16, 185, 129, 0.12) 0%,transparent 40%),
-        linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)
-      `,
+      background: 'linear-gradient(135deg, #f0fdf4 0%, #e8fbf0 50%, #dcfce7 100%)',
       backgroundAttachment:'fixed',
-      color:'#0f291b',
+      color:'#064e3b',
     }}>
       <style>{`
         @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
@@ -112,8 +108,8 @@ export default function FeedbackDetailPage() {
         }
         .fd-glass-hover:hover {
           transform:translateY(-2px);
-          box-shadow:0 16px 48px rgba(0,0,0,0.08)!important;
-          border-color:rgba(255,255,255,0.7)!important;
+          box-shadow:0 16px 48px rgba(22,163,74,0.06)!important;
+          border-color:rgba(16,185,129,0.35)!important;
         }
         .fd-chip {
           display:inline-flex; align-items:center; gap:5px;
@@ -121,21 +117,21 @@ export default function FeedbackDetailPage() {
           font-size:10px; font-weight:800; letter-spacing:0.07em; text-transform:uppercase;
         }
         .fd-meta-label {
-          font-size:9px; font-weight:700; color:#4b6b58;
+          font-size:9px; font-weight:700; color:#047857;
           letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px;
         }
         .fd-meta-value {
-          font-size:13px; font-weight:700; color:#0f291b;
+          font-size:13px; font-weight:700; color:#064e3b;
         }
         .fd-layer-row {
           display:flex; align-items:center; gap:10px; padding:10px 14px;
-          border-radius:12px; border:1px solid rgba(255,255,255,0.5);
-          background:rgba(255,255,255,0.2); transition:all 0.2s;
+          border-radius:12px; border:1px solid rgba(16, 185, 129, 0.15);
+          background:rgba(255, 255, 255, 0.8); transition:all 0.2s;
           cursor:default;
         }
         .fd-layer-row:hover {
-          background:rgba(255,255,255,0.4);
-          border-color:rgba(255,255,255,0.7);
+          background:rgba(16, 185, 129, 0.08);
+          border-color:rgba(16, 185, 129, 0.3);
         }
       `}</style>
 
@@ -145,21 +141,21 @@ export default function FeedbackDetailPage() {
         margin:'16px 24px 0',
         borderRadius:16,
         padding:'12px 20px',
-        display:'flex', alignItems:'center', justifyContent:'space-between',
+        display:'flex', alignItems:'center', justify: 'space-between',
         position:'sticky', top:16, zIndex:50,
       }}>
         {/* Back */}
         <button onClick={() => navigate('/critical-issues')}
-          style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:8, fontSize:13, fontWeight:700, color:'#6B7280', fontFamily:'Manrope,sans-serif', padding:'6px 12px', borderRadius:10, transition:'all 0.2s' }}
-          onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.4)';e.currentTarget.style.color='#1F2937';}}
-          onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color='#6B7280';}}>
+          style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:8, fontSize:13, fontWeight:700, color:'#047857', fontFamily:'Manrope,sans-serif', padding:'6px 12px', borderRadius:10, transition:'all 0.2s' }}
+          onMouseEnter={e=>{e.currentTarget.style.background='rgba(16,185,129,0.15)';e.currentTarget.style.color='#064e3b';}}
+          onMouseLeave={e=>{e.currentTarget.style.background='none';e.currentTarget.style.color='#047857';}}>
           <span className="material-symbols-outlined" style={{ fontSize:18 }}>arrow_back</span>
           Critical Issues
         </button>
 
         {/* Breadcrumb */}
-        <div style={{ fontSize:11, color:'#4b6b58', fontWeight:600, letterSpacing:'0.06em' }}>
-          Critical Issues &rsaquo; <span style={{ color:'#0f291b', fontWeight:800 }}>#{feedbackId?.slice(-8).toUpperCase()}</span>
+        <div style={{ fontSize:11, color:'#047857', fontWeight:600, letterSpacing:'0.06em' }}>
+          Critical Issues &rsaquo; <span style={{ color:'#064e3b', fontWeight:800 }}>#{feedbackId?.slice(-8).toUpperCase()}</span>
         </div>
 
         {/* Status chips */}
@@ -171,8 +167,8 @@ export default function FeedbackDetailPage() {
             </span>
           )}
           <span className="fd-chip" style={{
-            background: isSolved ? 'rgba(16,185,129,0.1)' : investigationStarted ? 'rgba(59,130,246,0.1)' : 'rgba(239,68,68,0.08)',
-            border:     `1px solid ${isSolved ? 'rgba(16,185,129,0.3)' : investigationStarted ? 'rgba(59,130,246,0.3)' : 'rgba(239,68,68,0.2)'}`,
+            background: isSolved ? 'rgba(16,185,129,0.12)' : investigationStarted ? 'rgba(59,130,246,0.12)' : 'rgba(239,68,68,0.12)',
+            border:     `1px solid ${isSolved ? 'rgba(16,185,129,0.25)' : investigationStarted ? 'rgba(59,130,246,0.25)' : 'rgba(239,68,68,0.2)'}`,
             color:       isSolved ? '#10B981' : investigationStarted ? '#3B82F6' : '#EF4444',
           }}>
             {isSolved ? '✓ Resolved' : investigationStarted ? '◉ In Progress' : '⊘ Pending'}
@@ -181,7 +177,7 @@ export default function FeedbackDetailPage() {
       </nav>
 
       {/* ── PAGE CONTENT ───────────────────────────────────── */}
-      <div style={{ maxWidth:1360, margin:'0 auto', padding:'24px 24px 40px', display:'grid', gridTemplateColumns:'1fr 360px', gap:24, alignItems:'start' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6" style={{ maxWidth:1360, margin:'0 auto', padding:'24px 24px 40px', alignItems:'start' }}>
 
         {/* ════════════════════════════════════════════════════
             LEFT COLUMN
@@ -190,12 +186,12 @@ export default function FeedbackDetailPage() {
 
           {/* ── Page heading ── */}
           <div className="fup">
-            <p style={{ fontSize:10, fontWeight:700, color:'#9CA3AF', letterSpacing:'0.14em', textTransform:'uppercase', marginBottom:6 }}>
+            <p style={{ fontSize:10, fontWeight:750, color:'#047857', letterSpacing:'0.14em', textTransform:'uppercase', marginBottom:6 }}>
               Investigation Deep-Dive
             </p>
-            <h1 style={{ fontSize:30, fontWeight:900, color:'#0f291b', letterSpacing:'-0.03em', margin:0, lineHeight:1.1, textTransform:'capitalize' }}>
+            <h1 style={{ fontSize:30, fontWeight:900, color:'#064e3b', letterSpacing:'-0.03em', margin:0, lineHeight:1.1, textTransform:'capitalize' }}>
               {f?.type_of_feedback || f?.feedback?.type || (
-                <span style={{ color:'#D1D5DB' }}>Loading...</span>
+                <span style={{ color:'#047857' }}>Loading...</span>
               )}
             </h1>
           </div>
@@ -203,10 +199,10 @@ export default function FeedbackDetailPage() {
           {/* ── Visual evidence card ── */}
           <div className="fup1 fd-glass-hover" style={{ ...glass, borderRadius:20, overflow:'hidden' }}>
             {/* Card header */}
-            <div style={{ padding:'14px 20px', borderBottom:'1px solid rgba(255,255,255,0.5)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+            <div style={{ padding:'14px 20px', borderBottom:'1px solid rgba(16, 185, 129, 0.2)', display:'flex', alignItems:'center', justify: 'space-between' }}>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <span className="material-symbols-outlined" style={{ fontSize:16, color:'#9CA3AF' }}>photo_camera</span>
-                <span style={{ fontSize:10, fontWeight:700, color:'#9CA3AF', letterSpacing:'0.12em', textTransform:'uppercase' }}>Visual Evidence</span>
+                <span className="material-symbols-outlined" style={{ fontSize:16, color:'#047857' }}>photo_camera</span>
+                <span style={{ fontSize:10, fontWeight:750, color:'#047857', letterSpacing:'0.12em', textTransform:'uppercase' }}>Visual Evidence</span>
               </div>
               {validation && (
                 <span className="fd-chip" style={{ background:risk?.bg, border:`1px solid ${risk?.border}`, color:risk?.color, fontSize:9 }}>
@@ -214,17 +210,17 @@ export default function FeedbackDetailPage() {
                 </span>
               )}
               {!imageSrc && (
-                <span style={{ fontSize:11, color:'#9CA3AF', fontWeight:600 }}>No image submitted</span>
+                <span style={{ fontSize:11, color:'#047857', fontWeight:700 }}>No image submitted</span>
               )}
             </div>
 
             {/* Image area */}
             {imageSrc ? (
-              <div style={{ position:'relative', background:'#EAE6DF' }}>
+              <div style={{ position:'relative', background:'#f0fdf4' }}>
                 {/* Loading spinner */}
                 {!imgLoaded && (
-                  <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', zIndex:2, minHeight:220 }}>
-                    <div style={{ width:32, height:32, borderRadius:'50%', border:'3px solid rgba(107,114,128,0.2)', borderTopColor:'#6B7280', animation:'spin 0.8s linear infinite' }}/>
+                  <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justify: 'center', zIndex:2, minHeight:220 }}>
+                    <div style={{ width:32, height:32, borderRadius:'50%', border:'3px solid rgba(16,185,129,0.2)', borderTopColor:'#10b981', animation:'spin 0.8s linear infinite' }}/>
                   </div>
                 )}
                 <img src={imageSrc} alt="Evidence"
@@ -233,21 +229,21 @@ export default function FeedbackDetailPage() {
 
                 {/* Overlay chips on image */}
                 {imgLoaded && (
-                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'20px', background:'linear-gradient(transparent,rgba(0,0,0,0.6))', display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
+                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'20px', background:'linear-gradient(transparent,rgba(0,0,0,0.4))', display:'flex', justify: 'space-between', alignItems:'flex-end' }}>
                     <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                       {validation?.layers?.exif_geofence?.lat && (
-                        <span style={{ padding:'4px 10px', borderRadius:8, background:'rgba(0,0,0,0.45)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', fontSize:10, color:'#fff', fontFamily:'monospace', fontWeight:600 }}>
+                        <span style={{ padding:'4px 10px', borderRadius:8, background:'rgba(255,255,255,0.85)', backdropFilter:'blur(10px)', border:'1px solid rgba(16,185,129,0.25)', fontSize:10, color:'#064e3b', fontFamily:'monospace', fontWeight:700 }}>
                           📍 {validation.layers.exif_geofence.lat.toFixed(4)}, {validation.layers.exif_geofence.lon.toFixed(4)}
                         </span>
                       )}
                       {validation?.layers?.ela_authenticity?.ela_score != null && (
-                        <span style={{ padding:'4px 10px', borderRadius:8, background:'rgba(0,0,0,0.45)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', fontSize:10, color:'#fff', fontWeight:700 }}>
+                        <span style={{ padding:'4px 10px', borderRadius:8, background:'rgba(255,255,255,0.85)', backdropFilter:'blur(10px)', border:'1px solid rgba(16,185,129,0.25)', fontSize:10, color:'#064e3b', fontWeight:800 }}>
                           ELA {validation.layers.ela_authenticity.ela_score}/100
                         </span>
                       )}
                     </div>
                     {risk && (
-                      <span className="fd-chip" style={{ background:'rgba(0,0,0,0.45)', backdropFilter:'blur(10px)', border:`1px solid ${risk.border}`, color:risk.color, fontSize:9 }}>
+                      <span className="fd-chip" style={{ background:'rgba(255,255,255,0.85)', backdropFilter:'blur(10px)', border:`1px solid ${risk.border}`, color:risk.color, fontSize:9 }}>
                         {risk.label}
                       </span>
                     )}
@@ -256,8 +252,8 @@ export default function FeedbackDetailPage() {
               </div>
             ) : (
               <div style={{ padding:'48px 20px', textAlign:'center' }}>
-                <span className="material-symbols-outlined" style={{ fontSize:48, color:'#D1D5DB', display:'block', marginBottom:12 }}>image_not_supported</span>
-                <p style={{ fontSize:13, color:'#9CA3AF', fontWeight:600, margin:0 }}>No image was uploaded with this feedback</p>
+                <span className="material-symbols-outlined" style={{ fontSize:48, color:'#10b981', display:'block', marginBottom:12 }}>image_not_supported</span>
+                <p style={{ fontSize:13, color:'#047857', fontWeight:700, margin:0 }}>No image was uploaded with this feedback</p>
               </div>
             )}
           </div>
@@ -268,15 +264,16 @@ export default function FeedbackDetailPage() {
 
             {/* Feedback text */}
             <p style={{
-              fontSize:15, color:'#0f291b', lineHeight:1.8, margin:'0 0 24px',
-              borderLeft:'3px solid rgba(22, 128, 61, 0.25)', paddingLeft:16,
+              fontSize:15, color:'#064e3b', lineHeight:1.8, margin:'0 0 24px',
+              borderLeft:'3px solid rgba(16, 185, 129, 0.3)', paddingLeft:16,
               fontStyle: (f?.feedback_text || f?.feedback?.original_text) ? 'normal' : 'italic',
+              fontWeight: 600,
             }}>
               {f?.feedback_text || f?.feedback?.original_text || 'No description provided.'}
             </p>
 
             {/* 3-col meta grid */}
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.6)' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, paddingTop:20, borderTop:'1px solid rgba(16, 185, 129, 0.15)' }}>
               {[
                 { label:'Reporter',     value: f?.name || f?.user?.name || 'Anonymous',               icon:'person' },
                 { label:'Email',        value: f?.email || f?.user?.email || 'Confidential',            icon:'mail' },
@@ -287,10 +284,10 @@ export default function FeedbackDetailPage() {
               ].map(({ label, value, icon }) => (
                 <div key={label}>
                   <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:5 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize:12, color:'#C6B7A6' }}>{icon}</span>
+                    <span className="material-symbols-outlined" style={{ fontSize:12, color:'#10b981' }}>{icon}</span>
                     <span className="fd-meta-label" style={{ marginBottom:0 }}>{label}</span>
                   </div>
-                  <div className="fd-meta-value" style={{ wordBreak:'break-all', color: value==='N/A'||value==='Confidential'||value==='Anonymous' ? '#4b6b58' : '#0f291b' }}>
+                  <div className="fd-meta-value" style={{ wordBreak:'break-all', color: value==='N/A'||value==='Confidential'||value==='Anonymous' ? '#047857' : '#064e3b' }}>
                     {value}
                   </div>
                 </div>
@@ -298,16 +295,16 @@ export default function FeedbackDetailPage() {
             </div>
 
             {/* Star rating */}
-            <div style={{ marginTop:20, paddingTop:16, borderTop:'1px solid rgba(255,255,255,0.6)', display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ marginTop:20, paddingTop:16, borderTop:'1px solid rgba(16, 185, 129, 0.15)', display:'flex', alignItems:'center', gap:12 }}>
               <span className="fd-meta-label" style={{ marginBottom:0 }}>Severity</span>
               <div style={{ display:'flex', gap:3 }}>
                 {[1,2,3,4,5].map(s => (
-                  <span key={s} style={{ fontSize:20, color: s <= rating ? '#F59E0B' : '#E5E7EB', lineHeight:1 }}>★</span>
+                  <span key={s} style={{ fontSize:20, color: s <= rating ? '#F59E0B' : 'rgba(16, 185, 129, 0.15)', lineHeight:1 }}>★</span>
                 ))}
               </div>
-              <span style={{ fontSize:12, color:'#9CA3AF', fontWeight:600 }}>{rating}/5</span>
+              <span style={{ fontSize:12, color:'#047857', fontWeight:700 }}>{rating}/5</span>
               {isCritical && (
-                <span className="fd-chip" style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', color:'#EF4444', fontSize:9 }}>
+                <span className="fd-chip" style={{ background:'rgba(239,68,68,0.12)', border:'1px solid rgba(239,68,68,0.2)', color:'#EF4444', fontSize:9 }}>
                   CRITICAL
                 </span>
               )}
@@ -318,8 +315,7 @@ export default function FeedbackDetailPage() {
           {validation && (
             <div className="fup3">
               <p className="fd-meta-label" style={{ marginBottom:12 }}>AI Image Intelligence · 4-Layer Analysis</p>
-              {/* Override ImageIntelCard dark bg with light wrapper */}
-              <div style={{ borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.55)', boxShadow:'0 8px 32px rgba(0,0,0,0.05)' }}>
+              <div style={{ borderRadius:20, overflow:'hidden', border:'1px solid rgba(16, 185, 129, 0.15)', boxShadow:'0 8px 32px rgba(22, 163, 74, 0.04)' }}>
                 <ImageIntelCard validation={validation} />
               </div>
             </div>
@@ -335,9 +331,9 @@ export default function FeedbackDetailPage() {
           <div className="fup fd-glass-hover" style={{ ...glass, borderRadius:20, padding:'20px 22px' }}>
             <p className="fd-meta-label" style={{ marginBottom:12 }}>Current Status</p>
             <div style={{
-              padding:'12px 16px', borderRadius:12, textAlign:'center', fontWeight:800, fontSize:13,
-              background: isSolved ? 'rgba(16,185,129,0.1)' : investigationStarted ? 'rgba(59,130,246,0.08)' : 'rgba(239,68,68,0.07)',
-              border:     `1px solid ${isSolved ? 'rgba(16,185,129,0.3)' : investigationStarted ? 'rgba(59,130,246,0.25)' : 'rgba(239,68,68,0.2)'}`,
+              padding:'12px 16px', borderRadius:12, textAlign:'center', fontWeight:850, fontSize:13,
+              background: isSolved ? 'rgba(16,185,129,0.12)' : investigationStarted ? 'rgba(59,130,246,0.12)' : 'rgba(239,68,68,0.12)',
+              border:     `1px solid ${isSolved ? 'rgba(16,185,129,0.25)' : investigationStarted ? 'rgba(59,130,246,0.25)' : 'rgba(239,68,68,0.2)'}`,
               color:       isSolved ? '#10B981' : investigationStarted ? '#3B82F6' : '#EF4444',
             }}>
               {isSolved ? '✓ Officially Resolved' : investigationStarted ? '◉ Investigation In Progress' : '⊘ Awaiting Action'}
@@ -348,24 +344,24 @@ export default function FeedbackDetailPage() {
           <div className="fup1 fd-glass-hover" style={{ ...glass, borderRadius:20, padding:'20px 22px' }}>
             <p className="fd-meta-label" style={{ marginBottom:14 }}>Actions</p>
             {isSolved ? (
-              <div style={{ padding:'14px', borderRadius:12, background:'rgba(16,185,129,0.08)', border:'1px solid rgba(16,185,129,0.2)', textAlign:'center', color:'#10B981', fontWeight:700, fontSize:13 }}>
+              <div style={{ padding:'14px', borderRadius:12, background:'rgba(16,185,129,0.12)', border:'1px solid rgba(16,185,129,0.25)', textAlign:'center', color:'#10B981', fontWeight:700, fontSize:13 }}>
                 ✓ Issue archived & resolved
               </div>
             ) : (
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {!investigationStarted ? (
                   <button className="fd-action-btn" onClick={startResolution}
-                    style={{ background:'#15803d', color:'#fff', boxShadow:'0 8px 24px rgba(22, 101, 52, 0.25)' }}>
+                    style={{ background:'#10b981', color:'#fff', boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)' }}>
                     <span className="material-symbols-outlined" style={{ fontSize:18 }}>handshake</span>
                     Acknowledge & Investigate
                   </button>
                 ) : (
                   <>
-                    <div style={{ padding:'12px', borderRadius:12, background:'rgba(59,130,246,0.07)', border:'1px solid rgba(59,130,246,0.2)', color:'#3B82F6', fontSize:12, fontWeight:700, textAlign:'center' }}>
+                    <div style={{ padding:'12px', borderRadius:12, background:'rgba(59,130,246,0.12)', border:'1px solid rgba(59,130,246,0.25)', color:'#3B82F6', fontSize:12, fontWeight:750, textAlign:'center' }}>
                       ◉ Investigation in progress
                     </div>
                     <button className="fd-action-btn" onClick={() => updateStatus('Solved')}
-                      style={{ background:'linear-gradient(135deg,#10B981,#059669)', color:'#fff', boxShadow:'0 8px 24px rgba(16,185,129,0.3)' }}>
+                      style={{ background:'linear-gradient(135deg,#10B981,#059669)', color:'#fff', boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)' }}>
                       <span className="material-symbols-outlined" style={{ fontSize:18 }}>check_circle</span>
                       Mark as Resolved
                     </button>
@@ -386,8 +382,8 @@ export default function FeedbackDetailPage() {
                 { icon:'location_on', val: [f?.district || f?.location?.district, f?.constituency || f?.location?.constituency].filter(Boolean).join(' › ') || 'N/A' },
               ].map(({ icon, val }) => (
                 <div key={icon} style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize:15, color:'#C6B7A6', marginTop:1, flexShrink:0 }}>{icon}</span>
-                  <span style={{ fontSize:12, color:'#6B7280', fontWeight:600, wordBreak:'break-all', lineHeight:1.5 }}>{val}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize:15, color:'#10b981', marginTop:1, flexShrink:0 }}>{icon}</span>
+                  <span style={{ fontSize:12, color:'#047857', fontWeight:750, wordBreak:'break-all', lineHeight:1.5 }}>{val}</span>
                 </div>
               ))}
             </div>
@@ -408,10 +404,10 @@ export default function FeedbackDetailPage() {
                 ].map(({ label, val, icon }) => {
                   const c = layerColor(val);
                   return (
-                    <div key={label} style={{ padding:'10px 12px', borderRadius:12, background:`${c}0D`, border:`1px solid ${c}33` }}>
+                    <div key={label} style={{ padding:'10px 12px', borderRadius:12, background:`${c}1A`, border:`1px solid ${c}33` }}>
                       <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:4 }}>
                         <span className="material-symbols-outlined" style={{ fontSize:12, color:c }}>{icon}</span>
-                        <span style={{ fontSize:9, fontWeight:700, color:'#9CA3AF', letterSpacing:'0.1em' }}>{label}</span>
+                        <span style={{ fontSize:9, fontWeight:700, color:'#047857', letterSpacing:'0.1em' }}>{label}</span>
                       </div>
                       <div style={{ fontSize:11, fontWeight:900, color:c, textTransform:'uppercase', letterSpacing:'0.04em' }}>
                         {val || '—'}
@@ -423,11 +419,11 @@ export default function FeedbackDetailPage() {
 
               {/* GPS */}
               {validation.layers?.exif_geofence?.lat && (
-                <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:10, padding:'8px 12px', borderRadius:10, background:'rgba(16,185,129,0.07)', border:'1px solid rgba(16,185,129,0.2)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:10, padding:'8px 12px', borderRadius:10, background:'rgba(16,185,129,0.08)', border:'1px solid rgba(16,185,129,0.15)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize:14, color:'#10B981' }}>location_on</span>
                   <div>
-                    <div style={{ fontSize:9, fontWeight:700, color:'#9CA3AF', letterSpacing:'0.1em', textTransform:'uppercase' }}>GPS Coordinates</div>
-                    <div style={{ fontSize:11, fontWeight:700, color:'#10B981', fontFamily:'monospace' }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:'#047857', letterSpacing:'0.1em', textTransform:'uppercase' }}>GPS Coordinates</div>
+                    <div style={{ fontSize:11, fontWeight:750, color:'#10B981', fontFamily:'monospace' }}>
                       {validation.layers.exif_geofence.lat.toFixed(5)}, {validation.layers.exif_geofence.lon.toFixed(5)}
                     </div>
                   </div>
@@ -435,21 +431,21 @@ export default function FeedbackDetailPage() {
               )}
 
               {/* Risk bar */}
-              <div style={{ padding:'12px 14px', borderRadius:12, background:'rgba(255,255,255,0.3)', border:'1px solid rgba(255,255,255,0.5)' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#6B7280' }}>Composite Risk Score</span>
+              <div style={{ padding:'12px 14px', borderRadius:12, background:'rgba(255,255,255,0.8)', border:'1px solid rgba(16,185,129,0.15)' }}>
+                <div style={{ display:'flex', justify: 'space-between', alignItems:'center', marginBottom:8 }}>
+                  <span style={{ fontSize:10, fontWeight:700, color:'#047857' }}>Composite Risk Score</span>
                   <span style={{ fontSize:16, fontWeight:900, color:risk?.color }}>{validation.overall_risk}/100</span>
                 </div>
-                <div style={{ height:6, borderRadius:999, background:'rgba(0,0,0,0.06)', overflow:'hidden' }}>
+                <div style={{ height:6, borderRadius:999, background:'rgba(16,185,129,0.08)', overflow:'hidden' }}>
                   <div style={{
                     height:'100%', borderRadius:999,
                     width:`${validation.overall_risk}%`,
                     background:`linear-gradient(90deg,${risk?.dot},${risk?.dot}aa)`,
                     transition:'width 1.2s cubic-bezier(0.22,1,0.36,1)',
-                    boxShadow:`0 0 8px ${risk?.dot}55`,
+                    boxShadow:`0 0 8px ${risk?.dot}33`,
                   }}/>
                 </div>
-                <div style={{ display:'flex', justifyContent:'space-between', marginTop:5 }}>
+                <div style={{ display:'flex', justify: 'space-between', marginTop:5 }}>
                   <span style={{ fontSize:8, color:'rgba(16,185,129,0.7)', fontWeight:600 }}>0 SAFE</span>
                   <span style={{ fontSize:8, color:'rgba(245,158,11,0.7)', fontWeight:600 }}>35 MOD</span>
                   <span style={{ fontSize:8, color:'rgba(239,68,68,0.7)', fontWeight:600 }}>65 HIGH</span>
@@ -461,8 +457,8 @@ export default function FeedbackDetailPage() {
           {/* No validation notice */}
           {!validation && f && (
             <div className="fup3 fd-glass-hover" style={{ ...glass, borderRadius:20, padding:'24px', textAlign:'center' }}>
-              <span className="material-symbols-outlined" style={{ fontSize:36, color:'#D1D5DB', display:'block', marginBottom:10 }}>image_not_supported</span>
-              <div style={{ fontSize:12, color:'#9CA3AF', fontWeight:600, lineHeight:1.5 }}>
+              <span className="material-symbols-outlined" style={{ fontSize:36, color:'#10b981', display:'block', marginBottom:10 }}>image_not_supported</span>
+              <div style={{ fontSize:12, color:'#047857', fontWeight:750, lineHeight:1.5 }}>
                 No image was uploaded.<br/>AI validation not available.
               </div>
             </div>

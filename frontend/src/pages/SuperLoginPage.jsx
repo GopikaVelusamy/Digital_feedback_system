@@ -54,7 +54,7 @@ export default function SuperLoginPage() {
       className="min-h-screen relative flex items-center justify-center overflow-hidden"
       style={{
         fontFamily: "'Manrope', sans-serif",
-        background: 'linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)',
+        background: 'linear-gradient(135deg, #f0fdf4 0%, #e8fbf0 50%, #dcfce7 100%)',
       }}
     >
       {/* ── Rich Golden/Green Animated Background Blobs ── */}
@@ -64,7 +64,7 @@ export default function SuperLoginPage() {
           position: 'absolute',
           width: '800px',
           height: '800px',
-          background: 'radial-gradient(circle, rgba(22, 163, 74, 0.15) 0%, rgba(255, 255, 255, 0) 70%)',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 70%)',
           borderRadius: '50%',
           zIndex: 0,
           animation: 'move 15s infinite alternate',
@@ -78,7 +78,7 @@ export default function SuperLoginPage() {
           position: 'absolute',
           width: '800px',
           height: '800px',
-          background: 'radial-gradient(circle, rgba(22, 163, 74, 0.15) 0%, rgba(255, 255, 255, 0) 70%)',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0) 70%)',
           borderRadius: '50%',
           zIndex: 0,
           animation: 'move 15s infinite alternate',
@@ -96,19 +96,19 @@ export default function SuperLoginPage() {
         }
       `}</style>
 
-      {/* ── Green Glass Card — styled in green combo ── */}
+      {/* ── Green Glass Card ── */}
       <div className="glass-card" style={{
         position: 'relative',
         zIndex: 10,
-        background: 'rgba(240, 253, 244, 0.65)',
-        border: '1px solid rgba(22, 163, 74, 0.25)',
+        background: 'rgba(255, 255, 255, 0.75)',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
         borderRadius: '2.5rem',
         padding: '3.5rem 3rem',
         width: '100%',
         maxWidth: '450px',
         textAlign: 'center',
-        backdropFilter: 'blur(20px)',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.05)'
+        backdropFilter: 'blur(24px)',
+        boxShadow: '0 20px 40px rgba(22, 163, 74, 0.04)'
       }}>
         {/* Floating Language Selector inside Card */}
         <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', zIndex: 100 }}>
@@ -118,17 +118,17 @@ export default function SuperLoginPage() {
             style={{
               padding: '6px 12px',
               borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.5)',
-              border: '1px solid rgba(22, 163, 74, 0.25)',
+              background: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
               fontSize: '11px',
               fontWeight: 800,
-              color: '#0f291b',
+              color: '#064e3b',
               cursor: 'pointer',
               outline: 'none',
             }}
           >
-            <option value="English">English</option>
-            <option value="Tamil">தமிழ்</option>
+            <option value="English" className="bg-white text-emerald-950">English</option>
+            <option value="Tamil" className="bg-white text-emerald-950">தமிழ்</option>
           </select>
         </div>
 
@@ -138,7 +138,7 @@ export default function SuperLoginPage() {
             style={{
               width: '80px',
               height: '6px',
-              background: '#15803d',
+              background: '#10b981',
               margin: '0 auto 2rem',
               borderRadius: '9999px',
             }}
@@ -149,14 +149,14 @@ export default function SuperLoginPage() {
               fontSize: '3rem',
               fontWeight: 800,
               marginBottom: '0.75rem',
-              color: '#0f291b',
+              color: '#064e3b',
               letterSpacing: '-0.05em',
             }}
           >
             {language === 'English' ? 'Super Admin' : 'முதன்மை நிர்வாகி'}
           </h2>
           <p
-            className="text-[#15803d]"
+            className="text-emerald-700"
             style={{
               fontSize: '11px',
               fontWeight: 900,
@@ -168,7 +168,7 @@ export default function SuperLoginPage() {
           </p>
         </div>
 
-        {/* Form — exact from super-login.html */}
+        {/* Form */}
         <form onSubmit={login} className="space-y-6">
           <div>
             <input
@@ -183,22 +183,22 @@ export default function SuperLoginPage() {
                 borderRadius: '1.5rem',
                 outline: 'none',
                 fontWeight: 700,
-                color: '#0f291b',
+                color: '#064e3b',
                 textAlign: 'center',
-                background: 'rgba(255, 255, 255, 0.7)',
-                border: '1px solid rgba(22, 163, 74, 0.25)',
+                background: '#ffffff',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#15803d';
-                e.target.style.boxShadow = '0 0 0 4px rgba(22, 163, 74, 0.15)';
-                e.target.style.background = 'white';
+                e.target.style.borderColor = '#10b981';
+                e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
+                e.target.style.background = '#ffffff';
                 e.target.style.transform = 'translateY(-2px)';
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = 'rgba(22, 163, 74, 0.25)';
+                e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
                 e.target.style.boxShadow = 'none';
-                e.target.style.background = 'rgba(255, 255, 255, 0.7)';
+                e.target.style.background = '#ffffff';
                 e.target.style.transform = 'translateY(0)';
               }}
             />
@@ -217,28 +217,28 @@ export default function SuperLoginPage() {
                 borderRadius: '1.5rem',
                 outline: 'none',
                 fontWeight: 700,
-                color: '#0f291b',
+                color: '#064e3b',
                 textAlign: 'center',
-                background: 'rgba(255, 255, 255, 0.7)',
-                border: '1px solid rgba(22, 163, 74, 0.25)',
+                background: '#ffffff',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#15803d';
-                e.target.style.boxShadow = '0 0 0 4px rgba(22, 163, 74, 0.15)';
-                e.target.style.background = 'white';
+                e.target.style.borderColor = '#10b981';
+                e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
+                e.target.style.background = '#ffffff';
                 e.target.style.transform = 'translateY(-2px)';
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = 'rgba(22, 163, 74, 0.25)';
+                e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
                 e.target.style.boxShadow = 'none';
-                e.target.style.background = 'rgba(255, 255, 255, 0.7)';
+                e.target.style.background = '#ffffff';
                 e.target.style.transform = 'translateY(0)';
               }}
             />
           </div>
 
-          {/* Master Session Button — styled in green combo */}
+          {/* Master Session Button */}
           <button
             type="submit"
             id="loginBtn"
@@ -257,7 +257,7 @@ export default function SuperLoginPage() {
               transition: 'all 0.3s ease',
             }}
             onMouseEnter={(e) => {
-              e.target.style.boxShadow = '0 15px 30px rgba(22, 163, 74, 0.3)';
+              e.target.style.boxShadow = '0 15px 30px rgba(22, 101, 52, 0.2)';
               e.target.style.transform = 'translateY(-3px)';
               e.target.style.background = '#166534';
             }}
@@ -275,12 +275,12 @@ export default function SuperLoginPage() {
           </button>
         </form>
 
-        {/* Footer text — exact from super-login.html */}
+        {/* Footer text */}
         <p
           style={{
             marginTop: '3rem',
             fontSize: '10px',
-            color: '#9ca3af',
+            color: '#047857',
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.1em',

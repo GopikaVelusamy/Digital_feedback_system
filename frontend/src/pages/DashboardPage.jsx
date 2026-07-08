@@ -723,12 +723,11 @@ export default function DashboardPage() {
       `}</style>
 
       {/* MAIN CONTENT */}
-      <main id="mainContent" style={{
+      <main id="mainContent" className="flex-1" style={{
         minHeight:'100vh', padding:'32px 40px',
         maxWidth: '1280px',
         boxSizing:'border-box', width: 'auto',
-        marginLeft: sidebarOpen ? '320px' : '0px',
-        transition:'margin-left 0.4s cubic-bezier(0.16,1,0.3,1)'
+        overflowX: 'hidden',
       }}>
 
         {/* HEADER */}

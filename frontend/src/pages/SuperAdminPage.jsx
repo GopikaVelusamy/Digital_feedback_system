@@ -89,6 +89,7 @@ export default function SuperAdminPage() {
   // ─── logout — exact mirror from superadmin.html ─────────────
   function logout() {
     localStorage.removeItem('VERIFIED_VARUN');
+    localStorage.removeItem('super_verified');
     navigate('/super-login');
   }
 

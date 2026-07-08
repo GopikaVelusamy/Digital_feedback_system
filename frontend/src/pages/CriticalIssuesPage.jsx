@@ -20,6 +20,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { translationData, getLanguage, setLanguage } from '../utils/translations';
 import ImageIntelCard from '../components/ImageIntelCard';
+import Sidebar from '../components/Sidebar';
 
 import { API } from '../config';
 

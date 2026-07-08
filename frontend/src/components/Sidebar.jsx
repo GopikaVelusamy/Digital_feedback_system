@@ -20,22 +20,26 @@ export default function Sidebar({ variant = 'admin' }) {
 
   const handleLogoutSuper = () => {
     localStorage.removeItem('VERIFIED_VARUN');
+    localStorage.removeItem('super_verified');
     navigate('/super-login');
   };
 
+  const isSuperUser = localStorage.getItem('VERIFIED_VARUN') === 'YES';
+  const effectiveVariant = isSuperUser ? 'superadmin' : variant;
+
   const menuItemsSuper = [
-    { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-    { path: '/critical-issues', icon: 'warning', label: 'Critical Issues' },
-    { path: '/super-admin', icon: 'admin_panel_settings', label: 'Super Admin', active: true },
+    { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', active: isDashboard },
+    { path: '/critical-issues', icon: 'warning', label: 'Critical Issues', active: isCritical },
+    { path: '/super-admin', icon: 'admin_panel_settings', label: 'Super Admin', active: isSuperAdmin },
   ];
 
   const menuItemsAdmin = [
     { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', active: isDashboard },
     { path: '/critical-issues', icon: 'warning', label: 'Critical Issues', active: isCritical },
-    { path: '/super-login', icon: 'admin_panel_settings', label: 'Super Admin' },
+    { path: '/super-login', icon: 'admin_panel_settings', label: 'Super Admin', active: location.pathname === '/super-login' || location.pathname === '/super_login' },
   ];
 
-  const menuItems = variant === 'superadmin' ? menuItemsSuper : menuItemsAdmin;
+  const menuItems = effectiveVariant === 'superadmin' ? menuItemsSuper : menuItemsAdmin;
 
   return (
     <>
@@ -79,7 +83,7 @@ export default function Sidebar({ variant = 'admin' }) {
               <div className="flex flex-col transition-all duration-300">
                 <h1 className="font-extrabold text-[15px] text-[#064e3b] tracking-tight leading-tight">ADMK Feedback</h1>
                 <p className="text-[9px] font-bold text-emerald-700 uppercase tracking-widest mt-0.5">
-                  {variant === 'superadmin' ? 'Super Admin Portal' : 'Admin Workspace'}
+                  {effectiveVariant === 'superadmin' ? 'Super Admin Portal' : 'Admin Workspace'}
                 </p>
               </div>
             )}
@@ -98,7 +102,7 @@ export default function Sidebar({ variant = 'admin' }) {
         {/* Navigation Menu */}
         <nav className="flex-1 space-y-2.5">
           {menuItems.map((item, idx) => {
-            const isActive = item.active || (variant === 'superadmin' && item.path === '/super-admin' && isSuperAdmin) || (variant === 'admin' && item.path === '/dashboard' && isDashboard) || (variant === 'admin' && item.path === '/critical-issues' && isCritical);
+            const isActive = item.active;
             return (
               <a
                 key={idx}
@@ -140,7 +144,7 @@ export default function Sidebar({ variant = 'admin' }) {
 
         {/* User profile / Logout footer */}
         <div className="pt-6 border-t border-emerald-200/50">
-          {variant === 'superadmin' ? (
+          {effectiveVariant === 'superadmin' ? (
             <div className={`flex items-center justify-between rounded-xl bg-emerald-100/20 border border-emerald-200/50 ${isCollapsedDesktop ? 'p-1.5' : 'p-3.5'}`}>
               {(!isCollapsedDesktop || isOpenMobile) && (
                 <div className="overflow-hidden">

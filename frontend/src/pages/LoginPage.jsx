@@ -556,12 +556,16 @@ export default function LoginPage() {
                 </div>
                 <span className="font-bold text-[#064e3b] tracking-wide">ADMK Portal</span>
               </div>
-              <button 
-                onClick={() => setIsDrawerOpen(false)}
-                className="w-8 h-8 rounded-full bg-emerald-100 hover:bg-[#c0392b]/10 text-emerald-800 hover:text-[#c0392b] border border-emerald-200 flex items-center justify-center transition-colors focus:outline-none"
+              <a 
+                href="#"
+                role="button"
+                onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); }}
+                className="close-btn w-8 h-8 rounded-full bg-emerald-100 hover:bg-[#c0392b]/10 text-emerald-800 hover:text-[#c0392b] border border-emerald-200 flex items-center justify-center transition-colors focus:outline-none"
+                style={{ width: '32px', height: '32px' }}
+                aria-label="Close Menu"
               >
                 <span className="material-symbols-outlined text-sm">close</span>
-              </button>
+              </a>
             </div>
 
             {/* Language Selection inside drawer */}
@@ -699,13 +703,16 @@ export default function LoginPage() {
           
           <div className="w-full max-w-md bg-white border border-emerald-200 rounded-[2rem] p-6 sm:p-10 shadow-2xl backdrop-blur-2xl relative overflow-y-auto max-h-[90vh] z-20 animate-in fade-in zoom-in duration-300">
             {/* Close Button */}
-            <button 
-              onClick={() => setIsAuthModalOpen(false)}
-              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-emerald-100 hover:bg-[#c0392b] border border-emerald-200 hover:border-transparent flex items-center justify-center text-emerald-800 hover:text-white transition-colors focus:outline-none z-30 cursor-pointer"
+            <a 
+              href="#"
+              role="button"
+              onClick={(e) => { e.preventDefault(); setIsAuthModalOpen(false); }}
+              className="close-btn absolute top-6 right-6 w-8 h-8 rounded-full bg-emerald-100 hover:bg-[#c0392b] border border-emerald-200 hover:border-transparent flex items-center justify-center text-emerald-800 hover:text-white transition-colors focus:outline-none z-30 cursor-pointer"
+              style={{ width: '32px', height: '32px' }}
               aria-label="Close Login Modal"
             >
               <span className="material-symbols-outlined text-sm">close</span>
-            </button>
+            </a>
 
             {/* Background shimmer */}
             <div className="absolute top-[-20%] left-[-20%] w-[300px] h-[300px] bg-emerald-100/50 rounded-full blur-[80px] pointer-events-none" />
@@ -903,12 +910,16 @@ export default function LoginPage() {
                   {language === 'English' ? 'Quick Help Desk' : 'உதவி மையம்'}
                 </span>
               </div>
-              <button 
-                onClick={() => setIsHelpOpen(false)}
-                className="w-7 h-7 rounded-full bg-emerald-50 hover:bg-[#c0392b]/10 text-emerald-800 hover:text-[#c0392b] flex items-center justify-center transition-colors focus:outline-none"
+              <a 
+                href="#"
+                role="button"
+                onClick={(e) => { e.preventDefault(); setIsHelpOpen(false); }}
+                className="close-btn w-7 h-7 rounded-full bg-emerald-50 hover:bg-[#c0392b]/10 text-emerald-800 hover:text-[#c0392b] flex items-center justify-center transition-colors focus:outline-none"
+                style={{ width: '28px', height: '28px' }}
+                aria-label="Close Help Desk"
               >
                 <span className="material-symbols-outlined text-sm">close</span>
-              </button>
+              </a>
             </div>
 
             {/* Content - FAQ Accordions */}
@@ -964,9 +975,12 @@ export default function LoginPage() {
         )}
 
         {/* Floating Button */}
-        <button
-          onClick={() => setIsHelpOpen(!isHelpOpen)}
+        <a
+          href="#"
+          role="button"
+          onClick={(e) => { e.preventDefault(); setIsHelpOpen(!isHelpOpen); }}
           className="w-14 h-14 bg-[#15803d] hover:bg-[#166534] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all focus:outline-none relative group"
+          style={{ width: '56px', height: '56px' }}
           aria-label="Toggle Quick Guide"
         >
           <span className="material-symbols-outlined text-2xl animate-pulse">support_agent</span>
@@ -974,7 +988,7 @@ export default function LoginPage() {
           <span className="absolute right-16 scale-0 group-hover:scale-100 bg-[#064e3b] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap transition-all shadow-md">
             {language === 'English' ? 'Quick Help Desk' : 'உதவி மையம்'}
           </span>
-        </button>
+        </a>
       </div>
       
       {/* ─── BOTTOM PORTAL FOOTER ─── */}

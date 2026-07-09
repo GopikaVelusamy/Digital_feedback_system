@@ -765,9 +765,9 @@ export default function DashboardPage() {
               <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#10b981' }}>calendar_month</span>
               <input id="fpDateRange" readOnly placeholder={t.selectDates} style={{ width:'140px', cursor:'pointer' }} />
               {dateRange && (
-                <button onClick={clearDates} style={{ background:'none', border:'none', cursor:'pointer', color:'#047857', fontSize:'13px', fontWeight:700, padding:'0 2px' }}
+                <a href="#" role="button" onClick={(e) => { e.preventDefault(); clearDates(); }} style={{ background:'none', border:'none', cursor:'pointer', color:'#047857', fontSize:'13px', fontWeight:700, padding:'0 2px', display:'inline-block' }}
                   onMouseEnter={e=>e.target.style.color='#EF4444'}
-                  onMouseLeave={e=>e.target.style.color='#047857'}>✕</button>
+                  onMouseLeave={e=>e.target.style.color='#047857'}>✕</a>
               )}
             </div>
           </div>

@@ -328,28 +328,28 @@ export default function FeedbackPage() {
 
         {/* Header */}
         <header 
-          className="flex items-center justify-between whitespace-nowrap border-b px-6 md:px-10 py-4 sticky top-0 z-50 backdrop-blur-xl transition-all duration-300"
+          className="flex items-center justify-between border-b px-3 sm:px-6 py-3 sticky top-0 z-50 backdrop-blur-xl transition-all duration-300"
           style={{
             background: 'rgba(255, 255, 255, 0.75)',
             borderColor: 'rgba(16, 185, 129, 0.15)',
           }}
         >
-          <div className="flex items-center gap-3 md:gap-5">
-            <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full border-2 border-[#15803d] shadow-md flex items-center justify-center overflow-hidden hover:scale-105 duration-300 transition-transform">
-              <img src="/irratai_ellai.png" className="w-full h-full object-contain p-1" alt="ADMK Logo" />
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full border-2 border-[#15803d] shadow-sm flex items-center justify-center overflow-hidden hover:scale-105 duration-300 transition-transform flex-shrink-0">
+              <img src="/irratai_ellai.png" className="w-full h-full object-contain p-0.5" alt="ADMK Logo" />
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-xs md:text-lg font-extrabold tracking-tight text-[#064e3b] select-none leading-tight font-serif">
-                <span className="text-[#c0392b] block md:inline mr-1">அனைத்திந்திய</span>
-                <span className="text-emerald-800 block md:inline mr-1">அண்ணா திராவிட</span>
-                <span className="text-[#15803d] block md:inline">முன்னேற்றக் கழகம்</span>
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-[10px] sm:text-xs md:text-sm font-extrabold tracking-tight text-[#064e3b] select-none leading-tight font-serif">
+                <span className="text-[#c0392b] block xs:inline mr-1">அனைத்திந்திய</span>
+                <span className="text-emerald-800 block xs:inline mr-1">அண்ணா திராவிட</span>
+                <span className="text-[#15803d] block xs:inline">முன்னேற்றக் கழகம்</span>
               </h1>
-              <p className="text-[8px] md:text-[10px] text-emerald-800/80 tracking-wide uppercase select-none mt-0.5">
+              <p className="text-[6.5px] sm:text-[8px] md:text-[9px] text-emerald-800/80 tracking-wide uppercase select-none mt-0.5 leading-none truncate">
                 All India Anna Dravida Munnetra Kazhagam
               </p>
             </div>
           </div>
-          <div className="flex flex-1 justify-end gap-4 md:gap-8">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             <nav className="hidden lg:flex items-center gap-9">
               {localStorage.getItem('role') === 'admin' && (
                 <a
@@ -375,34 +375,41 @@ export default function FeedbackPage() {
                 {t.resourcesLink}
               </a>
             </nav>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-1.5 sm:gap-2 items-center flex-shrink-0">
               {/* Language Switcher */}
               <div className="relative">
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="appearance-none rounded-xl h-10 pl-4 pr-10 bg-white border border-emerald-200 text-emerald-800 font-bold text-sm focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none cursor-pointer shadow-sm"
+                  className="appearance-none rounded-xl h-9 pl-3 pr-8 bg-white border border-emerald-200 text-emerald-800 font-bold text-xs focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none cursor-pointer shadow-sm"
+                  style={{ width: language === 'English' ? '82px' : '72px' }}
                 >
-                  <option value="English" className="bg-white text-emerald-850">English</option>
+                  <option value="English" className="bg-white text-emerald-850">EN</option>
                   <option value="Tamil" className="bg-white text-emerald-850">தமிழ்</option>
                 </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
-                  <span className="material-symbols-outlined text-emerald-600 text-lg">expand_more</span>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+                  <span className="material-symbols-outlined text-emerald-600 text-base">expand_more</span>
                 </div>
               </div>
 
-              <button
-                onClick={handleNotificationsClick}
-                className="flex items-center justify-center rounded-xl h-10 w-10 bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-700 hover:text-emerald-950 transition shadow-sm"
+              <a
+                href="#"
+                role="button"
+                onClick={(e) => { e.preventDefault(); handleNotificationsClick(); }}
+                className="flex items-center justify-center rounded-xl h-9 w-9 bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-700 hover:text-emerald-950 transition shadow-sm flex-shrink-0"
+                style={{ width: '36px', height: '36px' }}
               >
-                <span className="material-symbols-outlined text-[20px]">notifications</span>
-              </button>
-              <button
-                onClick={handleProfileClick}
-                className="flex items-center justify-center rounded-xl h-10 w-10 bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-700 hover:text-emerald-950 transition shadow-sm"
+                <span className="material-symbols-outlined text-[18px]">notifications</span>
+              </a>
+              <a
+                href="#"
+                role="button"
+                onClick={(e) => { e.preventDefault(); handleProfileClick(); }}
+                className="flex items-center justify-center rounded-xl h-9 w-9 bg-white hover:bg-emerald-50 border border-emerald-200 text-emerald-700 hover:text-emerald-950 transition shadow-sm flex-shrink-0"
+                style={{ width: '36px', height: '36px' }}
               >
-                <span className="material-symbols-outlined text-[20px]">account_circle</span>
-              </button>
+                <span className="material-symbols-outlined text-[18px]">account_circle</span>
+              </a>
             </div>
           </div>
         </header>

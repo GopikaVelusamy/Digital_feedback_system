@@ -961,7 +961,7 @@ img, video, canvas, svg {
   }
 
   /* Select/input full width */
-  select, input, textarea {
+  select, input:not([type="radio"]):not([type="checkbox"]), textarea {
     width: 100% !important;
     font-size: 1rem !important;
   }
@@ -1304,6 +1304,20 @@ img, video, canvas, svg {
 .hover-grow-text:hover {
   transform: scale(1.03) translateY(-1px);
 }
+
+/* Force modal/drawer close buttons and small icons to bypass full-width button overrides on mobile */
+.close-btn,
+a.close-btn,
+button.close-btn {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
 
 
 

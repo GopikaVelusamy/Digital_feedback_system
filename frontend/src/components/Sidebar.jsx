@@ -109,15 +109,15 @@ export default function Sidebar({ variant = 'admin' }) {
       >
         {/* Brand Header */}
         <div className="pb-4 mb-4 border-b border-emerald-200/50">
-          <div className="flex items-center justify-between gap-3 overflow-hidden">
-            <div className="flex items-center gap-3 flex-1 overflow-hidden">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1">
               <div className="w-12 h-12 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
                 <img src="/irratai_ellai.png" className="w-full h-full object-contain" alt="Logo" />
               </div>
               {!isCollapsedDesktop && (
                 <div className="flex flex-col transition-all duration-300 flex-1">
-                  <h1 className="font-black text-[10px] text-[#064e3b] leading-tight" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
-                    அனைத்திந்திய அண்ணா<br />திராவிட முன்னேற்ற<br />கழகம்
+                  <h1 className="font-black text-[9.5px] text-[#064e3b] leading-tight" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
+                    அனைத்திந்திய<br />அண்ணா திராவிட<br />முன்னேற்றக் கழகம்
                   </h1>
                   <p className="text-[7px] font-extrabold text-emerald-800 uppercase tracking-tighter mt-1 leading-none">
                     ALL INDIA ANNA DRAVIDA MUNNETRA KAZHAGAM
@@ -132,7 +132,7 @@ export default function Sidebar({ variant = 'admin' }) {
                 href="#"
                 role="button"
                 onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
-                className="lg:hidden p-2 rounded-xl bg-emerald-50 hover:bg-red-50 text-emerald-800 hover:text-red-600 transition border border-emerald-100 flex items-center justify-center flex-shrink-0"
+                className="close-btn lg:hidden p-2 rounded-xl bg-emerald-50 hover:bg-red-50 text-emerald-800 hover:text-red-600 transition border border-emerald-100 flex items-center justify-center flex-shrink-0"
                 style={{ width: '36px', height: '36px' }}
                 aria-label="Close Menu"
               >

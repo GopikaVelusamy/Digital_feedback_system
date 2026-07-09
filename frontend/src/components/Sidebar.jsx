@@ -103,7 +103,7 @@ export default function Sidebar({ variant = 'admin' }) {
       {/* ── SIDEBAR CONTAINER (DESKTOP & MOBILE SIDEBAR) ── */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 h-screen z-40 flex flex-col p-5
+          fixed lg:sticky top-0 left-0 h-screen z-40 flex flex-col p-4 sm:p-5
           border-r border-emerald-200/60 shadow-2xl transition-all duration-300 ease-out
           ${isOpenMobile ? 'translate-x-0 w-72' : '-translate-x-full lg:translate-x-0'}
           ${isCollapsedDesktop ? 'lg:w-20' : 'lg:w-72'}
@@ -118,7 +118,7 @@ export default function Sidebar({ variant = 'admin' }) {
             </div>
             {!isCollapsedDesktop && (
               <div className="flex flex-col transition-all duration-300 flex-1">
-                <h1 className="font-black text-[9.5px] text-[#064e3b] leading-tight" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
+                <h1 className="font-black text-[8.5px] text-[#064e3b] leading-tight" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
                   அனைத்திந்திய<br />அண்ணா திராவிட<br />முன்னேற்றக் கழகம்
                 </h1>
                 <p className="text-[7px] font-extrabold text-emerald-800 uppercase tracking-tighter mt-1 leading-none">

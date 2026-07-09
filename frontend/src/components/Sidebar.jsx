@@ -76,12 +76,16 @@ export default function Sidebar({ variant = 'admin' }) {
       {/* ── MOBILE NAVBAR/MENU BUTTON ── */}
       {!isOpenMobile && (
         <div className="lg:hidden fixed top-4 left-4 z-50 flex items-center gap-3">
-          <button
-            onClick={toggleMobileSidebar}
-            className="p-3 bg-emerald-950/90 border border-emerald-800/40 rounded-xl text-emerald-400 hover:text-white transition shadow-lg backdrop-blur-md"
+          <a
+            href="#"
+            role="button"
+            onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
+            className="p-2.5 bg-emerald-950/90 border border-emerald-800/40 rounded-xl text-emerald-400 hover:text-white transition shadow-lg backdrop-blur-md flex items-center justify-center hover:scale-105 active:scale-95"
+            style={{ width: '38px', height: '38px' }}
+            aria-label="Open Menu"
           >
-            <span className="material-symbols-outlined text-[24px]">menu</span>
-          </button>
+            <span className="material-symbols-outlined text-[18px]">menu</span>
+          </a>
         </div>
       )}
 
@@ -124,13 +128,16 @@ export default function Sidebar({ variant = 'admin' }) {
             
             {/* Mobile close button on the right side of the drawer */}
             {isOpenMobile && (
-              <button
-                onClick={toggleMobileSidebar}
-                className="lg:hidden p-2 rounded-xl bg-emerald-50 hover:bg-red-50 text-emerald-800 hover:text-red-600 transition border border-emerald-100 flex-shrink-0"
+              <a
+                href="#"
+                role="button"
+                onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
+                className="lg:hidden p-2 rounded-xl bg-emerald-50 hover:bg-red-50 text-emerald-800 hover:text-red-600 transition border border-emerald-100 flex items-center justify-center flex-shrink-0"
+                style={{ width: '36px', height: '36px' }}
                 aria-label="Close Menu"
               >
-                <span className="material-symbols-outlined text-[20px] font-bold">close</span>
-              </button>
+                <span className="material-symbols-outlined text-[18px] font-bold">close</span>
+              </a>
             )}
           </div>
           {!isCollapsedDesktop && (
@@ -265,13 +272,16 @@ export default function Sidebar({ variant = 'admin' }) {
                   <p className="text-[9px] text-emerald-700 uppercase tracking-widest mt-0.5">Master Admin</p>
                 </div>
               )}
-              <button
-                onClick={handleLogoutSuper}
-                className="p-2 hover:bg-red-100/40 rounded-lg text-slate-500 hover:text-red-600 transition"
+              <a
+                href="#"
+                role="button"
+                onClick={(e) => { e.preventDefault(); handleLogoutSuper(); }}
+                className="p-2 hover:bg-red-100/40 rounded-lg text-slate-500 hover:text-red-600 transition flex items-center justify-center flex-shrink-0"
+                style={{ width: '34px', height: '34px' }}
                 title="Logout Super Admin"
               >
                 <span className="material-symbols-outlined text-[18px]">logout</span>
-              </button>
+              </a>
             </div>
           ) : (
             <div className={`flex items-center gap-3 rounded-xl bg-emerald-100/20 border border-emerald-200/50 ${isCollapsedDesktop ? 'p-1.5 justify-center' : 'p-3.5'}`}>

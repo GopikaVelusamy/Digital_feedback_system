@@ -114,7 +114,7 @@ export default function Sidebar({ variant = 'admin' }) {
         <div className="pb-4 mb-4 border-b border-emerald-200/50">
           <div className="flex flex-col items-center gap-2.5 text-center w-full">
             {/* Logo */}
-            <div className="w-13 h-13 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
+            <div className="w-16 h-16 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-1 shadow-md shadow-emerald-700/10 overflow-hidden">
               <img src="/irratai_ellai.png" className="w-full h-full object-contain" alt="Logo" />
             </div>
             

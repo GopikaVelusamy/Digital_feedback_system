@@ -1199,21 +1199,21 @@ img, video, canvas, svg {
   animation: fadeIn 0.6s ease forwards;
 }
 
-/* Staggered animation delays */
-.delay-100 {
-  animation-delay: 100ms;
+/* Staggered animation delays (using anim-delay prefix to avoid collisions with Tailwind) */
+.anim-delay-100 {
+  animation-delay: 100ms !important;
 }
-.delay-200 {
-  animation-delay: 200ms;
+.anim-delay-200 {
+  animation-delay: 200ms !important;
 }
-.delay-300 {
-  animation-delay: 300ms;
+.anim-delay-300 {
+  animation-delay: 300ms !important;
 }
-.delay-400 {
-  animation-delay: 400ms;
+.anim-delay-400 {
+  animation-delay: 400ms !important;
 }
-.delay-500 {
-  animation-delay: 500ms;
+.anim-delay-500 {
+  animation-delay: 500ms !important;
 }
 
 /* --- Premium Interactive Hover & Text Reveal Animations --- */
@@ -1228,7 +1228,7 @@ img, video, canvas, svg {
 
 @keyframes maskRevealUp {
   from {
-    transform: translateY(100%);
+    transform: translateY(102%);
     opacity: 0;
   }
   to {
@@ -1239,7 +1239,7 @@ img, video, canvas, svg {
 
 .animate-reveal-up {
   display: inline-block;
-  animation: maskRevealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: maskRevealUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-premium-float {
@@ -1264,6 +1264,47 @@ img, video, canvas, svg {
 .text-glow-emerald {
   text-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
 }
+
+/* Shimmer slide text gradients */
+@keyframes textShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-text-shimmer-red {
+  background: linear-gradient(90deg, #ff4d4d, #ff9999, #ff4d4d);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 4s linear infinite;
+  display: inline-block;
+}
+
+.animate-text-shimmer-green {
+  background: linear-gradient(90deg, #059669, #34d399, #059669);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 4s linear infinite;
+  display: inline-block;
+}
+
+/* Text Grow Hover interaction */
+.hover-grow-text {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  display: inline-block;
+}
+.hover-grow-text:hover {
+  transform: scale(1.03) translateY(-1px);
+}
+
 
 
 

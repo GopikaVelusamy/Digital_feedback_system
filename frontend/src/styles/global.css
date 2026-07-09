@@ -1155,5 +1155,117 @@ img, video, canvas, svg {
   background: rgba(16, 185, 129, 0.08);
 }
 
+/* --- Premium Fade In / Slide Transitions --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+/* Staggered animation delays */
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+/* --- Premium Interactive Hover & Text Reveal Animations --- */
+@keyframes premiumFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(1.2deg);
+  }
+}
+
+@keyframes maskRevealUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-reveal-up {
+  display: inline-block;
+  animation: maskRevealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-premium-float {
+  animation: premiumFloat 6s ease-in-out infinite;
+}
+
+.tilt-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s ease;
+}
+
+.tilt-card:hover {
+  transform: rotateX(6deg) rotateY(-6deg) scale(1.03);
+  box-shadow: 0 35px 60px rgba(21, 128, 61, 0.25) !important;
+}
+
+/* Red/Green Text Glow */
+.text-glow-red {
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+}
+.text-glow-emerald {
+  text-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+}
+
+
+
 
 

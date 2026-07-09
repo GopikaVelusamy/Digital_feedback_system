@@ -35,7 +35,29 @@ export default function LoginPage() {
   // Authentication Modal overlay state
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // Quick Help state
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
+  // Welcome popup on mount
+  useEffect(() => {
+    const welcomeShown = sessionStorage.getItem('welcomeShown');
+    if (!welcomeShown) {
+      setTimeout(() => {
+        Swal.fire({
+          title: getLanguage() === 'English' ? 'Vanakkam!' : 'வணக்கம்!',
+          text: getLanguage() === 'English' 
+            ? 'Welcome to the ADMK Assembly Constituency Feedback & Grievance Redressal Platform.' 
+            : 'அதிமுக சட்டமன்ற தொகுதி மக்கள் குறை தீர்ப்பு போர்டலுக்கு உங்களை வரவேற்கிறோம்.',
+          icon: 'info',
+          confirmButtonText: getLanguage() === 'English' ? 'Explore Portal' : 'போர்ட்டலை ஆராய்க',
+          confirmButtonColor: '#15803d',
+          backdrop: `rgba(0,0,0,0.3) blur(10px)`,
+          customClass: { popup: 'glass-popup' }
+        });
+        sessionStorage.setItem('welcomeShown', 'true');
+      }, 1000);
+    }
+  }, []);
 
   useEffect(() => {
     const handleLangChange = () => {
@@ -631,46 +653,52 @@ export default function LoginPage() {
         
         {/* LEFT COLUMN */}
         <section className="lg:col-span-7 flex flex-col justify-center text-left" data-purpose="branding-banner">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-100/60 border border-emerald-200 rounded-full w-fit mb-6 shadow-sm backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-100/60 border border-emerald-200 rounded-full w-fit mb-6 shadow-sm backdrop-blur-sm transition-transform hover:scale-105 duration-300 animate-fade-in-up">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest">
               {language === 'English' ? 'Grievance Redressal Portal' : 'மக்கள் குறை தீர்ப்பு போர்டல்'}
             </span>
           </div>
           
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-tight text-[#064e3b] select-none font-serif">
-            <span className="text-[#ff4d4d] block mb-3">நம்மில் ஒருவர் </span> 
-            <span className="text-emerald-600 block">நமக்கான தலைவர்</span>
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-tight text-[#064e3b] select-none font-serif mt-2">
+            <span className="block overflow-hidden py-1">
+              <span className="text-[#ff4d4d] block animate-reveal-up text-glow-red">நம்மில் ஒருவர்</span>
+            </span>
+            <span className="block overflow-hidden py-1">
+              <span className="text-emerald-600 block animate-reveal-up delay-200 text-glow-emerald">நமக்கான தலைவர்</span>
+            </span>
           </h2>
           
-          <p className="text-sm md:text-lg text-emerald-900/90 mt-6 leading-relaxed max-w-xl select-none font-semibold">
-            {language === 'English'
-              ? 'Welcome to the AIADMK assembly constituency feedback platform. Directly connect with your representative, submit constituency grievances, and track resolution progress on public utilities.'
-              : 'அதிமுக சட்டமன்ற தொகுதி மக்கள் குறை தீர்க்கும் போர்டல். உங்கள் கருத்துக்கள் மற்றும் குறைகளை சமர்ப்பித்து தொகுதி மேம்பாட்டிற்கு உதவுங்கள்.'}
-          </p>
-
+          <div className="overflow-hidden mt-6">
+            <p className="text-sm md:text-lg text-emerald-900/90 leading-relaxed max-w-xl select-none font-semibold animate-fade-in-up delay-300">
+              {language === 'English'
+                ? 'Welcome to the AIADMK assembly constituency feedback platform. Directly connect with your representative, submit constituency grievances, and track resolution progress on public utilities.'
+                : 'அதிமுக சட்டமன்ற தொகுதி மக்கள் குறை தீர்க்கும் போர்டல். உங்கள் கருத்துக்கள் மற்றும் குறைகளை சமர்ப்பித்து தொகுதி மேம்பாட்டிற்கு உதவுங்கள்.'}
+            </p>
+          </div>
+ 
           {/* Dynamic CTA buttons */}
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-8 flex flex-wrap gap-4 animate-fade-in-up delay-400">
             <button
               onClick={() => { setActiveTab('login'); setIsAuthModalOpen(true); }}
-              className="px-8 py-3.5 bg-[#15803d] hover:bg-[#166534] text-white font-bold rounded-2xl shadow-md transform hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer text-sm focus:outline-none"
+              className="px-8 py-3.5 bg-[#15803d] hover:bg-[#166534] text-white font-bold rounded-2xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-sm focus:outline-none"
             >
               <span className="material-symbols-outlined text-lg">login</span>
               <span>{language === 'English' ? 'Get Started / Sign In' : 'தொடங்கு / உள்நுழை'}</span>
             </button>
             <button
               onClick={() => setIsDrawerOpen(true)}
-              className="px-8 py-3.5 bg-white hover:bg-emerald-50 border border-emerald-200 text-[#064e3b] font-bold rounded-2xl transition-all flex items-center gap-2 cursor-pointer text-sm focus:outline-none shadow-sm"
+              className="px-8 py-3.5 bg-white hover:bg-emerald-50 border border-emerald-200 text-[#064e3b] font-bold rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-sm focus:outline-none shadow-sm hover:shadow-md"
             >
               <span className="material-symbols-outlined text-lg">menu</span>
               <span>{language === 'English' ? 'Explore Menu' : 'முதன்மை பட்டி'}</span>
             </button>
           </div>
         </section>
-
+ 
         {/* RIGHT COLUMN */}
-        <section className="lg:col-span-5 flex flex-col justify-center items-center w-full" data-purpose="leaders-container">
-          <div className="relative rounded-[2.5rem] overflow-hidden border border-emerald-200 shadow-2xl transition-transform hover:scale-[1.01] duration-500 w-full max-w-sm sm:max-w-md lg:max-w-none">
+        <section className="lg:col-span-5 flex flex-col justify-center items-center w-full animate-fade-in-right delay-200" data-purpose="leaders-container">
+          <div className="relative rounded-[2.5rem] overflow-hidden border-2 border-emerald-300 shadow-2xl w-full max-w-sm sm:max-w-md lg:max-w-none tilt-card animate-premium-float hover:shadow-emerald-300/40 cursor-pointer">
             <img
               src="/leaders.jpg"
               alt="AIADMK Leaders"
@@ -882,6 +910,92 @@ export default function LoginPage() {
         </div>
       )}
 
+      {/* FLOATING QUICK HELP WIDGET */}
+      <div className="fixed bottom-6 right-6 z-[120] flex flex-col items-end">
+        {/* Help panel popup */}
+        {isHelpOpen && (
+          <div className="mb-4 w-[320px] sm:w-[400px] bg-white/95 border border-emerald-200 rounded-[2rem] p-6 shadow-2xl backdrop-blur-md animate-fade-in-up opacity-0" style={{ animationDelay: '0ms' }}>
+            <div className="flex justify-between items-center pb-4 border-b border-emerald-100">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-emerald-600 font-bold">help_center</span>
+                <span className="font-extrabold text-[#064e3b] text-base">
+                  {language === 'English' ? 'Quick Help Desk' : 'உதவி மையம்'}
+                </span>
+              </div>
+              <button 
+                onClick={() => setIsHelpOpen(false)}
+                className="w-7 h-7 rounded-full bg-emerald-50 hover:bg-[#c0392b]/10 text-emerald-800 hover:text-[#c0392b] flex items-center justify-center transition-colors focus:outline-none"
+              >
+                <span className="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+
+            {/* Content - FAQ Accordions */}
+            <div className="mt-4 space-y-3 max-h-[300px] overflow-y-auto pr-1">
+              {/* FAQ 1 */}
+              <FAQItem 
+                question={language === 'English' ? 'How to submit a grievance?' : 'குறையை எவ்வாறு சமர்ப்பிப்பது?'}
+                answer={language === 'English' 
+                  ? 'Click "Get Started / Sign In" to log in with Google or a registered email. Once signed in, fill the feedback form, select the issue category, set local details, and hit Submit.'
+                  : 'Google அல்லது மின்னஞ்சல் மூலம் உள்நுழைந்து, குறை தீர்க்கும் படிவத்தை நிரப்பி சமர்ப்பிக்கவும்.'}
+              />
+              {/* FAQ 2 */}
+              <FAQItem 
+                question={language === 'English' ? 'Who views my grievance?' : 'எனது குறையை யார் பார்ப்பார்கள்?'}
+                answer={language === 'English'
+                  ? 'Verified constituency administrators receive your grievance instantly. They will review, assign local resources, and update the resolution status in real-time.'
+                  : 'சரிபார்க்கப்பட்ட தொகுதி நிர்வாகி உங்கள் குறையை உடனடியாகப் பெற்று அதைத் தீர்ப்பார்.'}
+              />
+              {/* FAQ 3 */}
+              <FAQItem 
+                question={language === 'English' ? 'Is registration free?' : 'பதிவு செய்ய கட்டணம் உள்ளதா?'}
+                answer={language === 'English'
+                  ? 'Yes, registration and submission of grievances is absolutely free and open to all citizens within our assembly constituencies.'
+                  : 'ஆம், பதிவு செய்வதும் குறைகளைச் சமர்ப்பிப்பதும் முற்றிலும் இலவசம்.'}
+              />
+
+              {/* Quick Metrics / Stats inside popup */}
+              <div className="mt-4 pt-4 border-t border-emerald-100 grid grid-cols-3 gap-2 text-center">
+                <div className="p-2 bg-emerald-50 rounded-xl">
+                  <div className="text-sm font-black text-emerald-800">12k+</div>
+                  <div className="text-[9px] font-bold text-emerald-600 uppercase">Received</div>
+                </div>
+                <div className="p-2 bg-amber-50 rounded-xl">
+                  <div className="text-sm font-black text-amber-800">92%</div>
+                  <div className="text-[9px] font-bold text-amber-600 uppercase">Resolved</div>
+                </div>
+                <div className="p-2 bg-[#c0392b]/5 rounded-xl">
+                  <div className="text-sm font-black text-[#c0392b]">24h</div>
+                  <div className="text-[9px] font-bold text-[#c0392b]/70 uppercase">Avg Response</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact/Support button */}
+            <div className="mt-4 pt-3 border-t border-emerald-100 flex justify-between items-center text-xs">
+              <span className="text-emerald-700/80 font-bold">{language === 'English' ? 'Need Direct Support?' : 'நேரடி உதவி வேண்டுமா?'}</span>
+              <a href="mailto:support@admkfeedback.in" className="px-3 py-1.5 bg-[#15803d] hover:bg-[#166534] text-white font-bold rounded-lg transition-colors flex items-center gap-1">
+                <span className="material-symbols-outlined text-[10px]">mail</span>
+                Email Support
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Button */}
+        <button
+          onClick={() => setIsHelpOpen(!isHelpOpen)}
+          className="w-14 h-14 bg-[#15803d] hover:bg-[#166534] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all focus:outline-none relative group"
+          aria-label="Toggle Quick Guide"
+        >
+          <span className="material-symbols-outlined text-2xl animate-pulse">support_agent</span>
+          {/* Tooltip badge */}
+          <span className="absolute right-16 scale-0 group-hover:scale-100 bg-[#064e3b] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap transition-all shadow-md">
+            {language === 'English' ? 'Quick Help Desk' : 'உதவி மையம்'}
+          </span>
+        </button>
+      </div>
+      
       {/* ─── BOTTOM PORTAL FOOTER ─── */}
       <footer className="w-full py-8 mt-12 bg-white/70 border-t border-emerald-100 relative z-10 text-center px-4">
         <div className="flex justify-center gap-6 mb-4">
@@ -897,6 +1011,29 @@ export default function LoginPage() {
           InsightFlow Corporate Feedback &copy; {new Date().getFullYear()}
         </p>
       </footer>
+    </div>
+  );
+}
+
+function FAQItem({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border border-emerald-100 rounded-xl overflow-hidden bg-white">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex justify-between items-center p-3 text-left font-bold text-xs text-emerald-950 hover:bg-emerald-50/50 transition-colors"
+      >
+        <span>{question}</span>
+        <span className={`material-symbols-outlined text-sm transition-transform ${isOpen ? 'rotate-180 text-[#c0392b]' : 'text-emerald-600'}`}>
+          expand_more
+        </span>
+      </button>
+      {isOpen && (
+        <div className="p-3 bg-emerald-50/20 text-[11px] text-emerald-800 leading-relaxed border-t border-emerald-50 animate-fade-in opacity-0" style={{ animationDelay: '0ms' }}>
+          {answer}
+        </div>
+      )}
     </div>
   );
 }

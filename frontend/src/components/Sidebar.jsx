@@ -73,21 +73,24 @@ export default function Sidebar({ variant = 'admin' }) {
 
   return (
     <>
-      {/* ── MOBILE NAVBAR/MENU BUTTON ── */}
-      {!isOpenMobile && (
-        <div className="lg:hidden fixed top-4 left-4 z-50 flex items-center gap-3">
-          <a
-            href="#"
-            role="button"
-            onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
-            className="p-2.5 bg-emerald-950/90 border border-emerald-800/40 rounded-xl text-emerald-400 hover:text-white transition shadow-lg backdrop-blur-md flex items-center justify-center hover:scale-105 active:scale-95"
-            style={{ width: '38px', height: '38px' }}
-            aria-label="Open Menu"
-          >
-            <span className="material-symbols-outlined text-[18px]">menu</span>
-          </a>
-        </div>
-      )}
+      {/* ── MOBILE NAVBAR/MENU BUTTON (Slides out and transforms when menu opens) ── */}
+      <div 
+        className="lg:hidden fixed top-4 z-50 flex items-center gap-3"
+        style={{ left: isOpenMobile ? '300px' : '16px', transition: 'left 0.3s ease-out' }}
+      >
+        <a
+          href="#"
+          role="button"
+          onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
+          className="p-2.5 bg-emerald-950/90 border border-emerald-800/40 rounded-xl text-emerald-400 hover:text-white transition shadow-lg backdrop-blur-md flex items-center justify-center hover:scale-105 active:scale-95"
+          style={{ width: '38px', height: '38px' }}
+          aria-label={isOpenMobile ? "Close Menu" : "Open Menu"}
+        >
+          <span className="material-symbols-outlined text-[18px]">
+            {isOpenMobile ? 'close' : 'menu'}
+          </span>
+        </a>
+      </div>
 
       {/* ── MOBILE DRAWER BACKDROP ── */}
       {isOpenMobile && (
@@ -108,7 +111,7 @@ export default function Sidebar({ variant = 'admin' }) {
         `}
       >
         {/* Brand Header */}
-        <div className="pb-4 mb-4 border-b border-emerald-200/50 relative">
+        <div className="pb-4 mb-4 border-b border-emerald-200/50">
           <div className="flex items-center gap-2">
             <div className="w-12 h-12 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
               <img src="/irratai_ellai.png" className="w-full h-full object-contain" alt="Logo" />
@@ -124,20 +127,6 @@ export default function Sidebar({ variant = 'admin' }) {
               </div>
             )}
           </div>
-          
-          {/* Mobile close button on the right side of the drawer (positioned absolutely to not restrict title width) */}
-          {isOpenMobile && (
-            <a
-              href="#"
-              role="button"
-              onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
-              className="close-btn lg:hidden absolute top-1 right-0 p-2 rounded-xl bg-emerald-50 hover:bg-red-50 text-emerald-800 hover:text-red-600 transition border border-emerald-100 flex items-center justify-center"
-              style={{ width: '36px', height: '36px' }}
-              aria-label="Close Menu"
-            >
-              <span className="material-symbols-outlined text-[18px] font-bold">close</span>
-            </a>
-          )}
           {!isCollapsedDesktop && (
             <div className="mt-3 bg-emerald-50/50 border border-emerald-100/50 rounded-lg p-2 text-center">
               <p className="text-[8px] font-black text-emerald-800 tracking-wider my-0.5 leading-none">

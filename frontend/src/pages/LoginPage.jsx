@@ -38,26 +38,7 @@ export default function LoginPage() {
   // Quick Help state
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
-  // Welcome popup on mount
-  useEffect(() => {
-    const welcomeShown = sessionStorage.getItem('welcomeShown');
-    if (!welcomeShown) {
-      setTimeout(() => {
-        Swal.fire({
-          title: getLanguage() === 'English' ? 'Vanakkam!' : 'வணக்கம்!',
-          text: getLanguage() === 'English' 
-            ? 'Welcome to the ADMK Assembly Constituency Feedback & Grievance Redressal Platform.' 
-            : 'அதிமுக சட்டமன்ற தொகுதி மக்கள் குறை தீர்ப்பு போர்டலுக்கு உங்களை வரவேற்கிறோம்.',
-          icon: 'info',
-          confirmButtonText: getLanguage() === 'English' ? 'Explore Portal' : 'போர்ட்டலை ஆராய்க',
-          confirmButtonColor: '#15803d',
-          backdrop: `rgba(0,0,0,0.3) blur(10px)`,
-          customClass: { popup: 'glass-popup' }
-        });
-        sessionStorage.setItem('welcomeShown', 'true');
-      }, 1000);
-    }
-  }, []);
+
 
   useEffect(() => {
     const handleLangChange = () => {

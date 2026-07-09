@@ -484,19 +484,19 @@ export default function LoginPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#c0392b]/10 rounded-full blur-[120px] pointer-events-none" />
       
       {/* ─── STICKY HEADER ─── */}
-      <header className="sticky top-0 left-0 right-0 z-50 bg-white/80 border-b border-emerald-200/50 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-lg">
+      <header className="sticky top-0 left-0 right-0 z-50 bg-white/80 border-b border-emerald-200/50 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between shadow-lg">
         {/* Brand Identity / Logo & Tamil Text */}
-        <div className="flex items-center gap-3 md:gap-5">
-          <div className="w-14 h-14 md:w-20 md:h-20 bg-white rounded-full border-2 border-[#15803d] shadow-md flex items-center justify-center overflow-hidden hover:scale-105 duration-300 transition-transform">
-            <img src="/irratai_ellai.png" className="w-full h-full object-contain p-1" alt="ADMK Logo" />
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-5">
+          <div className="w-11 h-11 sm:w-14 md:w-20 md:h-20 bg-white rounded-full border border-[#15803d] shadow-md flex items-center justify-center overflow-hidden hover:scale-105 duration-300 transition-transform">
+            <img src="/irratai_ellai.png" className="w-full h-full object-contain p-0.5" alt="ADMK Logo" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-sm md:text-xl font-extrabold tracking-tight text-[#064e3b] select-none leading-tight font-serif">
+            <h1 className="text-[10px] sm:text-sm md:text-xl font-extrabold tracking-tight text-[#064e3b] select-none leading-tight font-serif">
               <span className="text-[#c0392b] block md:inline mr-1">அனைத்திந்திய</span>
               <span className="text-emerald-800 block md:inline mr-1">அண்ணா திராவிட</span>
               <span className="text-[#15803d] block md:inline">முன்னேற்றக் கழகம்</span>
             </h1>
-            <p className="text-[9px] md:text-xs text-[#064e3b]/70 tracking-wide uppercase select-none mt-0.5">
+            <p className="text-[7px] sm:text-[9px] md:text-xs text-[#064e3b]/70 tracking-wide uppercase select-none mt-0.5">
               All India Anna Dravida Munnetra Kazhagam
             </p>
           </div>
@@ -633,7 +633,7 @@ export default function LoginPage() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 md:py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         
         {/* LEFT COLUMN */}
-        <section className="lg:col-span-7 flex flex-col justify-center text-left" data-purpose="branding-banner">
+        <section className="lg:col-span-7 flex flex-col justify-center items-center lg:items-start text-center lg:text-left" data-purpose="branding-banner">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-100/60 border border-emerald-200 rounded-full w-fit mb-6 shadow-sm backdrop-blur-sm transition-transform hover:scale-105 duration-300 animate-fade-in-up">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
             <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-widest">
@@ -641,7 +641,7 @@ export default function LoginPage() {
             </span>
           </div>
           
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-tight text-[#064e3b] select-none font-serif mt-2">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight leading-tight text-[#064e3b] select-none font-serif mt-2 text-center lg:text-left w-full">
             <span className="block overflow-hidden py-1">
               <span className="animate-reveal-up animate-text-shimmer-red text-glow-red hover-grow-text cursor-default">நம்மில் ஒருவர்</span>
             </span>
@@ -650,8 +650,8 @@ export default function LoginPage() {
             </span>
           </h2>
           
-          <div className="overflow-hidden mt-6">
-            <p className="text-sm md:text-lg text-emerald-900/90 leading-relaxed max-w-xl select-none font-semibold animate-fade-in-up anim-delay-300">
+          <div className="overflow-hidden mt-6 w-full">
+            <p className="text-sm md:text-lg text-emerald-900/90 leading-relaxed max-w-xl mx-auto lg:mx-0 select-none font-semibold animate-fade-in-up anim-delay-300">
               {language === 'English'
                 ? 'Welcome to the AIADMK assembly constituency feedback platform. Directly connect with your representative, submit constituency grievances, and track resolution progress on public utilities.'
                 : 'அதிமுக சட்டமன்ற தொகுதி மக்கள் குறை தீர்க்கும் போர்டல். உங்கள் கருத்துக்கள் மற்றும் குறைகளை சமர்ப்பித்து தொகுதி மேம்பாட்டிற்கு உதவுங்கள்.'}
@@ -659,17 +659,17 @@ export default function LoginPage() {
           </div>
  
           {/* Dynamic CTA buttons */}
-          <div className="mt-8 flex flex-wrap gap-4 animate-fade-in-up anim-delay-400">
+          <div className="mt-8 flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4 animate-fade-in-up anim-delay-400 w-full sm:w-auto">
             <button
               onClick={() => { setActiveTab('login'); setIsAuthModalOpen(true); }}
-              className="px-8 py-3.5 bg-[#15803d] hover:bg-[#166534] text-white font-bold rounded-2xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-sm focus:outline-none"
+              className="w-full sm:w-auto px-8 py-3.5 bg-[#15803d] hover:bg-[#166534] text-white font-bold rounded-2xl shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm focus:outline-none"
             >
               <span className="material-symbols-outlined text-lg">login</span>
               <span>{language === 'English' ? 'Get Started / Sign In' : 'தொடங்கு / உள்நுழை'}</span>
             </button>
             <button
               onClick={() => setIsDrawerOpen(true)}
-              className="px-8 py-3.5 bg-white hover:bg-emerald-50 border border-emerald-200 text-[#064e3b] font-bold rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-sm focus:outline-none shadow-sm hover:shadow-md"
+              className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-emerald-50 border border-emerald-200 text-[#064e3b] font-bold rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm focus:outline-none shadow-sm hover:shadow-md"
             >
               <span className="material-symbols-outlined text-lg">menu</span>
               <span>{language === 'English' ? 'Explore Menu' : 'முதன்மை பட்டி'}</span>
@@ -697,7 +697,7 @@ export default function LoginPage() {
         <div className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
           <div className="absolute inset-0" onClick={() => setIsAuthModalOpen(false)} />
           
-          <div className="w-full max-w-md bg-white border border-emerald-200 rounded-[2.5rem] p-6 sm:p-10 shadow-2xl backdrop-blur-2xl relative overflow-hidden z-20 animate-in fade-in zoom-in duration-300">
+          <div className="w-full max-w-md bg-white border border-emerald-200 rounded-[2rem] p-6 sm:p-10 shadow-2xl backdrop-blur-2xl relative overflow-y-auto max-h-[90vh] z-20 animate-in fade-in zoom-in duration-300">
             {/* Close Button */}
             <button 
               onClick={() => setIsAuthModalOpen(false)}
@@ -895,7 +895,7 @@ export default function LoginPage() {
       <div className="fixed bottom-6 right-6 z-[120] flex flex-col items-end">
         {/* Help panel popup */}
         {isHelpOpen && (
-          <div className="mb-4 w-[320px] sm:w-[400px] bg-white/95 border border-emerald-200 rounded-[2rem] p-6 shadow-2xl backdrop-blur-md animate-fade-in-up opacity-0" style={{ animationDelay: '0ms' }}>
+          <div className="mb-4 w-[calc(100vw-3rem)] sm:w-[400px] max-w-[400px] bg-white/95 border border-emerald-200 rounded-[2rem] p-6 shadow-2xl backdrop-blur-md animate-fade-in-up opacity-0" style={{ animationDelay: '0ms' }}>
             <div className="flex justify-between items-center pb-4 border-b border-emerald-100">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-emerald-600 font-bold">help_center</span>
@@ -935,19 +935,19 @@ export default function LoginPage() {
                   : 'ஆம், பதிவு செய்வதும் குறைகளைச் சமர்ப்பிப்பதும் முற்றிலும் இலவசம்.'}
               />
 
-              {/* Quick Metrics / Stats inside popup */}
-              <div className="mt-4 pt-4 border-t border-emerald-100 grid grid-cols-3 gap-2 text-center">
-                <div className="p-2 bg-emerald-50 rounded-xl">
-                  <div className="text-sm font-black text-emerald-800">12k+</div>
-                  <div className="text-[9px] font-bold text-emerald-600 uppercase">Received</div>
+              {/* Quick Metrics / Stats inside popup - using flex instead of grid to prevent global layout overrides */}
+              <div className="mt-4 pt-4 border-t border-emerald-100 flex items-stretch gap-2 text-center">
+                <div className="flex-1 p-2 bg-emerald-50 rounded-xl flex flex-col justify-center">
+                  <div className="text-xs sm:text-sm font-black text-emerald-800">12k+</div>
+                  <div className="text-[8px] sm:text-[9px] font-bold text-emerald-600 uppercase tracking-tight">Received</div>
                 </div>
-                <div className="p-2 bg-amber-50 rounded-xl">
-                  <div className="text-sm font-black text-amber-800">92%</div>
-                  <div className="text-[9px] font-bold text-amber-600 uppercase">Resolved</div>
+                <div className="flex-1 p-2 bg-amber-50 rounded-xl flex flex-col justify-center">
+                  <div className="text-xs sm:text-sm font-black text-amber-800">92%</div>
+                  <div className="text-[8px] sm:text-[9px] font-bold text-amber-600 uppercase tracking-tight">Resolved</div>
                 </div>
-                <div className="p-2 bg-[#c0392b]/5 rounded-xl">
-                  <div className="text-sm font-black text-[#c0392b]">24h</div>
-                  <div className="text-[9px] font-bold text-[#c0392b]/70 uppercase">Avg Response</div>
+                <div className="flex-1 p-2 bg-[#c0392b]/5 rounded-xl flex flex-col justify-center">
+                  <div className="text-xs sm:text-sm font-black text-[#c0392b]">24h</div>
+                  <div className="text-[8px] sm:text-[9px] font-bold text-[#c0392b]/70 uppercase tracking-tight">Avg Response</div>
                 </div>
               </div>
             </div>

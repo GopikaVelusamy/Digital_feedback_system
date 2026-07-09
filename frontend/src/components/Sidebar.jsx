@@ -108,38 +108,36 @@ export default function Sidebar({ variant = 'admin' }) {
         `}
       >
         {/* Brand Header */}
-        <div className="pb-4 mb-4 border-b border-emerald-200/50">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 flex-1">
-              <div className="w-12 h-12 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
-                <img src="/irratai_ellai.png" className="w-full h-full object-contain" alt="Logo" />
-              </div>
-              {!isCollapsedDesktop && (
-                <div className="flex flex-col transition-all duration-300 flex-1">
-                  <h1 className="font-black text-[9.5px] text-[#064e3b] leading-tight" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
-                    அனைத்திந்திய<br />அண்ணா திராவிட<br />முன்னேற்றக் கழகம்
-                  </h1>
-                  <p className="text-[7px] font-extrabold text-emerald-800 uppercase tracking-tighter mt-1 leading-none">
-                    ALL INDIA ANNA DRAVIDA MUNNETRA KAZHAGAM
-                  </p>
-                </div>
-              )}
+        <div className="pb-4 mb-4 border-b border-emerald-200/50 relative">
+          <div className="flex items-center gap-2">
+            <div className="w-12 h-12 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
+              <img src="/irratai_ellai.png" className="w-full h-full object-contain" alt="Logo" />
             </div>
-            
-            {/* Mobile close button on the right side of the drawer */}
-            {isOpenMobile && (
-              <a
-                href="#"
-                role="button"
-                onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
-                className="close-btn lg:hidden p-2 rounded-xl bg-emerald-50 hover:bg-red-50 text-emerald-800 hover:text-red-600 transition border border-emerald-100 flex items-center justify-center flex-shrink-0"
-                style={{ width: '36px', height: '36px' }}
-                aria-label="Close Menu"
-              >
-                <span className="material-symbols-outlined text-[18px] font-bold">close</span>
-              </a>
+            {!isCollapsedDesktop && (
+              <div className="flex flex-col transition-all duration-300 flex-1">
+                <h1 className="font-black text-[9.5px] text-[#064e3b] leading-tight" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
+                  அனைத்திந்திய<br />அண்ணா திராவிட<br />முன்னேற்றக் கழகம்
+                </h1>
+                <p className="text-[7px] font-extrabold text-emerald-800 uppercase tracking-tighter mt-1 leading-none">
+                  ALL INDIA ANNA DRAVIDA MUNNETRA KAZHAGAM
+                </p>
+              </div>
             )}
           </div>
+          
+          {/* Mobile close button on the right side of the drawer (positioned absolutely to not restrict title width) */}
+          {isOpenMobile && (
+            <a
+              href="#"
+              role="button"
+              onClick={(e) => { e.preventDefault(); toggleMobileSidebar(); }}
+              className="close-btn lg:hidden absolute top-1 right-0 p-2 rounded-xl bg-emerald-50 hover:bg-red-50 text-emerald-800 hover:text-red-600 transition border border-emerald-100 flex items-center justify-center"
+              style={{ width: '36px', height: '36px' }}
+              aria-label="Close Menu"
+            >
+              <span className="material-symbols-outlined text-[18px] font-bold">close</span>
+            </a>
+          )}
           {!isCollapsedDesktop && (
             <div className="mt-3 bg-emerald-50/50 border border-emerald-100/50 rounded-lg p-2 text-center">
               <p className="text-[8px] font-black text-emerald-800 tracking-wider my-0.5 leading-none">

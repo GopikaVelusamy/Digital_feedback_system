@@ -112,16 +112,19 @@ export default function Sidebar({ variant = 'admin' }) {
       >
         {/* Brand Header */}
         <div className="pb-4 mb-4 border-b border-emerald-200/50">
-          <div className="flex items-center gap-2">
-            <div className="w-12 h-12 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
+          <div className="flex flex-col items-center gap-2.5 text-center w-full">
+            {/* Logo */}
+            <div className="w-13 h-13 rounded-full border-2 border-emerald-500 bg-white flex items-center justify-center flex-shrink-0 p-0.5 shadow-md shadow-emerald-700/10">
               <img src="/irratai_ellai.png" className="w-full h-full object-contain" alt="Logo" />
             </div>
+            
+            {/* Text details (hidden when desktop sidebar is collapsed) */}
             {!isCollapsedDesktop && (
-              <div className="flex flex-col transition-all duration-300 flex-1">
-                <h1 className="font-black text-[8.5px] text-[#064e3b] leading-tight" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
-                  அனைத்திந்திய<br />அண்ணா திராவிட<br />முன்னேற்றக் கழகம்
+              <div className="flex flex-col items-center transition-all duration-300 w-full">
+                <h1 className="font-black text-[11px] text-[#064e3b] leading-tight text-center" style={{ fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif" }}>
+                  அனைத்திந்திய அண்ணா திராவிட<br />முன்னேற்றக் கழகம்
                 </h1>
-                <p className="text-[7px] font-extrabold text-emerald-800 uppercase tracking-tighter mt-1 leading-none">
+                <p className="text-[7.5px] font-extrabold text-emerald-800 uppercase tracking-tight mt-1.5 leading-normal text-center max-w-[210px]">
                   ALL INDIA ANNA DRAVIDA MUNNETRA KAZHAGAM
                 </p>
               </div>

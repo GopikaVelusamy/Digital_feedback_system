@@ -150,7 +150,7 @@ export default function SuperAdminPage() {
         className="flex-1 min-h-screen overflow-x-hidden relative z-10 flex flex-col"
       >
         {/* Main */}
-        <main className="flex-1 overflow-y-auto p-8 min-w-0">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 md:pt-8 min-w-0">
           <style>{`
             .glass-card {
               background: rgba(255, 255, 255, 0.75);

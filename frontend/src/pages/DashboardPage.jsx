@@ -723,8 +723,8 @@ export default function DashboardPage() {
       `}</style>
 
       {/* MAIN CONTENT */}
-      <main id="mainContent" className="flex-1" style={{
-        minHeight:'100vh', padding:'32px 40px',
+      <main id="mainContent" className="flex-1 px-4 py-6 sm:px-10 sm:py-8 pt-20 sm:pt-8" style={{
+        minHeight:'100vh',
         maxWidth: '1280px',
         boxSizing:'border-box', width: 'auto',
         overflowX: 'hidden',
@@ -736,7 +736,7 @@ export default function DashboardPage() {
           gap:'16px', marginBottom:'32px', flexWrap:'wrap',
         }}>
           <div style={{ display:'flex', alignItems:'center' }}>
-            <h2 style={{ fontSize:'40px', fontWeight:900, color:'#064e3b', letterSpacing:'-0.04em', margin:0 }}>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#064e3b] tracking-tight leading-none my-0">
               {t.feedbackAnalytics}
             </h2>
           </div>
@@ -774,7 +774,7 @@ export default function DashboardPage() {
         </header>
 
         {/* TOP 3 STAT CARDS */}
-        <div className="fade-in-up-1" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'20px', marginBottom:'24px' }}>
+        <div className="fade-in-up-1 grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
           {[
             { label: t.totalReceived,       val:totalAnim,  icon: 'inbox',    bg: 'rgba(21, 128, 61, 0.1)', color: '#10b981', badge: '+12%', bColor: '#047857', borderLeft: '5px solid #10b981', trendIcon: 'trending_up' },
             { label: t.totalResolved,       val:solvedAnim, icon: 'task_alt', bg: 'rgba(16, 185, 129, 0.1)', color: '#16a34a', badge: '+8%',  bColor: '#16a34a', borderLeft: '5px solid #16a34a', trendIcon: 'trending_up' },

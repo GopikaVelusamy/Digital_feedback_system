@@ -416,7 +416,7 @@ export default function CriticalIssuesPage() {
       `}
       </style>
       
-      <main id="mainContent" className="flex-1 min-h-screen p-6 md:p-10 box-sizing-border-box overflow-x-hidden min-w-0">
+      <main id="mainContent" className="flex-1 min-h-screen px-4 py-6 sm:px-10 sm:py-8 pt-20 sm:pt-10 box-sizing-border-box overflow-x-hidden min-w-0">
 
         <header style={{ display:'flex', alignItems:'center', justify: 'space-between', gap:16, marginBottom:24, flexWrap:'wrap', animation:'fadeInUp 0.5s both' }}>
           <div style={{ display:'flex', alignItems:'center' }}>
@@ -425,7 +425,7 @@ export default function CriticalIssuesPage() {
                 <span style={{ width:7, height:7, borderRadius:'50%', background:'#EF4444', display:'inline-block', boxShadow:'0 0 0 0 rgba(239,68,68,0.4)', animation:'pulse 2s infinite' }}/>
                 <span style={{ fontSize:10, fontWeight:700, color:'#047857', letterSpacing:'0.12em', textTransform:'uppercase' }}>{t.liveMonitoringSystem}</span>
               </div>
-              <h2 style={{ fontSize:40, fontWeight:900, color:'#064e3b', letterSpacing:'-0.04em', margin:0 }}>{t.criticalIssuesTitle}</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#064e3b] tracking-tight leading-none my-0">{t.criticalIssuesTitle}</h2>
             </div>
           </div>
 

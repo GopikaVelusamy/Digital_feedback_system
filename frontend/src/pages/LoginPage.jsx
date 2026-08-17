@@ -107,6 +107,8 @@ export default function LoginPage() {
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
+  const [signupPhone, setSignupPhone] = useState('');
+  const [signupDob, setSignupDob] = useState('');
 
   // ─── LOGIN LOGIC ──────────────────────────────────────────
   async function login(e) {
@@ -145,7 +147,7 @@ export default function LoginPage() {
   // ─── SIGNUP LOGIC ─────────────────────────────────────────
   async function signup(e) {
     e.preventDefault();
-    if (!signupName || !signupEmail || !signupPassword) {
+    if (!signupName || !signupEmail || !signupPassword || !signupPhone || !signupDob) {
       notify('Input Error', 'All fields are mandatory.', 'warning');
       return;
     }
@@ -153,7 +155,13 @@ export default function LoginPage() {
       const res = await fetch(API + '/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: signupName, email: signupEmail, password: signupPassword }),
+        body: JSON.stringify({
+          name: signupName,
+          email: signupEmail,
+          password: signupPassword,
+          phone: signupPhone,
+          dob: signupDob,
+        }),
       });
       const data = await res.json();
       if (data.message === 'Signup success') {
@@ -859,6 +867,40 @@ export default function LoginPage() {
                       onChange={(e) => setSignupPassword(e.target.value)}
                       className="w-full pl-11 pr-5 py-3.5 rounded-2xl bg-white border border-emerald-200 text-[#064e3b] placeholder:text-emerald-600/40 focus:border-[#15803d] focus:ring-1 focus:ring-[#15803d] transition-all outline-none text-sm shadow-sm"
                       placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-emerald-800 mb-1.5 uppercase tracking-wide">
+                    {language === 'English' ? 'Phone Number' : 'தொலைபேசி எண்'}
+                  </label>
+                  <div className="relative">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600 text-sm">phone</span>
+                    <input
+                      id="signupPhone"
+                      type="tel"
+                      required
+                      value={signupPhone}
+                      onChange={(e) => setSignupPhone(e.target.value)}
+                      className="w-full pl-11 pr-5 py-3.5 rounded-2xl bg-white border border-emerald-200 text-[#064e3b] placeholder:text-emerald-600/40 focus:border-[#15803d] focus:ring-1 focus:ring-[#15803d] transition-all outline-none text-sm shadow-sm"
+                      placeholder={language === 'English' ? 'Enter mobile number' : 'மொபைல் எண்'}
+                      inputMode="numeric"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-emerald-800 mb-1.5 uppercase tracking-wide">
+                    {language === 'English' ? 'Date of Birth' : 'பிறந்த தேதி'}
+                  </label>
+                  <div className="relative">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600 text-sm">calendar_month</span>
+                    <input
+                      id="signupDob"
+                      type="date"
+                      required
+                      value={signupDob}
+                      onChange={(e) => setSignupDob(e.target.value)}
+                      className="w-full pl-11 pr-5 py-3.5 rounded-2xl bg-white border border-emerald-200 text-[#064e3b] placeholder:text-emerald-600/40 focus:border-[#15803d] focus:ring-1 focus:ring-[#15803d] transition-all outline-none text-sm shadow-sm"
                     />
                   </div>
                 </div>

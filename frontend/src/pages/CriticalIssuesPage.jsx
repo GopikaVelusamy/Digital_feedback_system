@@ -294,14 +294,15 @@ export default function CriticalIssuesPage() {
   const [urgencyWidth,     setUrgencyWidth]     = useState('0%');
   const [filter,           setFilter]           = useState('all'); // all | critical | verified | flagged
   const [districtFilter,   setDistrictFilter]   = useState('');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
   const [loading,          setLoading]          = useState(true);
   const [page,             setPage]             = useState(0);
   const PER_PAGE = 8;
 
   function renderDepartmentRankings(feedbacks) {
     const counts = {};
-    feedbacks.filter(f => f.status !== 'Solved').forEach(f => {
-      const cat = f.ai?.category || f.type_of_feedback || f.feedback?.type || 'General';
+    feedbacks.filter(f => f.status !== 'Solved' && f.status !== 'Resolved').forEach(f => {
+      const cat = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
       counts[cat] = (counts[cat] || 0) + 1;
     });
     setDepartmentCounts(Object.entries(counts).sort((a,b) => b[1]-a[1]));
@@ -319,11 +320,16 @@ export default function CriticalIssuesPage() {
   }
 
   function updateUrgencyStats(feedbacks) {
-    const total    = feedbacks.length;
-    const critical = feedbacks.filter(f => (f.feedback?.rating || f.rating || 5) <= 2).length;
-    const urgency  = total > 0 ? ((critical / total) * 10).toFixed(1) : '0.0';
+    const total = feedbacks.length;
+    const critical = feedbacks.filter(f => {
+      const rating = f.feedback?.rating || f.rating || 5;
+      const importance = (f.importance || f.ai?.priority || '').toLowerCase();
+      const risk = f.image_validation?.overall_risk || 0;
+      return rating <= 2 || importance === 'high' || importance === 'critical' || risk >= 65;
+    }).length;
+    const urgency = total > 0 ? ((critical / total) * 10).toFixed(1) : '0.0';
     setUrgencyScore(urgency);
-    setUrgencyWidth(`${urgency * 10}%`);
+    setUrgencyWidth(`${Math.min(100, parseFloat(urgency) * 10)}%`);
   }
 
   const loadCriticalData = useCallback(async () => {
@@ -344,7 +350,11 @@ export default function CriticalIssuesPage() {
   // ── Filtered feed ─────────────────────────────────────────
   const filteredFeed = priorityFeedbacks.filter(f => {
     const dist = f.location?.district || f.district || '';
-    if (districtFilter && dist !== districtFilter) return false;
+    const cat = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
+
+    if (districtFilter && dist.toLowerCase() !== districtFilter.toLowerCase()) return false;
+    if (selectedCategoryFilter !== 'All' && cat.toLowerCase().trim() !== selectedCategoryFilter.toLowerCase().trim()) return false;
+
     if (filter === 'critical') return (f.feedback?.rating || f.rating || 5) <= 2;
     if (filter === 'flagged')  return (f.image_validation?.overall_risk || 0) >= 65;
     if (filter === 'verified') return f.image_validation?.overall_status === 'verified';
@@ -355,6 +365,7 @@ export default function CriticalIssuesPage() {
   const flagged = allFeedbacks.filter(f => (f.image_validation?.overall_risk || 0) >= 65).length;
   const critCount = allFeedbacks.filter(f => (f.feedback?.rating || f.rating || 5) <= 2).length;
   const districts = [...new Set(allFeedbacks.map(f => f.location?.district || f.district).filter(Boolean))].sort();
+  const allCategories = [...new Set(allFeedbacks.map(f => f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type).filter(Boolean))].sort();
 
   const totalPages = Math.ceil(filteredFeed.length / PER_PAGE);
   const pageFeed = filteredFeed.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
@@ -446,6 +457,14 @@ export default function CriticalIssuesPage() {
                 {districts.map(d=><option key={d} value={d} className="bg-white text-[#064e3b]">{d}</option>)}
               </select>
             </div>
+            <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
+              <span className="material-symbols-outlined" style={{ fontSize:15, color:'#10b981' }}>category</span>
+              <select value={selectedCategoryFilter} onChange={e=>{setSelectedCategoryFilter(e.target.value);setPage(0);}}
+                style={{ background:'transparent', border:'none', outline:'none', fontSize:12, fontWeight:700, color:'#064e3b', fontFamily:'Manrope,sans-serif', width:140 }}>
+                <option value="All" className="bg-white text-[#047857]">All Categories</option>
+                {allCategories.map(c=><option key={c} value={c} className="bg-white text-[#064e3b]">{c}</option>)}
+              </select>
+            </div>
             <button onClick={()=>{loadCriticalData();setPage(0);}}
               className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:700, color:'#064e3b', fontFamily:'Manrope,sans-serif', transition:'all 0.2s' }}
               onMouseEnter={e=>e.currentTarget.style.background='rgba(16,185,129,0.15)'}
@@ -460,7 +479,7 @@ export default function CriticalIssuesPage() {
           {[
             { label: t.totalReports, val:allFeedbacks.length,     badgeColor:'#064e3b', icon:'inbox',          bgCard:'linear-gradient(135deg, #e8fbf0 0%, #dcfce7 100%)', textC: '#064e3b', labelC: '#047857' },
             { label: t.pending,       val:allFeedbacks.filter(f => f.status === 'Pending').length,   badgeColor:'#78350f', icon:'pending',        bgCard:'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', textC: '#78350f', labelC: '#92400e' },
-            { label: t.resolved,      val:allFeedbacks.filter(f => f.status === 'Solved').length,    badgeColor:'#065f46', icon:'check_circle',   bgCard:'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', textC: '#065f46', labelC: '#047857' },
+            { label: t.resolved,      val:allFeedbacks.filter(f => f.status === 'Solved' || f.status === 'Resolved').length,    badgeColor:'#065f46', icon:'check_circle',   bgCard:'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', textC: '#065f46', labelC: '#047857' },
             { label: t.critical,      val:allFeedbacks.filter(f => (f.feedback?.rating||f.rating||5) <= 2).length, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)', textC: '#ffffff', labelC: '#fecaca' },
             { label: t.aiFlagged,    val:allFeedbacks.filter(f => (f.image_validation?.overall_risk||0) >= 65).length,   badgeColor:'#ffffff', icon:'smart_toy',       bgCard:'linear-gradient(135deg, #0f766e 0%, #0d5c56 100%)', textC: '#ffffff', labelC: '#a7f3d0' },
           ].map(({ label, val, badgeColor, icon, bgCard, textC, labelC }) => (
@@ -486,8 +505,18 @@ export default function CriticalIssuesPage() {
 
             {/* Dept Rankings */}
             <div className="glass-ci" style={{ borderRadius:18, padding:'18px 20px' }}>
-              <div style={{ fontSize:11, fontWeight:700, color:'#047857', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:14 }}>
-                {t.deptRankings}
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:'#047857', letterSpacing:'0.1em', textTransform:'uppercase' }}>
+                  {t.deptRankings}
+                </div>
+                {selectedCategoryFilter !== 'All' && (
+                  <button
+                    onClick={() => setSelectedCategoryFilter('All')}
+                    style={{ fontSize: 10, fontWeight: 800, color: '#EF4444', background: 'rgba(239,68,68,0.1)', padding: '2px 8px', borderRadius: 999, border: 'none', cursor: 'pointer' }}
+                  >
+                    Reset Filter
+                  </button>
+                )}
               </div>
               {departmentCounts.length === 0 && (
                 <div style={{ fontSize:12, color:'#064e3b', textAlign:'center', padding:'12px 0' }}>Loading...</div>
@@ -497,24 +526,40 @@ export default function CriticalIssuesPage() {
                 const pct = (count / maxCount) * 100;
                 const ic = DEPT_ICONS[cat.toLowerCase()] || 'report';
                 const isHot = count > 5;
-                const deptColor = isHot ? '#EF4444' : '#10b981';
+                const isSelected = selectedCategoryFilter.toLowerCase() === cat.toLowerCase();
+                const deptColor = isSelected ? '#16a34a' : isHot ? '#EF4444' : '#10b981';
 
                 return (
-                  <div key={cat} style={{ marginBottom: 18 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div
+                    key={cat}
+                    onClick={() => {
+                      setSelectedCategoryFilter(prev => prev.toLowerCase() === cat.toLowerCase() ? 'All' : cat);
+                      setPage(0);
+                    }}
+                    style={{
+                      marginBottom: 12,
+                      padding: '8px 10px',
+                      borderRadius: 12,
+                      cursor: 'pointer',
+                      background: isSelected ? 'rgba(22,163,74,0.12)' : 'transparent',
+                      border: isSelected ? '1.5px solid #16a34a' : '1px solid transparent',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div 
                           className="glass-symbol" 
                           style={{ 
-                            width: '32px', 
-                            height: '32px', 
+                            width: '30px', 
+                            height: '30px', 
                             '--dept-color': deptColor 
                           }}
                         >
                           <span 
                             className="material-symbols-outlined" 
                             style={{ 
-                              fontSize: '18px', 
+                              fontSize: '16px', 
                               color: deptColor,
                               fontVariationSettings: "'FILL' 1, 'wght' 400"
                             }}

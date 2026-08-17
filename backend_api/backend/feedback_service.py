@@ -6,7 +6,7 @@ from backend.utils.security import hash_mobile, mask_mobile
 from backend.db import feedbacks, batches, analysis_results, global_issues
 from backend.ai_engine import analyze_feedback_batch
 
-print("🔥 NEW feedback_service.py LOADED 🔥")
+print("feedback_service.py loaded")
 
 # --------------------------------------------------
 # Batch Handling (Hidden)
@@ -67,6 +67,7 @@ def process_feedback(form_data):
     # --------------------------------------------------
     # 2. Save Feedback
     # --------------------------------------------------
+    chosen_category = form_data.get("type_of_feedback") or "General"
     result = feedbacks.insert_one({
         "location": {
             "district": form_data["district"],
@@ -81,17 +82,28 @@ def process_feedback(form_data):
             "email": form_data.get("email")
         },
         "feedback": {
-            "type": form_data["type_of_feedback"],
+            "type": chosen_category,
             "original_text": form_data["feedback_text"],
             "rating": form_data.get("rating"),
             "need_update": form_data.get("need_update", False)
         },
-
-        # ⭐ NEW FIELD (IMAGE SUPPORT)
+        "type_of_feedback": chosen_category,
+        "category": chosen_category,
+        "district": form_data["district"],
+        "constituency": form_data["constituency"],
+        "feedback_title": form_data.get("feedback_title"),
+        "feedback_text": form_data.get("feedback_text"),
+        "solution": form_data.get("solution"),
+        "importance": form_data.get("importance", "Normal"),
         "image": form_data.get("image"),
-
+        "status": "Pending",
         "batch_id": batch["batch_id"],
-        "created_at": datetime.now(timezone.utc)
+        "created_at": datetime.now(timezone.utc),
+        "ai": {
+            "category": chosen_category,
+            "priority": form_data.get("importance", "Medium"),
+            "summary": form_data.get("feedback_title") or (form_data.get("feedback_text", "")[:50] if form_data.get("feedback_text") else "Grievance")
+        }
     })
 
     print("✅ RAW FEEDBACK STORED IN:", feedbacks.full_name)

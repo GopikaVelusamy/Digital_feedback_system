@@ -5,10 +5,13 @@
 # =============================================================
 
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+import traceback
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from fastapi.staticfiles import StaticFiles
 import shutil, os, smtplib
+from dotenv import load_dotenv
+load_dotenv()
 from email.mime.text import MIMEText
 from bson import ObjectId
 from datetime import datetime
@@ -34,10 +37,10 @@ EMAIL_PASSWORD         = os.getenv('EMAIL_PASSWORD')
 try:
     from twilio.rest import Client
     twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    print("✅ Twilio Client Initialized")
+    print("Twilio Client Initialized")
 except Exception as e:
     twilio_client = None
-    print(f"⚠️  Twilio not available: {e}")
+    print(f"Twilio not available: {e}")
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -52,6 +55,13 @@ db                  = client["feedback_ai_db"]
 users_collection    = db["users"]
 feedback_collection = db["feedbacks"]
 global_issues       = db["global_issues"]
+press_releases_col  = db["press_releases"]
+gallery_col         = db["gallery"]
+legacy_col          = db["legacy"]
+
+# ── Additional imports for news scraping ──────────────────────
+import requests
+from xml.etree import ElementTree as ET
 
 app.add_middleware(
     CORSMiddleware,
@@ -76,20 +86,40 @@ def send_admin_email(receiver_email, admin_name, password):
 # ── Auth routes ───────────────────────────────────────────────
 @app.post("/api/signup")
 def signup(data: dict):
-    if users_collection.find_one({"email": data.get("email")}):
-        return {"message": "User already exists"}
-    users_collection.insert_one({
-        "name": data.get("name") or data.get("username"),
-        "email": data.get("email"), "password": data.get("password"), "role": "user"
-    })
-    return {"message": "Signup success"}
+    try:
+        if users_collection.find_one({"email": data.get("email")}):
+            return {"message": "User already exists"}
+        users_collection.insert_one({
+            "name": data.get("name") or data.get("username"),
+            "email": data.get("email"),
+            "password": data.get("password"),
+            "phone": data.get("phone"),
+            "dob": data.get("dob"),
+            "role": "user"
+        })
+        return {"message": "Signup success"}
+    except Exception as e:
+        print("ERROR in /api/signup:")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.post("/api/login")
 def login(data: dict):
-    user = users_collection.find_one({"email": data.get("email"), "password": data.get("password")})
-    if user:
-        return {"message": "Login success", "role": user.get("role","user"), "name": user.get("name","")}
-    return {"message": "Invalid email or password"}
+    try:
+        user = users_collection.find_one({"email": data.get("email"), "password": data.get("password")})
+        if user:
+            return {
+                "message": "Login success",
+                "role": user.get("role", "user"),
+                "name": user.get("name", ""),
+                "district": user.get("district", ""),
+                "constituency": user.get("constituency", "")
+            }
+        return {"message": "Invalid email or password"}
+    except Exception as e:
+        print("ERROR in /api/login:")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.post("/api/google-login")
 def google_login(data: dict):
@@ -127,13 +157,19 @@ async def submit_feedback(
     district:         str        = Form(...),
     constituency:     str        = Form(...),
     name:             str        = Form(None),
-    age:              int        = Form(None),
+    age:              str        = Form(None),
     booth_no:         str        = Form(None),
     booth_ward_no:    str        = Form(None),
+    local_body:       str        = Form(None),
+    ward_village:     str        = Form(None),
     email:            str        = Form(None),
     type_of_feedback: str        = Form(...),
+    feedback_title:   str        = Form(None),
     feedback_text:    str        = Form(...),
-    rating:           int        = Form(None),
+    rating:           str        = Form(None),
+    importance:       str        = Form(None),
+    need_response:    str        = Form(None),
+    anonymous:        str        = Form(None),
     solution:         str        = Form(None),
     image:            UploadFile = File(None)
 ):
@@ -151,14 +187,44 @@ async def submit_feedback(
             buf.write(image_bytes_data)
         image_path = file_location
 
-    # ── Base feedback document (your exact original structure) ──
+    parsed_age = None
+    if age:
+        try:
+            parsed_age = int(age)
+        except Exception:
+            parsed_age = None
+
+    parsed_rating = 5
+    if rating:
+        try:
+            parsed_rating = int(rating)
+        except Exception:
+            parsed_rating = 5
+
+    # ── Base feedback document structure ──
     data = {
         "district": district, "constituency": constituency,
-        "name": name, "age": age, "booth_no": booth_no, "booth_ward_no": booth_ward_no, "email": email,
-        "type_of_feedback": type_of_feedback, "feedback_text": feedback_text,
-        "rating": rating, "solution": solution,
-        "image": image_path, "status": "Pending", "created_at": datetime.now()
+        "name": name, "age": parsed_age, "booth_no": booth_no, "booth_ward_no": booth_ward_no,
+        "local_body": local_body, "ward_village": ward_village, "email": email,
+        "type_of_feedback": type_of_feedback, "category": type_of_feedback,
+        "feedback_title": feedback_title, "feedback_text": feedback_text,
+        "rating": parsed_rating, "importance": importance, "need_response": need_response,
+        "anonymous": anonymous, "solution": solution,
+        "image": image_path, "status": "Pending", "created_at": datetime.now(),
+        "ai": {
+            "category": type_of_feedback,
+            "priority": importance or "Medium",
+            "summary": feedback_title or (feedback_text[:50] if feedback_text else "Grievance")
+        }
     }
+
+    # ── Save to MongoDB ───────────────────────────────────────────
+    feedback_collection.insert_one(data)
+    feedback_id_str = str(data["_id"])
+    tracking_id = f"INF-{feedback_id_str[-6:].upper()}"
+    data["feedback_id"] = feedback_id_str
+    data["tracking_id"] = tracking_id
+    feedback_collection.update_one({"_id": data["_id"]}, {"$set": {"tracking_id": tracking_id, "feedback_id": feedback_id_str}})
 
     # ── 4-Layer Image Validation ─────────────────────────────────
     image_validation = None
@@ -186,14 +252,21 @@ async def submit_feedback(
             print(f"⚠️  Image validation error (non-blocking): {ve}")
             data["image_validation"] = {"overall_status": "error", "error": str(ve)}
 
-    # ── Save to MongoDB ───────────────────────────────────────────
-    feedback_collection.insert_one(data)
-
-    # ── Original AI pipeline (unchanged) ─────────────────────────
-    ai_result = process_feedback(data)
+    # ── Original AI pipeline (non-blocking) ───────────────────────
+    ai_result = None
+    try:
+        ai_result = process_feedback(data)
+    except Exception as ae:
+        print(f"⚠️  AI Pipeline error (non-blocking): {ae}")
+        ai_result = {"status": "skipped", "error": str(ae)}
 
     # ── Response ──────────────────────────────────────────────────
-    response = {"message": "Feedback received", "ai_status": ai_result}
+    response = {
+        "message": "Feedback received",
+        "feedback_id": feedback_id_str,
+        "tracking_id": tracking_id,
+        "ai_status": ai_result
+    }
     if image_validation:
         ai_layer = image_validation["layers"].get("ela_authenticity", {})
         response["image_validation"] = {
@@ -205,10 +278,8 @@ async def submit_feedback(
                 "exif":     image_validation["layers"]["exif_geofence"]["status"],
                 "semantic": image_validation["layers"]["semantic_alignment"]["status"],
                 "phash":    image_validation["layers"]["phash_dedup"]["status"],
-                # Layer 4 is now AI detection, keeping "ela" key for frontend compatibility
                 "ela":      ai_layer.get("status", "inconclusive"),
             },
-            # Extra AI detection fields for the frontend to display
             "ai_detection": {
                 "label":      ai_layer.get("label", "INCONCLUSIVE"),
                 "ai_score":   ai_layer.get("ai_score", 0.0),
@@ -228,29 +299,56 @@ def get_feedbacks():
             f["created_at"] = f["created_at"].isoformat()
     return data
 
+@app.get("/api/feedback/track/{tracking_id}")
 @app.get("/api/feedback/{feedback_id}")
-async def get_single_feedback(feedback_id: str):
-    try:
-        f = feedback_collection.find_one({"_id": ObjectId(feedback_id)})
-        if not f: raise HTTPException(status_code=404, detail="Not found")
-        f["_id"] = str(f["_id"])
-        if isinstance(f.get("created_at"), datetime):
-            f["created_at"] = f["created_at"].isoformat()
-        if f.get("image"):
-            f["image_url"] = f"{BACKEND_URL}/{f['image']}"
-        return f
-    except HTTPException: raise
-    except Exception: raise HTTPException(status_code=400, detail="Invalid ID")
+async def get_single_feedback(feedback_id: str = None, tracking_id: str = None):
+    target_id = (tracking_id or feedback_id or "").strip()
+    if not target_id:
+        raise HTTPException(status_code=400, detail="ID required")
+
+    or_conditions = [
+        {"tracking_id": target_id},
+        {"tracking_id": target_id.upper()},
+        {"feedback_id": target_id},
+        {"_id": target_id}
+    ]
+
+    if len(target_id) == 24:
+        try:
+            or_conditions.append({"_id": ObjectId(target_id)})
+        except Exception:
+            pass
+
+    f = feedback_collection.find_one({"$or": or_conditions})
+    if not f:
+        raise HTTPException(status_code=404, detail="No grievance record matches this Tracking ID")
+
+    f["_id"] = str(f["_id"])
+    if isinstance(f.get("created_at"), datetime):
+        f["created_at"] = f["created_at"].isoformat()
+    if f.get("image"):
+        f["image_url"] = f"{BACKEND_URL}/{f['image']}"
+    return f
 
 # ── Validation report endpoint (new — for admin panel) ───────
 @app.get("/api/feedback/{feedback_id}/validation")
 async def get_validation_report(feedback_id: str):
-    try:
-        f = feedback_collection.find_one({"_id": ObjectId(feedback_id)})
-        if not f: raise HTTPException(status_code=404, detail="Not found")
-        return {"feedback_id": feedback_id, "validation": f.get("image_validation")}
-    except HTTPException: raise
-    except Exception: raise HTTPException(status_code=400, detail="Invalid ID")
+    target_id = feedback_id.strip()
+    or_conditions = [
+        {"tracking_id": target_id},
+        {"feedback_id": target_id},
+        {"_id": target_id}
+    ]
+    if len(target_id) == 24:
+        try:
+            or_conditions.append({"_id": ObjectId(target_id)})
+        except Exception:
+            pass
+
+    f = feedback_collection.find_one({"$or": or_conditions})
+    if not f:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"feedback_id": str(f["_id"]), "tracking_id": f.get("tracking_id"), "validation": f.get("image_validation")}
 
 # ── Dashboard ────────────────────────────────────────────────
 @app.get("/api/dashboard")
@@ -333,3 +431,194 @@ def get_issues():
     issues = list(global_issues.find().sort("total_reports", -1).limit(10))
     for i in issues: i["_id"] = str(i["_id"])
     return issues
+
+
+# ================================================================
+# /api/news-inbox — Scrape Google News RSS for AIADMK / அதிமுக
+# Returns live news articles from Google News for the Super Admin
+# to curate and approve for the public website.
+# ================================================================
+@app.get("/api/news-inbox")
+def get_news_inbox():
+    """Scrape Google News RSS feed for AIADMK news articles."""
+    QUERIES = [
+        "AIADMK",
+        "EPS Edappadi Palaniswami",
+        "ADMK",
+    ]
+    articles = []
+    seen_links = set()
+
+    for query in QUERIES:
+        try:
+            rss_url = f"https://news.google.com/rss/search?q={requests.utils.quote(query)}&hl=en-IN&gl=IN&ceid=IN:en"
+            response = requests.get(rss_url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
+            if response.status_code != 200:
+                continue
+
+            root = ET.fromstring(response.content)
+            channel = root.find("channel")
+            if not channel:
+                continue
+
+            for item in channel.findall("item")[:8]:
+                title = (item.findtext("title") or "").strip()
+                link  = (item.findtext("link") or "").strip()
+                pub   = (item.findtext("pubDate") or "").strip()
+                desc  = (item.findtext("description") or "").strip()
+
+                # Clean Google News redirect links
+                if link and link not in seen_links:
+                    seen_links.add(link)
+
+                    # Try to parse pub date into readable format
+                    date_str = ""
+                    try:
+                        from email.utils import parsedate_to_datetime
+                        dt = parsedate_to_datetime(pub)
+                        date_str = f"{dt.day} {dt.strftime('%B %Y')}"
+                    except Exception:
+                        date_str = pub[:16] if pub else ""
+
+                    # Extract source from title if present (Google includes "- Source" at end)
+                    source = "Google News"
+                    if " - " in title:
+                        parts = title.rsplit(" - ", 1)
+                        title = parts[0].strip()
+                        source = parts[1].strip()
+
+                    # Determine language
+                    lang = "ta" if any(ord(c) > 2944 for c in title) else "en"
+
+                    articles.append({
+                        "title": title,
+                        "desc": desc[:300] if desc else "",
+                        "source_link": link,
+                        "source": source,
+                        "date": date_str,
+                        "lang": lang
+                    })
+        except Exception as e:
+            print(f"⚠️  RSS fetch error for '{query}': {e}")
+            continue
+
+    # Remove duplicates by title similarity
+    unique = []
+    unique_titles = set()
+    for art in articles:
+        key = art["title"][:40].lower().strip()
+        if key not in unique_titles:
+            unique_titles.add(key)
+            unique.append(art)
+
+    return unique[:20]  # Return max 20 articles
+
+
+# ================================================================
+# /api/press-releases — Published Live News for Public Pulse Portal
+# ================================================================
+@app.get("/api/press-releases")
+def get_press_releases():
+    releases = list(press_releases_col.find().sort("_id", -1))
+    for r in releases:
+        r["_id"] = str(r["_id"])
+    return releases
+
+@app.post("/api/press-releases/approve")
+async def approve_press_release(data: dict):
+    """Save an approved/edited news article from the inbox to MongoDB (Public Pulse)."""
+    if not data.get("title_en") and not data.get("title_ta"):
+        raise HTTPException(status_code=400, detail="At least English or Tamil title required")
+    data["created_at"] = datetime.now().isoformat()
+    press_releases_col.insert_one(data)
+    return {"message": "Press release published successfully"}
+
+@app.delete("/api/press-releases/{release_id}")
+def delete_press_release(release_id: str):
+    result = press_releases_col.delete_one({"_id": ObjectId(release_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Press release not found")
+    return {"message": "Press release deleted"}
+
+
+# ================================================================
+# /api/gallery — Media Gallery Photo Upload (Super Admin)
+# ================================================================
+@app.get("/api/gallery")
+def get_gallery():
+    photos = list(gallery_col.find().sort("_id", -1))
+    for p in photos:
+        p["_id"] = str(p["_id"])
+    return photos
+
+@app.post("/api/gallery")
+async def upload_gallery_photo(
+    title_en:    str        = Form(None),
+    title_ta:    str        = Form(...),
+    category_en: str        = Form("Campaigns"),
+    category_ta: str        = Form("பிரச்சாரம்"),
+    image:       UploadFile = File(...)
+):
+    """Upload a new campaign photo to the gallery."""
+    if not image or not image.filename:
+        raise HTTPException(status_code=400, detail="Image file required")
+
+    safe_name = image.filename.replace(" ", "_")
+    file_path = f"{UPLOAD_DIR}/{safe_name}"
+    contents = await image.read()
+    with open(file_path, "wb") as f:
+        f.write(contents)
+
+    doc = {
+        "title_en": title_en or title_ta,
+        "title_ta": title_ta,
+        "category_en": category_en,
+        "category_ta": category_ta,
+        "image_url": f"/uploads/{safe_name}",
+        "created_at": datetime.now().isoformat()
+    }
+    gallery_col.insert_one(doc)
+    return {"message": "Photo uploaded successfully", "image_url": doc["image_url"]}
+
+@app.delete("/api/gallery/{photo_id}")
+def delete_gallery_photo(photo_id: str):
+    photo = gallery_col.find_one({"_id": ObjectId(photo_id)})
+    if not photo:
+        raise HTTPException(status_code=404, detail="Photo not found")
+
+    # Remove file from disk
+    img_url = photo.get("image_url", "")
+    if img_url.startswith("/uploads/"):
+        file_path = img_url.lstrip("/")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    gallery_col.delete_one({"_id": ObjectId(photo_id)})
+    return {"message": "Photo deleted successfully"}
+
+
+# ================================================================
+# /api/legacy — Historical Legacy Milestones (Super Admin)
+# ================================================================
+@app.get("/api/legacy")
+def get_legacy():
+    milestones = list(legacy_col.find().sort("year", 1))
+    for m in milestones:
+        m["_id"] = str(m["_id"])
+    return milestones
+
+@app.post("/api/legacy")
+async def create_legacy_milestone(data: dict):
+    """Publish a new historical milestone."""
+    if not data.get("year") or not data.get("title_ta"):
+        raise HTTPException(status_code=400, detail="Year and Tamil title are required")
+    data["created_at"] = datetime.now().isoformat()
+    legacy_col.insert_one(data)
+    return {"message": "Milestone published successfully"}
+
+@app.delete("/api/legacy/{milestone_id}")
+def delete_legacy_milestone(milestone_id: str):
+    result = legacy_col.delete_one({"_id": ObjectId(milestone_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Milestone not found")
+    return {"message": "Milestone deleted"}

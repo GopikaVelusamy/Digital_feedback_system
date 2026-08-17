@@ -55,8 +55,14 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* glass.html → Login / Signup page */}
-        <Route path="/" element={<LoginPage />} />
+        {/* / → Main public portal (newer colorful FeedbackPage with dark nav + leader photos) */}
+        <Route path="/" element={<FeedbackPage />} />
+
+        {/* /login → Old login/signup page (kept for direct admin access) */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* /feedback → Also serves the main portal (same as /) */}
+        <Route path="/feedback" element={<FeedbackPage />} />
 
         {/* super-login.html → Super Admin login */}
         <Route path="/super-login" element={<SuperLoginPage />} />
@@ -79,16 +85,6 @@ export default function App() {
             <AdminRoute>
               <CriticalIssuesPage />
             </AdminRoute>
-          }
-        />
-
-        {/* feedback.html → Citizen feedback submission */}
-        <Route
-          path="/feedback"
-          element={
-            <UserRoute>
-              <FeedbackPage />
-            </UserRoute>
           }
         />
 
@@ -122,7 +118,7 @@ export default function App() {
           }
         />
 
-        {/* Catch-all → redirect to login */}
+        {/* Catch-all → redirect to main portal */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

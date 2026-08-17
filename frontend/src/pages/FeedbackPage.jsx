@@ -5764,16 +5764,6 @@ export default function FeedbackPage() {
                 </div>
               </div>
 
-              {/* Dedicated Super Admin Login Button */}
-              <button
-                onClick={() => navigate('/super-login')}
-                className="flex items-center justify-center gap-1.5 px-3.5 h-8.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-2xs uppercase tracking-wider transition shadow-md hover:scale-[1.04] duration-300 border border-amber-300/50"
-                title={language === 'English' ? 'Super Admin Portal' : 'சூப்பர் அட்மின் தளம்'}
-              >
-                <span className="material-symbols-outlined text-xs font-black">shield_person</span>
-                {language === 'English' ? 'Super Admin' : 'நிர்வாகி'}
-              </button>
-
               {/* Portal Login / Logout Button */}
               {currentUser ? (
                 <button

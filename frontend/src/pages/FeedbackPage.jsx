@@ -2456,22 +2456,16 @@ function TamilNaduSvgMap({
             <div
               key={node.id}
               style={{ top: `${node.top}%`, left: `${node.left}%` }}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 z-20 flex items-center justify-center ${isDimmed ? 'opacity-20 scale-75' : 'opacity-100 scale-100 hover:scale-150'}`}
+              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 z-20 w-8 h-8 rounded-full flex items-center justify-center ${isDimmed ? 'opacity-20 scale-75' : 'opacity-100 scale-100 hover:scale-125'}`}
               onClick={() => onSelectDistrict(node.id)}
               onMouseEnter={() => setHoveredDistrict(node.id)}
               onMouseLeave={() => setHoveredDistrict(null)}
+              title={node.id}
             >
-              {/* Pulsing Highlight Ring Animation */}
+              {/* Pulsing Highlight Ring Animation on Hover / Selection */}
               {(isSelected || isHovered) && (
-                <div className="absolute inset-0 -m-3 rounded-full border-2 border-amber-400 animate-ping opacity-85"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-amber-400 animate-ping opacity-90 shadow-[0_0_15px_#fbbf24]"></div>
               )}
-
-              {/* Glowing Map Dot Beacon */}
-              <div
-                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full transition-all duration-300 shadow-2xl flex items-center justify-center ${isSelected ? 'bg-amber-400 ring-4 ring-amber-400/60 scale-125 shadow-[0_0_25px_#fbbf24]' : isHovered ? 'bg-emerald-400 ring-4 ring-emerald-300/80 scale-125 shadow-[0_0_20px_#34d399]' : 'bg-amber-400/90 border-2 border-slate-950 shadow-[0_0_12px_rgba(251,191,36,0.85)]'}`}
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-slate-950"></div>
-              </div>
             </div>
           );
         })}

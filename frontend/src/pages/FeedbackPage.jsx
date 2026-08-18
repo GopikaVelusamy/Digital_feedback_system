@@ -2380,50 +2380,50 @@ function TamilNaduSvgMap({
 
   const districtMapNodes = [
     // Northern Region
-    { id: 'Chennai', top: 12, left: 74 },
-    { id: 'Thiruvallur', top: 10, left: 68 },
-    { id: 'Kanchipuram', top: 18, left: 68 },
-    { id: 'Chengalpattu', top: 23, left: 72 },
-    { id: 'Ranipet', top: 16, left: 61 },
-    { id: 'Vellore', top: 16, left: 55 },
-    { id: 'Tirupathur', top: 22, left: 49 },
-    { id: 'Krishnagiri', top: 21, left: 45 },
-    { id: 'Dharmapuri', top: 28, left: 47 },
-    { id: 'Thiruvannamalai', top: 28, left: 59 },
-    { id: 'Villupuram', top: 34, left: 65 },
-    { id: 'Kallakurichi', top: 36, left: 57 },
-    { id: 'Cuddalore', top: 40, left: 71 },
+    { id: 'Chennai', top: 15, left: 71 },
+    { id: 'Thiruvallur', top: 11, left: 64 },
+    { id: 'Kanchipuram', top: 21, left: 66 },
+    { id: 'Chengalpattu', top: 26, left: 70 },
+    { id: 'Ranipet', top: 17, left: 57 },
+    { id: 'Vellore', top: 16, left: 51 },
+    { id: 'Tirupathur', top: 23, left: 45 },
+    { id: 'Krishnagiri', top: 20, left: 39 },
+    { id: 'Dharmapuri', top: 28, left: 41 },
+    { id: 'Thiruvannamalai', top: 30, left: 55 },
+    { id: 'Villupuram', top: 36, left: 62 },
+    { id: 'Kallakurichi', top: 37, left: 52 },
+    { id: 'Cuddalore', top: 41, left: 68 },
 
     // Western Region (Kongu)
-    { id: 'Salem', top: 35, left: 48 },
-    { id: 'Erode', top: 37, left: 39 },
-    { id: 'Nilgiris', top: 33, left: 33 },
-    { id: 'Coimbatore', top: 44, left: 33 },
-    { id: 'Tiruppur', top: 46, left: 38 },
-    { id: 'Namakkal', top: 43, left: 48 },
+    { id: 'Salem', top: 36, left: 44 },
+    { id: 'Erode', top: 37, left: 34 },
+    { id: 'Nilgiris', top: 34, left: 28 },
+    { id: 'Coimbatore', top: 45, left: 28 },
+    { id: 'Tiruppur', top: 47, left: 33 },
+    { id: 'Namakkal', top: 44, left: 45 },
 
     // Central & Delta Region
-    { id: 'Karur', top: 49, left: 46 },
-    { id: 'Perambalur', top: 43, left: 57 },
-    { id: 'Ariyalur', top: 44, left: 63 },
-    { id: 'Mayiladuthurai', top: 45, left: 73 },
-    { id: 'Tiruchirappalli', top: 51, left: 54 },
-    { id: 'Thanjavur', top: 53, left: 64 },
-    { id: 'Tiruvarur', top: 54, left: 71 },
-    { id: 'Nagapattinam', top: 56, left: 75 },
-    { id: 'Pudukkottai', top: 59, left: 60 },
+    { id: 'Karur', top: 50, left: 42 },
+    { id: 'Perambalur', top: 44, left: 53 },
+    { id: 'Ariyalur', top: 45, left: 60 },
+    { id: 'Mayiladuthurai', top: 47, left: 69 },
+    { id: 'Tiruchirappalli', top: 52, left: 50 },
+    { id: 'Thanjavur', top: 54, left: 60 },
+    { id: 'Tiruvarur', top: 55, left: 66 },
+    { id: 'Nagapattinam', top: 57, left: 71 },
+    { id: 'Pudukkottai', top: 60, left: 55 },
 
     // Southern Region
-    { id: 'Dindigul', top: 57, left: 43 },
-    { id: 'Theni', top: 64, left: 36 },
-    { id: 'Madurai', top: 65, left: 46 },
-    { id: 'Sivagangai', top: 66, left: 56 },
-    { id: 'Virudhunagar', top: 72, left: 43 },
-    { id: 'Ramanathapuram', top: 73, left: 63 },
-    { id: 'Tenkasi', top: 79, left: 38 },
-    { id: 'Tirunelveli', top: 82, left: 42 },
-    { id: 'Thoothukudi', top: 81, left: 50 },
-    { id: 'Kanniyakumari', top: 89, left: 39 }
+    { id: 'Dindigul', top: 58, left: 38 },
+    { id: 'Theni', top: 65, left: 31 },
+    { id: 'Madurai', top: 66, left: 42 },
+    { id: 'Sivagangai', top: 67, left: 53 },
+    { id: 'Virudhunagar', top: 73, left: 39 },
+    { id: 'Ramanathapuram', top: 74, left: 58 },
+    { id: 'Tenkasi', top: 80, left: 33 },
+    { id: 'Tirunelveli', top: 83, left: 38 },
+    { id: 'Thoothukudi', top: 82, left: 46 },
+    { id: 'Kanniyakumari', top: 90, left: 35 }
   ];
 
   return (
@@ -2457,7 +2457,7 @@ function TamilNaduSvgMap({
             <div
               key={node.id}
               style={{ top: `${node.top}%`, left: `${node.left}%` }}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 z-20 flex items-center justify-center ${isDimmed ? 'opacity-20 scale-75' : 'opacity-100 scale-100 hover:scale-125'}`}
+              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 z-20 flex items-center justify-center ${isDimmed ? 'opacity-20 scale-75' : 'opacity-100 scale-100 hover:scale-150'}`}
               onClick={() => onSelectDistrict(node.id)}
               onMouseEnter={() => setHoveredDistrict(node.id)}
               onMouseLeave={() => setHoveredDistrict(null)}
@@ -2473,19 +2473,6 @@ function TamilNaduSvgMap({
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-950"></div>
               </div>
-
-              {/* High-Contrast District Name Text Label Badge */}
-              <span
-                className={`absolute left-full ml-1 px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap pointer-events-none transition-all duration-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.98)] ${
-                  isSelected
-                    ? 'bg-amber-400 text-slate-950 shadow-md scale-110 z-30'
-                    : isHovered
-                    ? 'bg-emerald-400 text-slate-950 scale-105 z-30'
-                    : 'bg-slate-950/85 text-amber-200 border border-amber-400/30'
-                }`}
-              >
-                {language === 'English' ? node.id : (constituencyData[node.id]?.ta || node.id)}
-              </span>
             </div>
           );
         })}

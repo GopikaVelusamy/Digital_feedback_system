@@ -1699,7 +1699,6 @@ const SCHEMES_DATABASE = [
     image: "/amma_rainwater_harvesting.jpg",
     source: "Municipal Administration"
   },
-
   {
     id: 24,
     name_en: "Athikadavu-Avinashi Scheme Implementation",

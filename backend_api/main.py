@@ -113,15 +113,24 @@ def signup(data: dict):
 @app.post("/api/login")
 def login(data: dict):
     try:
-        email = (data.get("email") or "").strip().lower()
+        raw_email = (data.get("email") or "").strip()
         password = (data.get("password") or "").strip()
-        user = users_collection.find_one({"email": email, "password": password})
+        if not raw_email or not password:
+            return {"message": "Email and password are required"}
+
+        # Case-insensitive email regex search for robust matching
+        email_pattern = {"$regex": f"^{re.escape(raw_email)}$", "$options": "i"}
+        user = users_collection.find_one({"email": email_pattern, "password": password})
+        
+        if not user:
+            user = users_collection.find_one({"email": raw_email.lower(), "password": password})
+
         if user:
             return {
                 "message": "Login success",
                 "role": user.get("role", "user"),
                 "name": user.get("name", ""),
-                "email": user.get("email", email),
+                "email": user.get("email", raw_email.lower()),
                 "district": user.get("district", "Salem"),
                 "constituency": user.get("constituency", ""),
                 "assigned_department": user.get("assigned_department", ""),

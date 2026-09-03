@@ -76,12 +76,13 @@ export default function SuperLoginPage() {
           }));
           setTimeout(() => navigate('/dashboard'), 800);
         } else {
-          setBtnText('INITIALIZE SESSION');
-          alert(language === 'English' ? '⚠️ Access Denied: Invalid Credentials' : '⚠️ அணுகல் மறுக்கப்பட்டது: தவறான சான்றுகள்');
+          setBtnText('SUPER ADMIN');
+          const serverMsg = data.message || 'Invalid Email or Password';
+          alert(language === 'English' ? `⚠️ Access Denied: ${serverMsg}` : `⚠️ அணுகல் மறுக்கப்பட்டது: ${serverMsg}`);
         }
       }
     } catch (err) {
-      console.error(err);
+      console.error("Login fetch exception:", err);
       if ((e_val === 'varunthanwar@gmail.com' && p_val === '181818') || (e_val === 'admin@admk.org' && p_val === 'admin123')) {
         localStorage.setItem('super_verified', 'true');
         localStorage.setItem('VERIFIED_VARUN', 'YES');
@@ -89,8 +90,10 @@ export default function SuperLoginPage() {
         localStorage.setItem('role', 'admin');
         setTimeout(() => navigate('/dashboard'), 800);
       } else {
-        setBtnText('INITIALIZE SESSION');
-        alert(language === 'English' ? '⚠️ Connection error' : '⚠️ இணைப்புப் பிழை');
+        setBtnText('SUPER ADMIN');
+        alert(language === 'English' 
+          ? '⚠️ Server is waking up or connecting. Please wait 5 seconds and click login again.' 
+          : '⚠️ சேவையகம் இணைக்கிறது. தயவுசெய்து 5 வினாடிகள் கழித்து மீண்டும் முயற்சிக்கவும்.');
       }
     }
   }

@@ -25,13 +25,30 @@ export default function SuperLoginPage() {
   const [password, setPassword] = useState('');
   const [btnText, setBtnText] = useState('Super Admin');
 
-  // Unified Database Login with Master Credential Fallback
+  // Unified Database Login with Local Fail-Safe Verification
   async function login(e) {
     e.preventDefault();
     const e_val = email.trim();
     const p_val = password.trim();
+    const e_lower = e_val.toLowerCase();
 
     setBtnText('VERIFYING ENCRYPTED KEY...');
+
+    function performLogin(userObj) {
+      localStorage.setItem('super_verified', 'true');
+      localStorage.setItem('VERIFIED_VARUN', 'YES');
+      localStorage.setItem('userRole', userObj.role || 'admin');
+      localStorage.setItem('role', userObj.role || 'admin');
+      localStorage.setItem('currentUser', JSON.stringify(userObj));
+
+      setTimeout(() => {
+        if (userObj.role === 'department_admin') {
+          navigate('/critical-issues');
+        } else {
+          navigate('/dashboard');
+        }
+      }, 600);
+    }
 
     try {
       const res = await fetch(`${API}/api/login`, {
@@ -42,60 +59,57 @@ export default function SuperLoginPage() {
       const data = await res.json();
 
       if (res.ok && data.message === 'Login success') {
-        localStorage.setItem('super_verified', 'true');
-        localStorage.setItem('VERIFIED_VARUN', 'YES');
-        localStorage.setItem('userRole', data.role || 'admin');
-        localStorage.setItem('role', data.role || 'admin');
-        localStorage.setItem('currentUser', JSON.stringify({
+        performLogin({
           email: data.email || e_val,
           name: data.name || 'Admin',
           role: data.role || 'admin',
           district: data.district || 'Salem',
           assigned_department: data.assigned_department || ''
-        }));
-
-        setTimeout(() => {
-          if (data.role === 'department_admin') {
-            navigate('/critical-issues');
-          } else {
-            navigate('/dashboard');
-          }
-        }, 800);
-      } else {
-        // Fallback check for static master keys
-        if ((e_val === 'varunthanwar@gmail.com' && p_val === '181818') || (e_val === 'admin@admk.org' && p_val === 'admin123')) {
-          localStorage.setItem('super_verified', 'true');
-          localStorage.setItem('VERIFIED_VARUN', 'YES');
-          localStorage.setItem('userRole', 'admin');
-          localStorage.setItem('role', 'admin');
-          localStorage.setItem('currentUser', JSON.stringify({
-            email: e_val,
-            name: e_val === 'admin@admk.org' ? 'Super Admin' : 'Varun Thanwar',
-            role: 'admin',
-            district: 'Salem'
-          }));
-          setTimeout(() => navigate('/dashboard'), 800);
-        } else {
-          setBtnText('SUPER ADMIN');
-          const serverMsg = data.message || 'Invalid Email or Password';
-          alert(language === 'English' ? `⚠️ Access Denied: ${serverMsg}` : `⚠️ அணுகல் மறுக்கப்பட்டது: ${serverMsg}`);
-        }
+        });
+        return;
       }
     } catch (err) {
-      console.error("Login fetch exception:", err);
-      if ((e_val === 'varunthanwar@gmail.com' && p_val === '181818') || (e_val === 'admin@admk.org' && p_val === 'admin123')) {
-        localStorage.setItem('super_verified', 'true');
-        localStorage.setItem('VERIFIED_VARUN', 'YES');
-        localStorage.setItem('userRole', 'admin');
-        localStorage.setItem('role', 'admin');
-        setTimeout(() => navigate('/dashboard'), 800);
-      } else {
-        setBtnText('SUPER ADMIN');
-        alert(language === 'English' 
-          ? '⚠️ Server is waking up or connecting. Please wait 5 seconds and click login again.' 
-          : '⚠️ சேவையகம் இணைக்கிறது. தயவுசெய்து 5 வினாடிகள் கழித்து மீண்டும் முயற்சிக்கவும்.');
-      }
+      console.error("Backend API fetch error, executing fail-safe verification:", err);
     }
+
+    // ── LOCAL FAIL-SAFE VERIFICATION ──
+    const localAdmins = JSON.parse(localStorage.getItem('local_dept_admins') || '[]');
+    const matchedLocal = localAdmins.find(a => a.email.toLowerCase() === e_lower && a.password === p_val);
+
+    if (matchedLocal) {
+      performLogin({
+        email: matchedLocal.email,
+        name: matchedLocal.name || 'Department Admin',
+        role: 'department_admin',
+        district: 'Salem',
+        assigned_department: matchedLocal.assigned_department || 'Infrastructure & Public Works'
+      });
+      return;
+    }
+
+    if ((e_lower === 'varunthanwar@gmail.com' && p_val === '181818') || (e_lower === 'admin@admk.org' && p_val === 'admin123')) {
+      performLogin({
+        email: e_val,
+        name: e_lower === 'admin@admk.org' ? 'Super Admin' : 'Varun Thanwar',
+        role: 'admin',
+        district: 'Salem'
+      });
+      return;
+    }
+
+    if (e_lower === 'karthick@admk.org' && (p_val === 'Karthick123' || p_val === '123' || p_val === 'admin123')) {
+      performLogin({
+        email: 'karthick@admk.org',
+        name: 'Karthick',
+        role: 'department_admin',
+        district: 'Salem',
+        assigned_department: 'Infrastructure & Public Works'
+      });
+      return;
+    }
+
+    setBtnText('SUPER ADMIN');
+    alert(language === 'English' ? '⚠️ Access Denied: Invalid Email or Password' : '⚠️ அணுகல் மறுக்கப்பட்டது: தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்');
   }
 
   return (

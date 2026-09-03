@@ -83,6 +83,11 @@ export default function CreateAdminPage() {
       const data = await res.json();
 
       if (res.ok && !data.error) {
+        // Save local backup copy for fail-safe login
+        const existingLocal = JSON.parse(localStorage.getItem('local_dept_admins') || '[]');
+        const updatedLocal = [...existingLocal.filter(a => a.email.toLowerCase() !== adminData.email.toLowerCase()), adminData];
+        localStorage.setItem('local_dept_admins', JSON.stringify(updatedLocal));
+
         setShowModal(true);
         setName('');
         setEmail('');

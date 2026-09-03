@@ -730,6 +730,35 @@ export default function DashboardPage() {
         overflowX: 'hidden',
       }}>
 
+        {/* Department Admin Assigned Dashboard Banner */}
+        {(() => {
+          const loggedUserRaw = localStorage.getItem('currentUser');
+          const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+          const isDeptAdmin = currentUser?.role === 'department_admin' && currentUser?.assigned_department;
+          const assignedDeptName = currentUser?.assigned_department || '';
+          if (!isDeptAdmin) return null;
+          return (
+            <div className="w-full bg-gradient-to-r from-emerald-800 to-emerald-950 text-white p-5 rounded-3xl shadow-lg border border-amber-400/40 flex flex-wrap items-center justify-between gap-4 mb-6 animate-fadeIn">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center justify-center font-bold text-2xl shadow-inner">
+                  🏛️
+                </div>
+                <div>
+                  <span className="text-3xs font-black text-amber-400 uppercase tracking-widest block">
+                    Assigned Department Analytics • Salem District
+                  </span>
+                  <h3 className="text-lg font-black uppercase text-white tracking-tight">
+                    {assignedDeptName} Dashboard
+                  </h3>
+                </div>
+              </div>
+              <span className="px-4 py-2 rounded-full bg-emerald-700/80 border border-emerald-500/30 text-xs font-black uppercase text-emerald-200 tracking-wider">
+                Department Portal Active
+              </span>
+            </div>
+          );
+        })()}
+
         {/* HEADER */}
         <header className="fade-in-up" style={{
           display:'flex', alignItems:'center', justifyContent:'space-between',

@@ -54,13 +54,22 @@ export default function Sidebar({ variant = 'admin' }) {
     navigate('/super-login');
   };
 
-  const isSuperUser = localStorage.getItem('VERIFIED_VARUN') === 'YES';
-  const effectiveVariant = isSuperUser ? 'superadmin' : variant;
+  const loggedUserRaw = localStorage.getItem('currentUser');
+  const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+  const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin';
+  const isDeptAdmin = currentUser?.role === 'department_admin';
+  const userName = currentUser?.name || (isSuperUser ? 'Super Admin' : 'Admin User');
+  const userDept = currentUser?.assigned_department || (isSuperUser ? 'Salem Master' : 'Department Admin');
 
   const menuItemsSuper = [
     { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', active: isDashboard },
     { path: '/critical-issues', icon: 'warning', label: 'Critical Issues', active: isCritical },
     { path: '/super-admin', icon: 'admin_panel_settings', label: 'Super Admin', active: isSuperAdmin },
+  ];
+
+  const menuItemsDeptAdmin = [
+    { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', active: isDashboard },
+    { path: '/critical-issues', icon: 'warning', label: 'Critical Issues', active: isCritical },
   ];
 
   const menuItemsAdmin = [
@@ -69,7 +78,7 @@ export default function Sidebar({ variant = 'admin' }) {
     { path: '/super-login', icon: 'admin_panel_settings', label: 'Super Admin', active: location.pathname === '/super-login' || location.pathname === '/super_login' },
   ];
 
-  const menuItems = effectiveVariant === 'superadmin' ? menuItemsSuper : menuItemsAdmin;
+  const menuItems = isSuperUser ? menuItemsSuper : isDeptAdmin ? menuItemsDeptAdmin : menuItemsAdmin;
 
   return (
     <>
@@ -254,40 +263,24 @@ export default function Sidebar({ variant = 'admin' }) {
 
         {/* User profile / Logout footer */}
         <div className="pt-6 border-t border-emerald-200/50">
-          {effectiveVariant === 'superadmin' ? (
-            <div className={`flex items-center justify-between rounded-xl bg-emerald-100/20 border border-emerald-200/50 ${isCollapsedDesktop ? 'p-1.5' : 'p-3.5'}`}>
-              {(!isCollapsedDesktop || isOpenMobile) && (
-                <div className="overflow-hidden">
-                  <p className="text-xs font-bold text-[#064e3b] tracking-wide truncate">Varun S.</p>
-                  <p className="text-[9px] text-emerald-700 uppercase tracking-widest mt-0.5">Master Admin</p>
-                </div>
-              )}
-              <a
-                href="#"
-                role="button"
-                onClick={(e) => { e.preventDefault(); handleLogoutSuper(); }}
-                className="p-2 hover:bg-red-100/40 rounded-lg text-slate-500 hover:text-red-600 transition flex items-center justify-center flex-shrink-0"
-                style={{ width: '34px', height: '34px' }}
-                title="Logout Super Admin"
-              >
-                <span className="material-symbols-outlined text-[18px]">logout</span>
-              </a>
-            </div>
-          ) : (
-            <div className={`flex items-center gap-3 rounded-xl bg-emerald-100/20 border border-emerald-200/50 ${isCollapsedDesktop ? 'p-1.5 justify-center' : 'p-3.5'}`}>
-              <img
-                className="size-9 rounded-full border-2 border-emerald-200"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnvRLL0IXpl7oX9kYEhuo6N3aVqBGyuqW-DWDIImkz7wT6Y7KWecYC8vPNyjSS9ncF1_QQNDxZ7p7zW5ohISVlqqh97r-p-k4RMakxC6zt2d6YFI-hZrvJw7dnyrnzUSdtGqGjQarLGlDcB85IjzH9rbgZY6yt4Nvw1L3UnU4tV_pVILS2i0MZCwXVOOfHVuu8MXoEamd71CtJ6X-F6H60LUfs6-wZL_rctOhHnqpriy4zh8qbbrt46lCaJGCqu5fXdBYCTr3Xfw"
-                alt="Profile"
-              />
-              {(!isCollapsedDesktop || isOpenMobile) && (
-                <div className="overflow-hidden flex-1">
-                  <p className="text-xs font-bold text-[#064e3b] tracking-wide truncate">Varun</p>
-                  <p className="text-[9px] text-emerald-700 uppercase tracking-widest mt-0.5">Constituency Admin</p>
-                </div>
-              )}
-            </div>
-          )}
+          <div className={`flex items-center justify-between rounded-xl bg-emerald-100/20 border border-emerald-200/50 ${isCollapsedDesktop ? 'p-1.5' : 'p-3.5'}`}>
+            {(!isCollapsedDesktop || isOpenMobile) && (
+              <div className="overflow-hidden">
+                <p className="text-xs font-bold text-[#064e3b] tracking-wide truncate">{userName}</p>
+                <p className="text-[9px] text-emerald-700 font-extrabold uppercase tracking-widest mt-0.5 truncate">{userDept}</p>
+              </div>
+            )}
+            <a
+              href="#"
+              role="button"
+              onClick={(e) => { e.preventDefault(); handleLogoutSuper(); }}
+              className="p-2 hover:bg-red-100/40 rounded-lg text-slate-500 hover:text-red-600 transition flex items-center justify-center flex-shrink-0"
+              style={{ width: '34px', height: '34px' }}
+              title="Logout Session"
+            >
+              <span className="material-symbols-outlined text-[18px]">logout</span>
+            </a>
+          </div>
         </div>
       </aside>
     </>

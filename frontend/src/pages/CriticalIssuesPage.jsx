@@ -268,10 +268,51 @@ function FeedbackCard({ item, idx, navigate }) {
   );
 }
 
+// ── Helper for department category matching across Salem District ───────────
+function matchesDepartment(f, deptName) {
+  if (!deptName) return true;
+  const targetDept = deptName.toLowerCase().trim();
+  const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
+  const cat = catRaw.toLowerCase().trim();
+
+  if (cat.includes(targetDept) || targetDept.includes(cat)) return true;
+
+  if (targetDept.includes('infra') || targetDept.includes('public works')) {
+    return cat.includes('road') || cat.includes('infra') || cat.includes('water') || 
+           cat.includes('electric') || cat.includes('power') || cat.includes('sanitat') || 
+           cat.includes('local') || cat.includes('complaint') || cat.includes('general') ||
+           cat.includes('public') || cat.includes('other');
+  }
+  if (targetDept.includes('health') || targetDept.includes('safety') || targetDept.includes('welfare')) {
+    return cat.includes('health') || cat.includes('safety') || cat.includes('women') || 
+           cat.includes('medical') || cat.includes('security') || cat.includes('hospital');
+  }
+  if (targetDept.includes('education') || targetDept.includes('youth')) {
+    return cat.includes('educat') || cat.includes('youth') || cat.includes('employ') || 
+           cat.includes('school') || cat.includes('college');
+  }
+  if (targetDept.includes('agricultur') || targetDept.includes('rural')) {
+    return cat.includes('agri') || cat.includes('farm') || cat.includes('rural');
+  }
+  if (targetDept.includes('scheme') || targetDept.includes('govern')) {
+    return cat.includes('scheme') || cat.includes('govern') || cat.includes('suggest');
+  }
+  if (targetDept.includes('party') || targetDept.includes('leader')) {
+    return cat.includes('party') || cat.includes('leader') || cat.includes('candidate') || cat.includes('election');
+  }
+  return true;
+}
+
 // ── Main page ─────────────────────────────────────────────────
 export default function CriticalIssuesPage() {
   const navigate  = useNavigate();
   const location  = useLocation();
+
+  // Department Admin Scope (Defined at component top)
+  const loggedUserRaw = localStorage.getItem('currentUser');
+  const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+  const isDeptAdmin = currentUser?.role === 'department_admin' && currentUser?.assigned_department;
+  const assignedDeptName = currentUser?.assigned_department || '';
 
   // Language state
   const [language, setLanguageState] = useState(getLanguage());
@@ -329,41 +370,6 @@ export default function CriticalIssuesPage() {
     const urgency = total > 0 ? ((critical / total) * 10).toFixed(1) : '0.0';
     setUrgencyScore(urgency);
     setUrgencyWidth(`${Math.min(100, parseFloat(urgency) * 10)}%`);
-  }
-
-  // Helper for department category matching across Salem District
-  function matchesDepartment(f, deptName) {
-    if (!deptName) return true;
-    const targetDept = deptName.toLowerCase().trim();
-    const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
-    const cat = catRaw.toLowerCase().trim();
-
-    if (cat.includes(targetDept) || targetDept.includes(cat)) return true;
-
-    if (targetDept.includes('infra') || targetDept.includes('public works')) {
-      return cat.includes('road') || cat.includes('infra') || cat.includes('water') || 
-             cat.includes('electric') || cat.includes('power') || cat.includes('sanitat') || 
-             cat.includes('local') || cat.includes('complaint') || cat.includes('general') ||
-             cat.includes('public') || cat.includes('other');
-    }
-    if (targetDept.includes('health') || targetDept.includes('safety') || targetDept.includes('welfare')) {
-      return cat.includes('health') || cat.includes('safety') || cat.includes('women') || 
-             cat.includes('medical') || cat.includes('security') || cat.includes('hospital');
-    }
-    if (targetDept.includes('education') || targetDept.includes('youth')) {
-      return cat.includes('educat') || cat.includes('youth') || cat.includes('employ') || 
-             cat.includes('school') || cat.includes('college');
-    }
-    if (targetDept.includes('agricultur') || targetDept.includes('rural')) {
-      return cat.includes('agri') || cat.includes('farm') || cat.includes('rural');
-    }
-    if (targetDept.includes('scheme') || targetDept.includes('govern')) {
-      return cat.includes('scheme') || cat.includes('govern') || cat.includes('suggest');
-    }
-    if (targetDept.includes('party') || targetDept.includes('leader')) {
-      return cat.includes('party') || cat.includes('leader') || cat.includes('candidate') || cat.includes('election');
-    }
-    return true;
   }
 
   const loadCriticalData = useCallback(async () => {

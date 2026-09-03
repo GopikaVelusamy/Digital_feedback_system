@@ -372,25 +372,35 @@ export default function CriticalIssuesPage() {
     setUrgencyWidth(`${Math.min(100, parseFloat(urgency) * 10)}%`);
   }
 
-  const loadCriticalData = useCallback(async () => {
+  const loadCriticalData = useCallback(async (retryCount = 0) => {
     setLoading(true);
     try {
       const res  = await fetch(`${API}/api/feedbacks`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setAllFeedbacks(data);
+      if (Array.isArray(data) && data.length > 0) {
+        setAllFeedbacks(data);
+        const scoped = (isDeptAdmin && assignedDeptName)
+          ? data.filter(f => matchesDepartment(f, assignedDeptName))
+          : data;
 
-      const scoped = (isDeptAdmin && assignedDeptName)
-        ? data.filter(f => matchesDepartment(f, assignedDeptName))
-        : data;
-
-      renderDepartmentRankings(scoped);
-      renderPriorityFeedbacks(scoped);
-      updateUrgencyStats(scoped);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+        renderDepartmentRankings(scoped);
+        renderPriorityFeedbacks(scoped);
+        updateUrgencyStats(scoped);
+      } else if (retryCount < 2) {
+        setTimeout(() => loadCriticalData(retryCount + 1), 1500);
+      }
+    } catch (e) {
+      console.error("Critical data fetch error:", e);
+      if (retryCount < 2) {
+        setTimeout(() => loadCriticalData(retryCount + 1), 1500);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [isDeptAdmin, assignedDeptName]);
 
-  useEffect(() => { loadCriticalData(); }, [loadCriticalData]);
+  useEffect(() => { loadCriticalData(0); }, [loadCriticalData]);
 
   // ── Scoped Feedbacks for Department Admin ─────────────────
   const scopeFeedbacks = isDeptAdmin && assignedDeptName 

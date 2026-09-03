@@ -69,19 +69,26 @@ app.add_middleware(
     allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
 
+import threading
+
 def send_admin_email(receiver_email, admin_name, password):
-    body = (f"Hello {admin_name},\n\nYou have been assigned as an Admin for InsightFlow.\n\n"
-            f"Email: {receiver_email}\nPassword: {password}\n\nPlease login to the portal.")
-    msg = MIMEText(body)
-    msg['Subject'] = "InsightFlow | Admin Access Granted"
-    msg['From'] = EMAIL_SENDER; msg['To'] = receiver_email
-    try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
-            s.login(EMAIL_SENDER, EMAIL_PASSWORD)
-            s.sendmail(EMAIL_SENDER, receiver_email, msg.as_string())
-        print(f"✅ Email sent to {receiver_email}")
-    except Exception as e:
-        print(f"❌ Email ERROR: {e}")
+    if not EMAIL_SENDER or not EMAIL_PASSWORD or "your_email" in str(EMAIL_SENDER):
+        print(f"ℹ️ Skipping email dispatch for {receiver_email} (SMTP credentials not configured)")
+        return
+    def _send():
+        try:
+            body = (f"Hello {admin_name},\n\nYou have been assigned as an Admin for InsightFlow.\n\n"
+                    f"Email: {receiver_email}\nPassword: {password}\n\nPlease login to the portal.")
+            msg = MIMEText(body)
+            msg['Subject'] = "InsightFlow | Admin Access Granted"
+            msg['From'] = EMAIL_SENDER; msg['To'] = receiver_email
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=3) as s:
+                s.login(EMAIL_SENDER, EMAIL_PASSWORD)
+                s.sendmail(EMAIL_SENDER, receiver_email, msg.as_string())
+            print(f"✅ Email sent to {receiver_email}")
+        except Exception as e:
+            print(f"⚠️ Email dispatch error (non-blocking): {e}")
+    threading.Thread(target=_send, daemon=True).start()
 
 # ── Auth routes ───────────────────────────────────────────────
 @app.post("/api/signup")

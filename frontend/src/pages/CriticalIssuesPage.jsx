@@ -331,46 +331,75 @@ export default function CriticalIssuesPage() {
     setUrgencyWidth(`${Math.min(100, parseFloat(urgency) * 10)}%`);
   }
 
+  // Helper for department category matching across Salem District
+  function matchesDepartment(f, deptName) {
+    if (!deptName) return true;
+    const targetDept = deptName.toLowerCase().trim();
+    const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
+    const cat = catRaw.toLowerCase().trim();
+
+    if (cat.includes(targetDept) || targetDept.includes(cat)) return true;
+
+    if (targetDept.includes('infra') || targetDept.includes('public works')) {
+      return cat.includes('road') || cat.includes('infra') || cat.includes('water') || 
+             cat.includes('electric') || cat.includes('power') || cat.includes('sanitat') || 
+             cat.includes('local') || cat.includes('complaint') || cat.includes('general') ||
+             cat.includes('public') || cat.includes('other');
+    }
+    if (targetDept.includes('health') || targetDept.includes('safety') || targetDept.includes('welfare')) {
+      return cat.includes('health') || cat.includes('safety') || cat.includes('women') || 
+             cat.includes('medical') || cat.includes('security') || cat.includes('hospital');
+    }
+    if (targetDept.includes('education') || targetDept.includes('youth')) {
+      return cat.includes('educat') || cat.includes('youth') || cat.includes('employ') || 
+             cat.includes('school') || cat.includes('college');
+    }
+    if (targetDept.includes('agricultur') || targetDept.includes('rural')) {
+      return cat.includes('agri') || cat.includes('farm') || cat.includes('rural');
+    }
+    if (targetDept.includes('scheme') || targetDept.includes('govern')) {
+      return cat.includes('scheme') || cat.includes('govern') || cat.includes('suggest');
+    }
+    if (targetDept.includes('party') || targetDept.includes('leader')) {
+      return cat.includes('party') || cat.includes('leader') || cat.includes('candidate') || cat.includes('election');
+    }
+    return true;
+  }
+
   const loadCriticalData = useCallback(async () => {
     setLoading(true);
     try {
       const res  = await fetch(`${API}/api/feedbacks`);
       const data = await res.json();
       setAllFeedbacks(data);
-      renderDepartmentRankings(data);
-      renderPriorityFeedbacks(data);
-      updateUrgencyStats(data);
+
+      const scoped = (isDeptAdmin && assignedDeptName)
+        ? data.filter(f => matchesDepartment(f, assignedDeptName))
+        : data;
+
+      renderDepartmentRankings(scoped);
+      renderPriorityFeedbacks(scoped);
+      updateUrgencyStats(scoped);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
-  }, []);
+  }, [isDeptAdmin, assignedDeptName]);
 
   useEffect(() => { loadCriticalData(); }, [loadCriticalData]);
 
-  // Department Admin Scope
-  const loggedUserRaw = localStorage.getItem('currentUser');
-  const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
-  const isDeptAdmin = currentUser?.role === 'department_admin' && currentUser?.assigned_department;
-  const assignedDeptName = currentUser?.assigned_department || '';
+  // ── Scoped Feedbacks for Department Admin ─────────────────
+  const scopeFeedbacks = isDeptAdmin && assignedDeptName 
+    ? allFeedbacks.filter(f => matchesDepartment(f, assignedDeptName))
+    : allFeedbacks;
+
+  const priorityScopeFeedbacks = isDeptAdmin && assignedDeptName
+    ? priorityFeedbacks.filter(f => matchesDepartment(f, assignedDeptName))
+    : priorityFeedbacks;
 
   // ── Filtered feed ─────────────────────────────────────────
-  const filteredFeed = priorityFeedbacks.filter(f => {
+  const filteredFeed = priorityScopeFeedbacks.filter(f => {
     const dist = f.location?.district || f.district || '';
     const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
     const cat = catRaw.toLowerCase().trim();
-
-    // Auto-filter for Department Admin assigned queue
-    if (isDeptAdmin && assignedDeptName) {
-      const targetDept = assignedDeptName.toLowerCase().trim();
-      const matchesDept = cat.includes(targetDept) || targetDept.includes(cat) ||
-        (targetDept.includes('infra') && (cat.includes('road') || cat.includes('infra') || cat.includes('local') || cat.includes('complaint'))) ||
-        (targetDept.includes('health') && (cat.includes('health') || cat.includes('safety') || cat.includes('women'))) ||
-        (targetDept.includes('education') && (cat.includes('educat') || cat.includes('youth') || cat.includes('employ'))) ||
-        (targetDept.includes('agricultur') && (cat.includes('agri') || cat.includes('farm'))) ||
-        (targetDept.includes('scheme') && (cat.includes('scheme') || cat.includes('govern') || cat.includes('suggest'))) ||
-        (targetDept.includes('party') && (cat.includes('party') || cat.includes('leader') || cat.includes('candidate') || cat.includes('election')));
-
-      if (!matchesDept) return false;
-    }
 
     if (districtFilter && dist.toLowerCase() !== districtFilter.toLowerCase()) return false;
     if (selectedCategoryFilter !== 'All' && cat !== selectedCategoryFilter.toLowerCase().trim()) return false;
@@ -521,11 +550,11 @@ export default function CriticalIssuesPage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6" style={{ animation:'fadeInUp 0.5s 0.05s both' }}>
           {[
-            { label: t.totalReports, val:allFeedbacks.length,     badgeColor:'#064e3b', icon:'inbox',          bgCard:'linear-gradient(135deg, #e8fbf0 0%, #dcfce7 100%)', textC: '#064e3b', labelC: '#047857' },
-            { label: t.pending,       val:allFeedbacks.filter(f => f.status === 'Pending').length,   badgeColor:'#78350f', icon:'pending',        bgCard:'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', textC: '#78350f', labelC: '#92400e' },
-            { label: t.resolved,      val:allFeedbacks.filter(f => f.status === 'Solved' || f.status === 'Resolved').length,    badgeColor:'#065f46', icon:'check_circle',   bgCard:'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', textC: '#065f46', labelC: '#047857' },
-            { label: t.critical,      val:allFeedbacks.filter(f => (f.feedback?.rating||f.rating||5) <= 2).length, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)', textC: '#ffffff', labelC: '#fecaca' },
-            { label: t.aiFlagged,    val:allFeedbacks.filter(f => (f.image_validation?.overall_risk||0) >= 65).length,   badgeColor:'#ffffff', icon:'smart_toy',       bgCard:'linear-gradient(135deg, #0f766e 0%, #0d5c56 100%)', textC: '#ffffff', labelC: '#a7f3d0' },
+            { label: t.totalReports, val:scopeFeedbacks.length,     badgeColor:'#064e3b', icon:'inbox',          bgCard:'linear-gradient(135deg, #e8fbf0 0%, #dcfce7 100%)', textC: '#064e3b', labelC: '#047857' },
+            { label: t.pending,       val:scopeFeedbacks.filter(f => f.status === 'Pending').length,   badgeColor:'#78350f', icon:'pending',        bgCard:'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', textC: '#78350f', labelC: '#92400e' },
+            { label: t.resolved,      val:scopeFeedbacks.filter(f => f.status === 'Solved' || f.status === 'Resolved').length,    badgeColor:'#065f46', icon:'check_circle',   bgCard:'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', textC: '#065f46', labelC: '#047857' },
+            { label: t.critical,      val:scopeFeedbacks.filter(f => (f.feedback?.rating||f.rating||5) <= 2).length, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)', textC: '#ffffff', labelC: '#fecaca' },
+            { label: t.aiFlagged,    val:scopeFeedbacks.filter(f => (f.image_validation?.overall_risk||0) >= 65).length,   badgeColor:'#ffffff', icon:'smart_toy',       bgCard:'linear-gradient(135deg, #0f766e 0%, #0d5c56 100%)', textC: '#ffffff', labelC: '#a7f3d0' },
           ].map(({ label, val, badgeColor, icon, bgCard, textC, labelC }) => (
             <div key={label} className="glass-ci" style={{ borderRadius:16, padding:'16px 18px', display:'flex', alignItems:'center', gap:12, transition:'all 0.3s', background: bgCard, border:'1px solid rgba(16,185,129,0.2)' }}
               onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}

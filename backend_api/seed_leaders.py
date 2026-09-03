@@ -7,40 +7,36 @@ uri = os.getenv('MONGODB_URI')
 client = MongoClient(uri)
 db = client["feedback_ai_db"]
 
-leaders = [
-    {
-        "email": "coimbatore_leader@admk.org",
-        "name": "Coimbatore Leader",
-        "password": "leader123",
-        "role": "leader",
-        "district": "Coimbatore",
-        "constituency": "Coimbatore South"
-    },
-    {
-        "email": "salem_leader@admk.org",
-        "name": "Salem Constituency Leader",
-        "password": "leader123",
-        "role": "leader",
-        "district": "Salem",
-        "constituency": "Edappadi"
-    },
+# Ensure Super Admin accounts exist and clean up old obsolete static leader entries
+super_admins = [
     {
         "email": "admin@admk.org",
-        "name": "Super Admin",
+        "name": "Super Admin (Salem Master)",
         "password": "admin123",
         "role": "admin",
-        "district": "All",
+        "district": "Salem",
+        "constituency": "All"
+    },
+    {
+        "email": "varunthanwar@gmail.com",
+        "name": "Super Admin (Varun)",
+        "password": "181818",
+        "role": "admin",
+        "district": "Salem",
         "constituency": "All"
     }
 ]
 
-for l in leaders:
-    existing = db["users"].find_one({"email": l["email"]})
-    if not existing:
-        db["users"].insert_one(l)
-        print(f"Created user: {l['email']}")
-    else:
-        db["users"].update_one({"email": l["email"]}, {"$set": l})
-        print(f"Updated user: {l['email']}")
+# Delete old hardcoded coimbatore and salem static leader accounts
+db["users"].delete_many({"email": {"$in": ["coimbatore_leader@admk.org", "salem_leader@admk.org"]}})
+print("Cleaned up old hardcoded static leader accounts.")
 
-print("All leader accounts updated successfully!")
+for sa in super_admins:
+    db["users"].update_one(
+        {"email": sa["email"]},
+        {"$set": sa},
+        upsert=True
+    )
+    print(f"Verified Super Admin account: {sa['email']}")
+
+print("Super Admin seeding completed successfully!")

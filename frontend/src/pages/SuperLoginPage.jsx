@@ -25,26 +25,67 @@ export default function SuperLoginPage() {
   const [password, setPassword] = useState('');
   const [btnText, setBtnText] = useState('Super Admin');
 
-  // Exact mirror of login() function in super-login.html
-  function login(e) {
+  // Unified Database Login with Master Credential Fallback
+  async function login(e) {
     e.preventDefault();
     const e_val = email.trim();
     const p_val = password.trim();
 
     setBtnText('VERIFYING ENCRYPTED KEY...');
 
-    // Varun's Credentials — exact from original
-    if (e_val === 'varunthanwar@gmail.com' && p_val === '181818') {
-      localStorage.setItem('super_verified', 'true');
-      localStorage.setItem('VERIFIED_VARUN', 'YES');
-      setTimeout(() => {
-        navigate('/super-admin');
-      }, 1000);
-    } else {
-      setTimeout(() => {
+    try {
+      const res = await fetch(`${API}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: e_val, password: p_val })
+      });
+      const data = await res.json();
+
+      if (res.ok && data.message === 'Login success') {
+        localStorage.setItem('super_verified', 'true');
+        localStorage.setItem('currentUser', JSON.stringify({
+          email: data.email || e_val,
+          name: data.name || 'Admin',
+          role: data.role || 'admin',
+          district: data.district || 'Salem',
+          assigned_department: data.assigned_department || ''
+        }));
+        localStorage.setItem('userRole', data.role || 'admin');
+
+        setTimeout(() => {
+          if (data.role === 'department_admin') {
+            navigate('/critical-issues');
+          } else {
+            navigate('/super-admin');
+          }
+        }, 800);
+      } else {
+        // Fallback check for static master keys
+        if ((e_val === 'varunthanwar@gmail.com' && p_val === '181818') || (e_val === 'admin@admk.org' && p_val === 'admin123')) {
+          localStorage.setItem('super_verified', 'true');
+          localStorage.setItem('userRole', 'admin');
+          localStorage.setItem('currentUser', JSON.stringify({
+            email: e_val,
+            name: e_val === 'admin@admk.org' ? 'Super Admin' : 'Varun Thanwar',
+            role: 'admin',
+            district: 'Salem'
+          }));
+          setTimeout(() => navigate('/super-admin'), 800);
+        } else {
+          setBtnText('INITIALIZE SESSION');
+          alert(language === 'English' ? '⚠️ Access Denied: Invalid Credentials' : '⚠️ அணுகல் மறுக்கப்பட்டது: தவறான சான்றுகள்');
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      if ((e_val === 'varunthanwar@gmail.com' && p_val === '181818') || (e_val === 'admin@admk.org' && p_val === 'admin123')) {
+        localStorage.setItem('super_verified', 'true');
+        localStorage.setItem('userRole', 'admin');
+        setTimeout(() => navigate('/super-admin'), 800);
+      } else {
         setBtnText('INITIALIZE SESSION');
-        alert(language === 'English' ? '⚠️ Access Denied: Invalid Master Credentials' : '⚠️ அணுகல் மறுக்கப்பட்டது: தவறான முதன்மை சான்றுகள்');
-      }, 600);
+        alert(language === 'English' ? '⚠️ Connection error' : '⚠️ இணைப்புப் பிழை');
+      }
     }
   }
 

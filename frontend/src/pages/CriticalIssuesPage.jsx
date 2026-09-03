@@ -237,8 +237,7 @@ function FeedbackCard({ item, idx, navigate }) {
           )}
 
           {/* Action row */}
-          <div style={{ display:'flex', gap:10, padding:'14px 16px' }}>
-            <button onClick={() => navigate(`/feedback-detail?id=${item._id}`)}
+          <div style={{ display:'flex', gap:10, padding:'14px 16px' }}><button onClick={() => navigate(`/feedback-detail?id=${item._id}`)}
               style={{
                 flex:1, padding:'11px 0', borderRadius:12, fontSize:11, fontWeight:900,
                 border:'none', cursor:'pointer', fontFamily:'Manrope,sans-serif',
@@ -347,13 +346,34 @@ export default function CriticalIssuesPage() {
 
   useEffect(() => { loadCriticalData(); }, [loadCriticalData]);
 
+  // Department Admin Scope
+  const loggedUserRaw = localStorage.getItem('currentUser');
+  const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+  const isDeptAdmin = currentUser?.role === 'department_admin' && currentUser?.assigned_department;
+  const assignedDeptName = currentUser?.assigned_department || '';
+
   // ── Filtered feed ─────────────────────────────────────────
   const filteredFeed = priorityFeedbacks.filter(f => {
     const dist = f.location?.district || f.district || '';
-    const cat = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
+    const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
+    const cat = catRaw.toLowerCase().trim();
+
+    // Auto-filter for Department Admin assigned queue
+    if (isDeptAdmin && assignedDeptName) {
+      const targetDept = assignedDeptName.toLowerCase().trim();
+      const matchesDept = cat.includes(targetDept) || targetDept.includes(cat) ||
+        (targetDept.includes('infra') && (cat.includes('road') || cat.includes('infra') || cat.includes('local') || cat.includes('complaint'))) ||
+        (targetDept.includes('health') && (cat.includes('health') || cat.includes('safety') || cat.includes('women'))) ||
+        (targetDept.includes('education') && (cat.includes('educat') || cat.includes('youth') || cat.includes('employ'))) ||
+        (targetDept.includes('agricultur') && (cat.includes('agri') || cat.includes('farm'))) ||
+        (targetDept.includes('scheme') && (cat.includes('scheme') || cat.includes('govern') || cat.includes('suggest'))) ||
+        (targetDept.includes('party') && (cat.includes('party') || cat.includes('leader') || cat.includes('candidate') || cat.includes('election')));
+
+      if (!matchesDept) return false;
+    }
 
     if (districtFilter && dist.toLowerCase() !== districtFilter.toLowerCase()) return false;
-    if (selectedCategoryFilter !== 'All' && cat.toLowerCase().trim() !== selectedCategoryFilter.toLowerCase().trim()) return false;
+    if (selectedCategoryFilter !== 'All' && cat !== selectedCategoryFilter.toLowerCase().trim()) return false;
 
     if (filter === 'critical') return (f.feedback?.rating || f.rating || 5) <= 2;
     if (filter === 'flagged')  return (f.image_validation?.overall_risk || 0) >= 65;
@@ -428,6 +448,30 @@ export default function CriticalIssuesPage() {
       </style>
       
       <main id="mainContent" className="flex-1 min-h-screen px-4 py-6 sm:px-10 sm:py-8 pt-20 sm:pt-10 box-sizing-border-box overflow-x-hidden min-w-0">
+
+        {/* Department Admin Assigned Queue Banner */}
+        {isDeptAdmin && (
+          <div className="w-full bg-gradient-to-r from-emerald-800 to-emerald-950 text-white p-5 rounded-3xl shadow-lg border border-amber-400/40 flex flex-wrap items-center justify-between gap-4 mb-6 animate-fadeIn">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center justify-center font-bold text-2xl shadow-inner">
+                🏛️
+              </div>
+              <div>
+                <span className="text-3xs font-black text-amber-400 uppercase tracking-widest block">
+                  Assigned Department Queue • Salem District
+                </span>
+                <h3 className="text-lg font-black uppercase text-white tracking-tight">
+                  {assignedDeptName} Department
+                </h3>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="px-4 py-2 rounded-full bg-emerald-700/80 border border-emerald-500/30 text-xs font-black uppercase text-emerald-200 tracking-wider">
+                {filteredFeed.length} Assigned Petitions
+              </span>
+            </div>
+          </div>
+        )}
 
         <header style={{ display:'flex', alignItems:'center', justify: 'space-between', gap:16, marginBottom:24, flexWrap:'wrap', animation:'fadeInUp 0.5s both' }}>
           <div style={{ display:'flex', alignItems:'center' }}>

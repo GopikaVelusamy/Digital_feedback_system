@@ -106,14 +106,19 @@ def signup(data: dict):
 @app.post("/api/login")
 def login(data: dict):
     try:
-        user = users_collection.find_one({"email": data.get("email"), "password": data.get("password")})
+        email = (data.get("email") or "").strip().lower()
+        password = (data.get("password") or "").strip()
+        user = users_collection.find_one({"email": email, "password": password})
         if user:
             return {
                 "message": "Login success",
                 "role": user.get("role", "user"),
                 "name": user.get("name", ""),
-                "district": user.get("district", ""),
-                "constituency": user.get("constituency", "")
+                "email": user.get("email", email),
+                "district": user.get("district", "Salem"),
+                "constituency": user.get("constituency", ""),
+                "assigned_department": user.get("assigned_department", ""),
+                "admin_type": user.get("admin_type", "department")
             }
         return {"message": "Invalid email or password"}
     except Exception as e:
@@ -123,31 +128,68 @@ def login(data: dict):
 
 @app.post("/api/google-login")
 def google_login(data: dict):
-    email = data.get("email")
+    email = (data.get("email") or "").strip().lower()
     name = data.get("name") or "Google User"
-    role = data.get("role") or "user"
     
     # Check if user already exists
     user = users_collection.find_one({"email": email})
     if not user:
         return {"message": "Please signup first"}
         
-    return {"message": "Login success", "role": user.get("role", "user"), "name": user.get("name", name)}
+    return {
+        "message": "Login success",
+        "role": user.get("role", "user"),
+        "name": user.get("name", name),
+        "email": user.get("email", email),
+        "assigned_department": user.get("assigned_department", "")
+    }
 
 @app.post("/api/create-admin")
 async def create_admin(data: dict):
-    if users_collection.find_one({"email": data.get("email")}):
-        return {"error": "Admin already exists"}
-    data["role"] = "admin"
-    users_collection.insert_one(data)
-    send_admin_email(data.get("email"), data.get("name"), data.get("password"))
-    return {"message": "Admin assigned successfully and Email sent"}
+    email = (data.get("email") or "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    if users_collection.find_one({"email": email}):
+        return {"error": "An admin with this email already exists"}
+    
+    assigned_dept = data.get("assigned_department") or data.get("department") or "Infrastructure & Public Works"
+    admin_doc = {
+        "name": (data.get("name") or "").strip(),
+        "email": email,
+        "password": (data.get("password") or "").strip(),
+        "role": data.get("role") or "department_admin",
+        "admin_type": "department",
+        "assigned_department": assigned_dept,
+        "district": data.get("district") or "Salem",
+        "created_at": datetime.now().isoformat()
+    }
+    users_collection.insert_one(admin_doc)
+    try:
+        send_admin_email(email, admin_doc["name"], admin_doc["password"])
+    except Exception as e:
+        print(f"⚠️ Email notification non-blocking error: {e}")
+    
+    admin_doc["_id"] = str(admin_doc["_id"])
+    admin_doc.pop("password", None)
+    return {"message": "Department Admin assigned successfully", "admin": admin_doc}
 
 @app.get("/api/admins")
 def get_admins():
-    admins = list(users_collection.find({"role": "admin"}))
-    for a in admins: a["_id"] = str(a["_id"])
+    admins = list(users_collection.find({"role": {"$in": ["admin", "super_admin", "department_admin", "leader", "constituency_admin"]}}))
+    for a in admins:
+        a["_id"] = str(a["_id"])
+        a.pop("password", None)
     return admins
+
+@app.delete("/api/admins/{email}")
+def delete_admin(email: str):
+    target_email = email.strip().lower()
+    if target_email in ["admin@admk.org", "varunthanwar@gmail.com"]:
+        raise HTTPException(status_code=400, detail="Cannot revoke primary Super Admin account")
+    res = users_collection.delete_one({"email": target_email})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Admin not found")
+    return {"message": f"Admin {target_email} revoked successfully"}
 
 # ================================================================
 # /api/feedback — SUBMIT FEEDBACK with 4-Layer Image Validation

@@ -1,21 +1,31 @@
-// ============================================================
-// CreateAdminPage.jsx — Exact React conversion of createadmin.html
-// All districts, success modal, form submit logic preserved
-// ============================================================
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API } from '../config';
 
-// All 38 Tamil Nadu districts — exact from createadmin.html
-const TN_DISTRICTS = [
-  'Chennai','Ariyalur','Chengalpattu','Coimbatore','Cuddalore',
-  'Dharmapuri','Dindigul','Erode','Kallakurichi','Kancheepuram',
-  'Karur','Krishnagiri','Madurai','Mayiladuthurai','Nagapattinam',
-  'Namakkal','Nilgiris','Perambalur','Pudukkottai','Ramanathapuram',
-  'Ranipet','Salem','Sivaganga','Tenkasi','Thanjavur','Theni',
-  'Thoothukudi','Tiruchirappalli','Tirunelveli','Tirupathur',
-  'Tiruppur','Tiruvallur','Tiruvannamalai','Tiruvarur','Vellore',
-  'Viluppuram','Virudhunagar',
+const SALEM_DEPARTMENTS = [
+  'Infrastructure & Public Works',
+  'Education & Youth Affairs',
+  'Health, Safety & Welfare',
+  'Agriculture & Rural Development',
+  'Government Schemes & Governance',
+  'Party Affairs & Leadership',
+  'Governance',
+  'Leadership',
+  'Local Issues',
+  'Infrastructure',
+  'Education',
+  'Healthcare',
+  'Employment',
+  'Agriculture',
+  "Women's Welfare",
+  'Youth Development',
+  'Public Safety',
+  'Government Schemes',
+  'Party Organisation',
+  'Candidate Feedback',
+  'Election Issues',
+  'Suggestions',
+  'Complaints'
 ];
 
 export default function CreateAdminPage() {
@@ -25,11 +35,31 @@ export default function CreateAdminPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [district, setDistrict] = useState('Chennai');
-  const [btnText, setBtnText] = useState('CONFIRM ASSIGNMENT');
+  const [assignedDepartment, setAssignedDepartment] = useState(SALEM_DEPARTMENTS[0]);
+  const [btnText, setBtnText] = useState('CONFIRM DEPARTMENT ASSIGNMENT');
   const [showModal, setShowModal] = useState(false);
+  const [adminList, setAdminList] = useState([]);
+  const [loadingAdmins, setLoadingAdmins] = useState(false);
 
-  // ─── handleSubmit — exact mirror from createadmin.html ──────
+  useEffect(() => {
+    fetchAdmins();
+  }, []);
+
+  async function fetchAdmins() {
+    setLoadingAdmins(true);
+    try {
+      const res = await fetch(`${API}/api/admins`);
+      if (res.ok) {
+        const data = await res.json();
+        setAdminList(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingAdmins(false);
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setBtnText('PROCESSING...');
@@ -38,8 +68,9 @@ export default function CreateAdminPage() {
       name,
       email,
       password,
-      district,
-      role: 'admin',
+      district: 'Salem',
+      assigned_department: assignedDepartment,
+      role: 'department_admin',
     };
 
     try {
@@ -49,24 +80,47 @@ export default function CreateAdminPage() {
         body: JSON.stringify(adminData),
       });
 
-      if (res.ok) {
-        // Show success modal — exact behavior from createadmin.html
+      const data = await res.json();
+
+      if (res.ok && !data.error) {
         setShowModal(true);
+        setName('');
+        setEmail('');
+        setPassword('');
+        fetchAdmins();
       } else {
-        alert('Error creating admin. Email might already exist.');
-        setBtnText('CONFIRM ASSIGNMENT');
+        alert(data.error || 'Error creating department admin. Email might already exist.');
       }
     } catch (err) {
       console.error(err);
       alert('Server Error');
-      setBtnText('CONFIRM ASSIGNMENT');
+    } finally {
+      setBtnText('CONFIRM DEPARTMENT ASSIGNMENT');
+    }
+  }
+
+  async function handleRevokeAdmin(adminEmail) {
+    if (!window.confirm(`Are you sure you want to revoke admin account for ${adminEmail}?`)) return;
+    try {
+      const res = await fetch(`${API}/api/admins/${encodeURIComponent(adminEmail)}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        alert('Admin account revoked successfully.');
+        fetchAdmins();
+      } else {
+        const d = await res.json();
+        alert(d.detail || 'Failed to revoke admin account.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Failed to revoke admin account.');
     }
   }
 
   return (
-    // ─── createadmin.html body structure — exact ─────────────────
     <div
-      className="min-h-screen relative flex items-center justify-center p-4 text-[#064e3b]"
+      className="min-h-screen relative flex flex-col items-center justify-start p-4 md:p-8 text-[#064e3b]"
       style={{
         fontFamily: "'Manrope', sans-serif",
         background: 'linear-gradient(135deg, #f0fdf4 0%, #e8fbf0 50%, #dcfce7 100%)',
@@ -77,9 +131,7 @@ export default function CreateAdminPage() {
       <div className="fixed inset-0 grid-bg pointer-events-none"></div>
 
       {/* Floating blobs */}
-      <div
-        className="absolute top-20 left-20 w-32 h-32 bg-emerald-800/8 rounded-full blur-3xl animate-float"
-      ></div>
+      <div className="absolute top-20 left-20 w-32 h-32 bg-emerald-800/8 rounded-full blur-3xl animate-float"></div>
       <div
         className="absolute bottom-20 right-20 w-48 h-48 bg-emerald-800/8 rounded-full blur-3xl animate-float"
         style={{ animationDelay: '-3s' }}
@@ -100,49 +152,49 @@ export default function CreateAdminPage() {
             <div className="w-20 h-20 bg-emerald-100 text-[#10b981] border border-emerald-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-4xl">verified_user</span>
             </div>
-            <h3 className="text-2xl font-bold text-[#064e3b] mb-2">Admin Created</h3>
+            <h3 className="text-2xl font-bold text-[#064e3b] mb-2">Department Admin Assigned</h3>
             <p className="text-[#047857] mb-6 text-sm font-semibold">
-              Credentials have been saved and notification sent successfully.
+              Credentials and department queue permissions have been granted successfully.
             </p>
             <button
-              onClick={() => navigate('/super-admin')}
+              onClick={() => setShowModal(false)}
               className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-all"
             >
-              Return to Panel
+              Continue Managing
             </button>
           </div>
         </div>
       )}
 
-      {/* ── Main Form ── */}
-      <main className="relative z-10 w-full max-w-2xl">
+      {/* ── Main Container ── */}
+      <main className="relative z-10 w-full max-w-4xl space-y-10 my-4">
 
         {/* Header */}
-        <header className="text-center mb-10">
+        <header className="text-center">
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); navigate('/super-admin'); }}
             className="inline-flex items-center text-[#047857] hover:text-[#064e3b] transition mb-4 text-sm font-bold uppercase tracking-widest"
           >
             <span className="material-symbols-outlined text-base mr-2">arrow_back</span>
-            Back to Panel
+            Back to Super Admin Panel
           </a>
-          <h1 className="text-5xl font-extrabold text-[#064e3b] tracking-tighter">
-            Assign New Admin
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-[#064e3b] tracking-tighter uppercase">
+            Assign Department Admin
           </h1>
           <p className="text-[#047857] mt-2 font-medium">
-            Grant specialized access to district authorities
+            Salem District Master Portal • Assign department-wise grievance routing authorities
           </p>
         </header>
 
-        {/* Card with Form */}
+        {/* Form Card */}
         <div
           className="rounded-[3rem] p-8 lg:p-12"
           style={{
-            background: 'rgba(255, 255, 255, 0.75)',
+            background: 'rgba(255, 255, 255, 0.85)',
             backdropFilter: 'blur(24px)',
             border: '1px solid rgba(16, 185, 129, 0.2)',
-            boxShadow: '0 25px 50px -12px rgba(22, 163, 74, 0.04)',
+            boxShadow: '0 25px 50px -12px rgba(22, 163, 74, 0.06)',
           }}
         >
           <form
@@ -152,40 +204,17 @@ export default function CreateAdminPage() {
           >
 
             {/* Full Name */}
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-xs font-black text-[#047857] mb-2 uppercase tracking-widest ml-2">
                 Full Name
               </label>
               <input
                 type="text"
-                id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Enter full name"
-                style={{
-                  width: '100%',
-                  padding: '1.25rem',
-                  borderRadius: '1rem',
-                  outline: 'none',
-                  fontWeight: 600,
-                  color: '#064e3b',
-                  background: '#ffffff',
-                  border: '1px solid rgba(16, 185, 129, 0.2)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#10b981';
-                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(-2px)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                  e.target.style.boxShadow = 'none';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(0)';
-                }}
+                className="w-full p-4 rounded-2xl outline-none font-semibold text-[#064e3b] bg-white border border-emerald-500/20 focus:border-emerald-500 transition shadow-sm"
               />
             </div>
 
@@ -196,34 +225,11 @@ export default function CreateAdminPage() {
               </label>
               <input
                 type="email"
-                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="admin@tn.gov.in"
-                style={{
-                  width: '100%',
-                  padding: '1.25rem',
-                  borderRadius: '1rem',
-                  outline: 'none',
-                  fontWeight: 600,
-                  color: '#064e3b',
-                  background: '#ffffff',
-                  border: '1px solid rgba(16, 185, 129, 0.2)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#10b981';
-                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(-2px)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                  e.target.style.boxShadow = 'none';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(0)';
-                }}
+                placeholder="infra_admin@salem.gov.in"
+                className="w-full p-4 rounded-2xl outline-none font-semibold text-[#064e3b] bg-white border border-emerald-500/20 focus:border-emerald-500 transition shadow-sm"
               />
             </div>
 
@@ -234,78 +240,34 @@ export default function CreateAdminPage() {
               </label>
               <input
                 type="password"
-                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                style={{
-                  width: '100%',
-                  padding: '1.25rem',
-                  borderRadius: '1rem',
-                  outline: 'none',
-                  fontWeight: 600,
-                  color: '#064e3b',
-                  background: '#ffffff',
-                  border: '1px solid rgba(16, 185, 129, 0.2)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#10b981';
-                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(-2px)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                  e.target.style.boxShadow = 'none';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(0)';
-                }}
+                className="w-full p-4 rounded-2xl outline-none font-semibold text-[#064e3b] bg-white border border-emerald-500/20 focus:border-emerald-500 transition shadow-sm"
               />
             </div>
 
-            {/* Assigned District */}
-            <div className="md:col-span-2">
+            {/* Assigned Department */}
+            <div>
               <label className="block text-xs font-black text-[#047857] mb-2 uppercase tracking-widest ml-2">
-                Assigned District
+                Assigned Department (Salem District)
               </label>
               <select
-                id="district"
-                value={district}
-                onChange={(e) => setDistrict(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '1.25rem',
-                  borderRadius: '1rem',
-                  outline: 'none',
-                  fontWeight: 600,
-                  color: '#064e3b',
-                  background: '#ffffff',
-                  border: '1px solid rgba(16, 185, 129, 0.2)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#10b981';
-                  e.target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.15)';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(-2px)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                  e.target.style.boxShadow = 'none';
-                  e.target.style.background = '#ffffff';
-                  e.target.style.transform = 'translateY(0)';
-                }}
+                value={assignedDepartment}
+                onChange={(e) => setAssignedDepartment(e.target.value)}
+                className="w-full p-4 rounded-2xl outline-none font-semibold text-[#064e3b] bg-white border border-emerald-500/20 focus:border-emerald-500 transition shadow-sm cursor-pointer"
               >
-                {TN_DISTRICTS.map((d) => (
-                  <option key={d} value={d} className="bg-white text-emerald-950">{d}</option>
+                {SALEM_DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept} className="bg-white text-emerald-950">
+                    {dept}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Submit Button */}
-            <div className="md:col-span-2 pt-4">
+            <div className="md:col-span-2 pt-2">
               <button
                 type="submit"
                 className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-lg transition transform active:scale-95"
@@ -315,6 +277,89 @@ export default function CreateAdminPage() {
             </div>
 
           </form>
+        </div>
+
+        {/* ── Sub-Admin Management Table ── */}
+        <div
+          className="rounded-[3rem] p-8 lg:p-10 space-y-6"
+          style={{
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            boxShadow: '0 25px 50px -12px rgba(22, 163, 74, 0.06)',
+          }}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-100 pb-4">
+            <div>
+              <span className="text-3xs font-black text-emerald-600 uppercase tracking-widest block">
+                Active Permissions
+              </span>
+              <h3 className="text-2xl font-black text-[#064e3b] uppercase">
+                Active Department Admins
+              </h3>
+            </div>
+            <button
+              onClick={fetchAdmins}
+              className="px-4 py-2 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold uppercase hover:bg-emerald-200 transition"
+            >
+              Refresh Table
+            </button>
+          </div>
+
+          {loadingAdmins ? (
+            <div className="text-center py-8 text-emerald-700 font-bold text-sm">
+              Loading active admins...
+            </div>
+          ) : adminList.length === 0 ? (
+            <div className="text-center py-8 text-emerald-700 font-semibold text-sm">
+              No assigned department admins found. Use the form above to assign one.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-emerald-200 text-3xs font-black text-emerald-800 uppercase tracking-wider">
+                    <th className="py-3 px-4">Admin Name</th>
+                    <th className="py-3 px-4">Email</th>
+                    <th className="py-3 px-4">Role / Type</th>
+                    <th className="py-3 px-4">Assigned Scope</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-emerald-100 text-xs font-semibold text-[#064e3b]">
+                  {adminList.map((adm) => {
+                    const isSuper = adm.email === 'admin@admk.org' || adm.email === 'varunthanwar@gmail.com' || adm.role === 'admin';
+                    return (
+                      <tr key={adm._id || adm.email} className="hover:bg-emerald-50/50 transition">
+                        <td className="py-3.5 px-4 font-extrabold">{adm.name || 'Admin'}</td>
+                        <td className="py-3.5 px-4 font-mono text-emerald-900">{adm.email}</td>
+                        <td className="py-3.5 px-4">
+                          <span className={`px-3 py-1 rounded-full text-3xs font-black uppercase tracking-wider ${isSuper ? 'bg-amber-100 text-amber-950 border border-amber-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'}`}>
+                            {isSuper ? 'SUPER ADMIN' : 'DEPARTMENT ADMIN'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-bold text-emerald-800">
+                          {isSuper ? 'Salem District (Master)' : (adm.assigned_department || 'Department Queue')}
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          {!isSuper ? (
+                            <button
+                              onClick={() => handleRevokeAdmin(adm.email)}
+                              className="px-3.5 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white font-bold text-3xs uppercase tracking-wider transition"
+                            >
+                              Revoke
+                            </button>
+                          ) : (
+                            <span className="text-3xs text-slate-400 font-bold uppercase tracking-wider">Master Key</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </main>
     </div>

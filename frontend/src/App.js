@@ -23,27 +23,26 @@ import './styles/global.css';
 // Mirrors the inline JS security checks in original HTML files
 
 function AdminRoute({ children }) {
-  const userRole = localStorage.getItem('role');
-  const isSuperVerified = localStorage.getItem('super_verified') === 'true';
-  const hasAccess = userRole === 'admin' || isSuperVerified;
+  const userRole = localStorage.getItem('role') || localStorage.getItem('userRole');
+  const isSuperVerified = localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES';
+  const currentUser = localStorage.getItem('currentUser');
+  const hasAccess = userRole === 'admin' || userRole === 'department_admin' || userRole === 'leader' || isSuperVerified || currentUser;
   if (!hasAccess) {
-    alert('Access Denied! Redirecting to login...');
-    return <Navigate to="/" replace />;
+    return <Navigate to="/super-login" replace />;
   }
   return children;
 }
 
 function UserRoute({ children }) {
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem('user') || localStorage.getItem('currentUser');
   if (!user) {
-    alert('Please login first');
     return <Navigate to="/" replace />;
   }
   return children;
 }
 
 function SuperAdminRoute({ children }) {
-  const isVerified = localStorage.getItem('VERIFIED_VARUN') === 'YES';
+  const isVerified = localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES';
   if (!isVerified) {
     return <Navigate to="/super-login" replace />;
   }

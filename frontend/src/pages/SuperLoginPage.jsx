@@ -43,6 +43,9 @@ export default function SuperLoginPage() {
 
       if (res.ok && data.message === 'Login success') {
         localStorage.setItem('super_verified', 'true');
+        localStorage.setItem('VERIFIED_VARUN', 'YES');
+        localStorage.setItem('userRole', data.role || 'admin');
+        localStorage.setItem('role', data.role || 'admin');
         localStorage.setItem('currentUser', JSON.stringify({
           email: data.email || e_val,
           name: data.name || 'Admin',
@@ -50,27 +53,28 @@ export default function SuperLoginPage() {
           district: data.district || 'Salem',
           assigned_department: data.assigned_department || ''
         }));
-        localStorage.setItem('userRole', data.role || 'admin');
 
         setTimeout(() => {
           if (data.role === 'department_admin') {
             navigate('/critical-issues');
           } else {
-            navigate('/super-admin');
+            navigate('/dashboard');
           }
         }, 800);
       } else {
         // Fallback check for static master keys
         if ((e_val === 'varunthanwar@gmail.com' && p_val === '181818') || (e_val === 'admin@admk.org' && p_val === 'admin123')) {
           localStorage.setItem('super_verified', 'true');
+          localStorage.setItem('VERIFIED_VARUN', 'YES');
           localStorage.setItem('userRole', 'admin');
+          localStorage.setItem('role', 'admin');
           localStorage.setItem('currentUser', JSON.stringify({
             email: e_val,
             name: e_val === 'admin@admk.org' ? 'Super Admin' : 'Varun Thanwar',
             role: 'admin',
             district: 'Salem'
           }));
-          setTimeout(() => navigate('/super-admin'), 800);
+          setTimeout(() => navigate('/dashboard'), 800);
         } else {
           setBtnText('INITIALIZE SESSION');
           alert(language === 'English' ? '⚠️ Access Denied: Invalid Credentials' : '⚠️ அணுகல் மறுக்கப்பட்டது: தவறான சான்றுகள்');
@@ -80,8 +84,10 @@ export default function SuperLoginPage() {
       console.error(err);
       if ((e_val === 'varunthanwar@gmail.com' && p_val === '181818') || (e_val === 'admin@admk.org' && p_val === 'admin123')) {
         localStorage.setItem('super_verified', 'true');
+        localStorage.setItem('VERIFIED_VARUN', 'YES');
         localStorage.setItem('userRole', 'admin');
-        setTimeout(() => navigate('/super-admin'), 800);
+        localStorage.setItem('role', 'admin');
+        setTimeout(() => navigate('/dashboard'), 800);
       } else {
         setBtnText('INITIALIZE SESSION');
         alert(language === 'English' ? '⚠️ Connection error' : '⚠️ இணைப்புப் பிழை');

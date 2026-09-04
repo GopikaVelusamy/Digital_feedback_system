@@ -15,6 +15,7 @@ import FeedbackPage from './pages/FeedbackPage';
 import FeedbackDetailPage from './pages/FeedbackDetailPage';
 import SuperAdminPage from './pages/SuperAdminPage';
 import CreateAdminPage from './pages/CreateAdminPage';
+import CreateConstituencyAdminPage from './pages/CreateConstituencyAdminPage';
 
 // Import global CSS (equivalent to style.css in original project)
 import './styles/global.css';
@@ -113,6 +114,16 @@ export default function App() {
           element={
             <SuperAdminRoute>
               <CreateAdminPage />
+            </SuperAdminRoute>
+          }
+        />
+
+        {/* Create constituency admin form */}
+        <Route
+          path="/create-constituency-admin"
+          element={
+            <SuperAdminRoute>
+              <CreateConstituencyAdminPage />
             </SuperAdminRoute>
           }
         />

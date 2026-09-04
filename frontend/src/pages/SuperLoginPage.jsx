@@ -73,16 +73,29 @@ export default function SuperLoginPage() {
     }
 
     // ── LOCAL FAIL-SAFE VERIFICATION ──
-    const localAdmins = JSON.parse(localStorage.getItem('local_dept_admins') || '[]');
-    const matchedLocal = localAdmins.find(a => a.email.toLowerCase() === e_lower && a.password === p_val);
+    const localDeptAdmins = JSON.parse(localStorage.getItem('local_dept_admins') || '[]');
+    const localConstAdmins = JSON.parse(localStorage.getItem('local_constituency_admins') || '[]');
 
-    if (matchedLocal) {
+    const matchedDept = localDeptAdmins.find(a => a.email.toLowerCase() === e_lower && a.password === p_val);
+    if (matchedDept) {
       performLogin({
-        email: matchedLocal.email,
-        name: matchedLocal.name || 'Department Admin',
+        email: matchedDept.email,
+        name: matchedDept.name || 'Department Admin',
         role: 'department_admin',
         district: 'Salem',
-        assigned_department: matchedLocal.assigned_department || 'Infrastructure & Public Works'
+        assigned_department: matchedDept.assigned_department || 'Infrastructure & Public Works'
+      });
+      return;
+    }
+
+    const matchedConst = localConstAdmins.find(a => a.email.toLowerCase() === e_lower && a.password === p_val);
+    if (matchedConst) {
+      performLogin({
+        email: matchedConst.email,
+        name: matchedConst.name || 'Constituency Admin',
+        role: 'constituency_admin',
+        district: 'Salem',
+        assigned_constituency: matchedConst.assigned_constituency || 'Salem South'
       });
       return;
     }

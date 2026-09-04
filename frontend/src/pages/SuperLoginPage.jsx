@@ -35,14 +35,19 @@ export default function SuperLoginPage() {
     setBtnText('VERIFYING ENCRYPTED KEY...');
 
     function performLogin(userObj) {
-      localStorage.setItem('super_verified', 'true');
-      localStorage.setItem('VERIFIED_VARUN', 'YES');
+      if (userObj.role === 'admin') {
+        localStorage.setItem('super_verified', 'true');
+        localStorage.setItem('VERIFIED_VARUN', 'YES');
+      } else {
+        localStorage.removeItem('super_verified');
+        localStorage.removeItem('VERIFIED_VARUN');
+      }
       localStorage.setItem('userRole', userObj.role || 'admin');
       localStorage.setItem('role', userObj.role || 'admin');
       localStorage.setItem('currentUser', JSON.stringify(userObj));
 
       setTimeout(() => {
-        if (userObj.role === 'department_admin') {
+        if (userObj.role === 'department_admin' || userObj.role === 'constituency_admin') {
           navigate('/critical-issues');
         } else {
           navigate('/dashboard');
@@ -64,7 +69,8 @@ export default function SuperLoginPage() {
           name: data.name || 'Admin',
           role: data.role || 'admin',
           district: data.district || 'Salem',
-          assigned_department: data.assigned_department || ''
+          assigned_department: data.assigned_department || '',
+          assigned_constituency: data.assigned_constituency || data.constituency || ''
         });
         return;
       }
@@ -117,6 +123,17 @@ export default function SuperLoginPage() {
         role: 'department_admin',
         district: 'Salem',
         assigned_department: 'Infrastructure & Public Works'
+      });
+      return;
+    }
+
+    if ((e_lower === 'constituency@admk.org' || e_lower === 'salemsouth@admk.org') && (p_val === 'admin123' || p_val === '123')) {
+      performLogin({
+        email: e_lower,
+        name: 'Salem South Constituency Admin',
+        role: 'constituency_admin',
+        district: 'Salem',
+        assigned_constituency: 'Salem South'
       });
       return;
     }

@@ -504,6 +504,14 @@ function matchesDepartment(f, deptName) {
   return true;
 }
 
+function matchesConstituency(f, constName) {
+  if (!constName || constName === 'All') return true;
+  const target = constName.toLowerCase().trim();
+  const fConst = (f.location?.constituency || f.constituency || f.location?.constituency_en || '').toLowerCase().trim();
+  if (!fConst) return false;
+  return fConst === target || fConst.includes(target) || target.includes(fConst);
+}
+
 // ─────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const navigate   = useNavigate();
@@ -605,6 +613,8 @@ export default function DashboardPage() {
       const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
       if (currentUser?.role === 'department_admin' && currentUser?.assigned_department) {
         url.searchParams.set('department', currentUser.assigned_department);
+      } else if (currentUser?.role === 'constituency_admin' && currentUser?.assigned_constituency) {
+        url.searchParams.set('constituency', currentUser.assigned_constituency);
       }
 
       const res  = await fetch(url.toString());
@@ -667,6 +677,8 @@ export default function DashboardPage() {
       const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
       if (currentUser?.role === 'department_admin' && currentUser?.assigned_department) {
         list = list.filter(f => matchesDepartment(f, currentUser.assigned_department));
+      } else if (currentUser?.role === 'constituency_admin' && currentUser?.assigned_constituency) {
+        list = list.filter(f => matchesConstituency(f, currentUser.assigned_constituency));
       }
 
       setSolved(list.filter(f => f.status === 'Solved' || f.status === 'Resolved').length);

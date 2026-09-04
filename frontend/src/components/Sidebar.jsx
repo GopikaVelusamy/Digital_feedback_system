@@ -56,10 +56,11 @@ export default function Sidebar({ variant = 'admin' }) {
 
   const loggedUserRaw = localStorage.getItem('currentUser');
   const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
-  const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin';
+  const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin' && currentUser?.role !== 'constituency_admin';
   const isDeptAdmin = currentUser?.role === 'department_admin';
+  const isConstAdmin = currentUser?.role === 'constituency_admin';
   const userName = currentUser?.name || (isSuperUser ? 'Super Admin' : 'Admin User');
-  const userDept = currentUser?.assigned_department || (isSuperUser ? 'Salem Master' : 'Department Admin');
+  const userDept = currentUser?.assigned_constituency ? `${currentUser.assigned_constituency} Constituency` : currentUser?.assigned_department || (isSuperUser ? 'Salem Master' : 'Admin User');
 
   const menuItemsSuper = [
     { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', active: isDashboard },
@@ -78,7 +79,7 @@ export default function Sidebar({ variant = 'admin' }) {
     { path: '/super-login', icon: 'admin_panel_settings', label: 'Super Admin', active: location.pathname === '/super-login' || location.pathname === '/super_login' },
   ];
 
-  const menuItems = isSuperUser ? menuItemsSuper : isDeptAdmin ? menuItemsDeptAdmin : menuItemsAdmin;
+  const menuItems = isSuperUser ? menuItemsSuper : (isDeptAdmin || isConstAdmin) ? menuItemsDeptAdmin : menuItemsAdmin;
 
   return (
     <>

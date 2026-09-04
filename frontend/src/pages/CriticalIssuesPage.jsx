@@ -303,16 +303,26 @@ function matchesDepartment(f, deptName) {
   return true;
 }
 
+function matchesConstituency(f, constName) {
+  if (!constName || constName === 'All') return true;
+  const target = constName.toLowerCase().trim();
+  const fConst = (f.location?.constituency || f.constituency || f.location?.constituency_en || '').toLowerCase().trim();
+  if (!fConst) return false;
+  return fConst === target || fConst.includes(target) || target.includes(fConst);
+}
+
 // ── Main page ─────────────────────────────────────────────────
 export default function CriticalIssuesPage() {
   const navigate  = useNavigate();
   const location  = useLocation();
 
-  // Department Admin Scope (Defined at component top)
+  // Department / Constituency Admin Scope (Defined at component top)
   const loggedUserRaw = localStorage.getItem('currentUser');
   const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
   const isDeptAdmin = currentUser?.role === 'department_admin' && currentUser?.assigned_department;
   const assignedDeptName = currentUser?.assigned_department || '';
+  const isConstAdmin = currentUser?.role === 'constituency_admin' && currentUser?.assigned_constituency;
+  const assignedConstName = currentUser?.assigned_constituency || '';
 
   // Language state
   const [language, setLanguageState] = useState(getLanguage());
@@ -382,6 +392,8 @@ export default function CriticalIssuesPage() {
         setAllFeedbacks(data);
         const scoped = (isDeptAdmin && assignedDeptName)
           ? data.filter(f => matchesDepartment(f, assignedDeptName))
+          : (isConstAdmin && assignedConstName)
+          ? data.filter(f => matchesConstituency(f, assignedConstName))
           : data;
 
         renderDepartmentRankings(scoped);
@@ -398,17 +410,21 @@ export default function CriticalIssuesPage() {
     } finally {
       setLoading(false);
     }
-  }, [isDeptAdmin, assignedDeptName]);
+  }, [isDeptAdmin, assignedDeptName, isConstAdmin, assignedConstName]);
 
   useEffect(() => { loadCriticalData(0); }, [loadCriticalData]);
 
-  // ── Scoped Feedbacks for Department Admin ─────────────────
-  const scopeFeedbacks = isDeptAdmin && assignedDeptName 
+  // ── Scoped Feedbacks for Department Admin & Constituency Admin ─────────────────
+  const scopeFeedbacks = (isDeptAdmin && assignedDeptName)
     ? allFeedbacks.filter(f => matchesDepartment(f, assignedDeptName))
+    : (isConstAdmin && assignedConstName)
+    ? allFeedbacks.filter(f => matchesConstituency(f, assignedConstName))
     : allFeedbacks;
 
-  const priorityScopeFeedbacks = isDeptAdmin && assignedDeptName
+  const priorityScopeFeedbacks = (isDeptAdmin && assignedDeptName)
     ? priorityFeedbacks.filter(f => matchesDepartment(f, assignedDeptName))
+    : (isConstAdmin && assignedConstName)
+    ? priorityFeedbacks.filter(f => matchesConstituency(f, assignedConstName))
     : priorityFeedbacks;
 
   // ── Filtered feed ─────────────────────────────────────────
@@ -513,6 +529,30 @@ export default function CriticalIssuesPage() {
             <div className="flex items-center gap-3">
               <span className="px-4 py-2 rounded-full bg-emerald-700/80 border border-emerald-500/30 text-xs font-black uppercase text-emerald-200 tracking-wider">
                 {filteredFeed.length} Assigned Petitions
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Constituency Admin Assigned Queue Banner */}
+        {isConstAdmin && (
+          <div className="w-full bg-gradient-to-r from-emerald-800 to-emerald-950 text-white p-5 rounded-3xl shadow-lg border border-amber-400/40 flex flex-wrap items-center justify-between gap-4 mb-6 animate-fadeIn">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center justify-center font-bold text-2xl shadow-inner">
+                🗳️
+              </div>
+              <div>
+                <span className="text-3xs font-black text-amber-400 uppercase tracking-widest block">
+                  Assigned Constituency Queue • Salem District
+                </span>
+                <h3 className="text-lg font-black uppercase text-white tracking-tight">
+                  {assignedConstName} Constituency
+                </h3>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="px-4 py-2 rounded-full bg-emerald-700/80 border border-emerald-500/30 text-xs font-black uppercase text-emerald-200 tracking-wider">
+                {filteredFeed.length} Constituency Petitions
               </span>
             </div>
           </div>

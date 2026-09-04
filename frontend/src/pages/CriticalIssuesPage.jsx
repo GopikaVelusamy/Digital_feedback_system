@@ -426,11 +426,11 @@ export default function CriticalIssuesPage() {
     return true;
   });
 
-  const total = allFeedbacks.length;
-  const flagged = allFeedbacks.filter(f => (f.image_validation?.overall_risk || 0) >= 65).length;
-  const critCount = allFeedbacks.filter(f => (f.feedback?.rating || f.rating || 5) <= 2).length;
-  const districts = [...new Set(allFeedbacks.map(f => f.location?.district || f.district).filter(Boolean))].sort();
-  const allCategories = [...new Set(allFeedbacks.map(f => f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type).filter(Boolean))].sort();
+  const total = scopeFeedbacks.length;
+  const flagged = scopeFeedbacks.filter(f => (f.image_validation?.overall_risk || 0) >= 65).length;
+  const critCount = scopeFeedbacks.filter(f => (f.feedback?.rating || f.rating || 5) <= 2).length;
+  const districts = [...new Set(scopeFeedbacks.map(f => f.location?.district || f.district).filter(Boolean))].sort();
+  const allCategories = [...new Set(scopeFeedbacks.map(f => f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type).filter(Boolean))].sort();
 
   const totalPages = Math.ceil(filteredFeed.length / PER_PAGE);
   const pageFeed = filteredFeed.slice(page * PER_PAGE, (page + 1) * PER_PAGE);

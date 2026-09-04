@@ -412,7 +412,7 @@ async def get_validation_report(feedback_id: str):
 
 # ── Dashboard ────────────────────────────────────────────────
 @app.get("/api/dashboard")
-def dashboard(district: str = None, constituency: str = None, dateRange: str = None):
+def dashboard(district: str = None, constituency: str = None, dateRange: str = None, department: str = None):
     query = {}
     if district:
         query["$or"] = [{"district": district}, {"location.district": district}]
@@ -433,6 +433,22 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
         except Exception as e: print(f"Date parse error: {e}")
 
     feedbacks_list = list(feedback_collection.find(query))
+
+    if department:
+        dept_lower = department.lower()
+        def matches_dept(f):
+            cat = str(f.get("type_of_feedback") or f.get("category") or (f.get("ai") or {}).get("category") or "General").lower().strip()
+            if "infra" in dept_lower or "public works" in dept_lower:
+                return any(k in cat for k in ["road", "infra", "water", "electric", "power", "sanitat", "local", "complaint", "general", "public", "other"])
+            if "health" in dept_lower or "safety" in dept_lower or "welfare" in dept_lower:
+                return any(k in cat for k in ["health", "safety", "women", "medical", "security", "hospital"])
+            if "education" in dept_lower or "youth" in dept_lower:
+                return any(k in cat for k in ["educat", "youth", "employ", "school", "college"])
+            if "party" in dept_lower or "leader" in dept_lower:
+                return any(k in cat for k in ["party", "leader", "candidate", "election"])
+            return True
+        feedbacks_list = [f for f in feedbacks_list if matches_dept(f)]
+
     pos = neu = neg = 0
     departments = {
         "roads & infrastructure": {"pos":0,"neu":0,"neg":0},
@@ -446,6 +462,7 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
         "electricity":"electricity & power","safety":"public security",
         "transport":"roads & infrastructure","health":"public security",
         "education":"public security","services":"public security",
+        "local issues":"roads & infrastructure", "local": "roads & infrastructure"
     }
     for f in feedbacks_list:
         rate = f.get("feedback",{}).get("rating") or f.get("rating") or 0

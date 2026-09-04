@@ -469,7 +469,40 @@ tnFeatures.forEach(f => {
     </div>
   );
 }
-// ── End ADDITION 1 ─────────────────────────────────────────────
+// ── Helper for department category matching across Salem District ───────────
+function matchesDepartment(f, deptName) {
+  if (!deptName) return true;
+  const targetDept = deptName.toLowerCase().trim();
+  const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
+  const cat = catRaw.toLowerCase().trim();
+
+  if (cat.includes(targetDept) || targetDept.includes(cat)) return true;
+
+  if (targetDept.includes('infra') || targetDept.includes('public works')) {
+    return cat.includes('road') || cat.includes('infra') || cat.includes('water') || 
+           cat.includes('electric') || cat.includes('power') || cat.includes('sanitat') || 
+           cat.includes('local') || cat.includes('complaint') || cat.includes('general') ||
+           cat.includes('public') || cat.includes('other');
+  }
+  if (targetDept.includes('health') || targetDept.includes('safety') || targetDept.includes('welfare')) {
+    return cat.includes('health') || cat.includes('safety') || cat.includes('women') || 
+           cat.includes('medical') || cat.includes('security') || cat.includes('hospital');
+  }
+  if (targetDept.includes('education') || targetDept.includes('youth')) {
+    return cat.includes('educat') || cat.includes('youth') || cat.includes('employ') || 
+           cat.includes('school') || cat.includes('college');
+  }
+  if (targetDept.includes('agricultur') || targetDept.includes('rural')) {
+    return cat.includes('agri') || cat.includes('farm') || cat.includes('rural');
+  }
+  if (targetDept.includes('scheme') || targetDept.includes('govern')) {
+    return cat.includes('scheme') || cat.includes('govern') || cat.includes('suggest');
+  }
+  if (targetDept.includes('party') || targetDept.includes('leader')) {
+    return cat.includes('party') || cat.includes('leader') || cat.includes('candidate') || cat.includes('election');
+  }
+  return true;
+}
 
 // ─────────────────────────────────────────────────────────────
 export default function DashboardPage() {
@@ -567,6 +600,13 @@ export default function DashboardPage() {
       if (dist)   url.searchParams.set('district',     dist);
       if (consti) url.searchParams.set('constituency', consti);
       if (dr)     url.searchParams.set('dateRange',    dr);
+      
+      const loggedUserRaw = localStorage.getItem('currentUser');
+      const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+      if (currentUser?.role === 'department_admin' && currentUser?.assigned_department) {
+        url.searchParams.set('department', currentUser.assigned_department);
+      }
+
       const res  = await fetch(url.toString());
       const data = await res.json();
       const tot  = parseInt(data.total_feedbacks) || 0;
@@ -602,8 +642,15 @@ export default function DashboardPage() {
   const loadStatuses = useCallback(async () => {
     try {
       const res  = await fetch(`${API}/api/feedbacks`);
-      const list = await res.json();
-      setSolved(list.filter(f => f.status === 'Solved').length);
+      let list = await res.json();
+      
+      const loggedUserRaw = localStorage.getItem('currentUser');
+      const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+      if (currentUser?.role === 'department_admin' && currentUser?.assigned_department) {
+        list = list.filter(f => matchesDepartment(f, currentUser.assigned_department));
+      }
+
+      setSolved(list.filter(f => f.status === 'Solved' || f.status === 'Resolved').length);
       setPending(list.filter(f => f.status === 'Pending').length);
       setSolving(list.filter(f => f.status === 'In Progress').length);
       // Count per-district — supports both flat (f.district) and nested (f.location.district)

@@ -23,7 +23,7 @@ export default function SuperLoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [btnText, setBtnText] = useState('Super Admin');
+  const [btnText, setBtnText] = useState('Admin Sign In');
 
   // Unified Database Login with Local Fail-Safe Verification
   async function login(e) {
@@ -138,7 +138,7 @@ export default function SuperLoginPage() {
       return;
     }
 
-    setBtnText('SUPER ADMIN');
+    setBtnText('Admin Sign In');
     alert(language === 'English' ? '⚠️ Access Denied: Invalid Email or Password' : '⚠️ அணுகல் மறுக்கப்பட்டது: தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்');
   }
 
@@ -363,8 +363,8 @@ export default function SuperLoginPage() {
               e.target.style.background = '#15803d';
             }}
           >
-            {btnText === 'Super Admin'
-              ? (language === 'English' ? 'Super Admin' : 'முதன்மை நிர்வாகி')
+            {btnText === 'Admin Sign In'
+              ? (language === 'English' ? 'ADMIN SIGN IN' : 'நிர்வாகி உள்நுழைவு')
               : (btnText === 'INITIALIZE SESSION'
                   ? (language === 'English' ? 'INITIALIZE SESSION' : 'அமர்வைத் தொடங்கு')
                   : (language === 'English' ? 'VERIFYING ENCRYPTED KEY...' : 'விசையை சரிபார்க்கிறது...'))}

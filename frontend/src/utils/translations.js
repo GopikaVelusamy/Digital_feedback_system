@@ -25,7 +25,7 @@ export const translationData = {
     password: "Password",
     loginBtn: "Login",
     feedbackForm: "Feedback Form",
-    superAdminLogin: "Super Admin Login",
+    superAdminLogin: "Admin Portal Login",
     invalidCredentials: "Invalid email or password",
 
     // Dashboard Page
@@ -140,7 +140,7 @@ export const translationData = {
     password: "கடவுச்சொல்",
     loginBtn: "உள்நுழையவும்",
     feedbackForm: "கருத்து படிவம்",
-    superAdminLogin: "முதன்மை நிர்வாகி உள்நுழைவு",
+    superAdminLogin: "நிர்வாகிகள் போர்ட்டல்",
     invalidCredentials: "செல்லாத மின்னஞ்சல் அல்லது கடவுச்சொல்",
 
     // Dashboard Page

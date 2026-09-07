@@ -240,25 +240,27 @@ export default function SuperLoginPage() {
 
           <h2
             style={{
-              fontSize: '3rem',
+              fontSize: '2.5rem',
               fontWeight: 800,
-              marginBottom: '0.75rem',
+              marginBottom: '0.5rem',
               color: '#064e3b',
-              letterSpacing: '-0.05em',
+              letterSpacing: '-0.03em',
             }}
           >
-            {language === 'English' ? 'Super Admin' : 'முதன்மை நிர்வாகி'}
+            {language === 'English' ? 'Admin Portal' : 'நிர்வாகிகள் போர்ட்டல்'}
           </h2>
           <p
-            className="text-emerald-700"
+            className="text-emerald-800"
             style={{
-              fontSize: '11px',
+              fontSize: '10px',
               fontWeight: 900,
               textTransform: 'uppercase',
-              letterSpacing: '0.4em',
+              letterSpacing: '0.15em',
             }}
           >
-            {language === 'English' ? 'ADMK • Feedback' : 'கட்சியின் • கருத்துக்கள்'}
+            {language === 'English'
+              ? 'Super Admin • Department Admin • Constituency Leader'
+              : 'தலைமை நிர்வாகி • துறை நிர்வாகி • தொகுதி பொறுப்பாளர்'}
           </p>
         </div>
 

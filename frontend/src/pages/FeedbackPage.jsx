@@ -7761,7 +7761,7 @@ export default function FeedbackPage() {
                     onClick={() => { setShowAuthModal(false); navigate('/super-login'); }}
                     className="text-3xs font-black text-amber-600 hover:text-amber-700 uppercase tracking-wide bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 transition"
                   >
-                    🛡️ {language === 'English' ? 'Super Admin' : 'நிர்வாகி'}
+                    🛡️ {language === 'English' ? 'Admin Portal' : 'நிர்வாகிகள் போர்ட்டல்'}
                   </button>
                 </div>
 

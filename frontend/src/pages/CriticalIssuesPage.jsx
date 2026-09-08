@@ -618,14 +618,26 @@ export default function CriticalIssuesPage() {
                 <option value="Tamil" className="bg-white text-[#064e3b]">தமிழ்</option>
               </select>
             </div>
-            <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
-              <span className="material-symbols-outlined" style={{ fontSize:15, color:'#10b981' }}>location_on</span>
-              <select value={districtFilter} onChange={e=>{setDistrictFilter(e.target.value);setPage(0);}}
-                style={{ background:'transparent', border:'none', outline:'none', fontSize:12, fontWeight:700, color:'#064e3b', fontFamily:'Manrope,sans-serif', width:130 }}>
-                <option value="" className="bg-white text-[#047857]">{t.allDistricts}</option>
-                {districts.map(d=><option key={d} value={d} className="bg-white text-[#064e3b]">{d}</option>)}
-              </select>
-            </div>
+            {isConstAdmin ? (
+              <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:6 }}>
+                <span style={{ fontSize:14 }}>🗳️</span>
+                <span style={{ fontSize:12, fontWeight:800, color:'#78350f' }}>{assignedConstName} Constituency</span>
+              </div>
+            ) : isDeptAdmin ? (
+              <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:6 }}>
+                <span style={{ fontSize:14 }}>🏛️</span>
+                <span style={{ fontSize:12, fontWeight:800, color:'#78350f' }}>{assignedDeptName} Dept</span>
+              </div>
+            ) : (
+              <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
+                <span className="material-symbols-outlined" style={{ fontSize:15, color:'#10b981' }}>location_on</span>
+                <select value={districtFilter} onChange={e=>{setDistrictFilter(e.target.value);setPage(0);}}
+                  style={{ background:'transparent', border:'none', outline:'none', fontSize:12, fontWeight:700, color:'#064e3b', fontFamily:'Manrope,sans-serif', width:130 }}>
+                  <option value="" className="bg-white text-[#047857]">{t.allDistricts}</option>
+                  {districts.map(d=><option key={d} value={d} className="bg-white text-[#064e3b]">{d}</option>)}
+                </select>
+              </div>
+            )}
             <div className="glass-ci" style={{ borderRadius:12, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
               <span className="material-symbols-outlined" style={{ fontSize:15, color:'#10b981' }}>category</span>
               <select value={selectedCategoryFilter} onChange={e=>{setSelectedCategoryFilter(e.target.value);setPage(0);}}

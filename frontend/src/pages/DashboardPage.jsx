@@ -871,19 +871,60 @@ export default function DashboardPage() {
                 <option value="Tamil">தமிழ்</option>
               </select>
             </div>
-            <div className="filter-pill">
-              <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#10b981' }}>location_on</span>
-              <select value={district} onChange={e=>onDistrict(e.target.value)} style={{ width:'140px' }}>
-                <option value="">{t.allDistricts}</option>
-                {Object.keys(DISTRICT_DATA).map(d=><option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
-            <div className="filter-pill">
-              <select value={constituency} onChange={e=>onConstituency(e.target.value)} style={{ width:'160px' }}>
-                <option value="">{t.allConstituencies}</option>
-                {constituencies.map(c=><option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+            {(() => {
+              const loggedUserRaw = localStorage.getItem('currentUser');
+              const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+              const isDeptAdmin = currentUser?.role === 'department_admin' && currentUser?.assigned_department;
+              const isConstAdmin = currentUser?.role === 'constituency_admin' && currentUser?.assigned_constituency;
+              const assignedDeptName = currentUser?.assigned_department || '';
+              const assignedConstName = currentUser?.assigned_constituency || '';
+
+              if (isConstAdmin) {
+                return (
+                  <>
+                    <div className="filter-pill bg-emerald-50/80 border border-emerald-200/80">
+                      <span className="material-symbols-outlined text-[15px] text-[#10b981]">location_on</span>
+                      <span className="text-xs font-bold text-[#064e3b]">Salem District</span>
+                    </div>
+                    <div className="filter-pill bg-amber-50/80 border border-amber-300/80">
+                      <span className="text-xs">🗳️</span>
+                      <span className="text-xs font-bold text-amber-900">{assignedConstName} Constituency</span>
+                    </div>
+                  </>
+                );
+              }
+              if (isDeptAdmin) {
+                return (
+                  <>
+                    <div className="filter-pill bg-emerald-50/80 border border-emerald-200/80">
+                      <span className="material-symbols-outlined text-[15px] text-[#10b981]">location_on</span>
+                      <span className="text-xs font-bold text-[#064e3b]">Salem District</span>
+                    </div>
+                    <div className="filter-pill bg-amber-50/80 border border-amber-300/80">
+                      <span className="text-xs">🏛️</span>
+                      <span className="text-xs font-bold text-amber-900">{assignedDeptName} Dept</span>
+                    </div>
+                  </>
+                );
+              }
+              return (
+                <>
+                  <div className="filter-pill">
+                    <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#10b981' }}>location_on</span>
+                    <select value={district} onChange={e=>onDistrict(e.target.value)} style={{ width:'140px' }}>
+                      <option value="">{t.allDistricts}</option>
+                      {Object.keys(DISTRICT_DATA).map(d=><option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                  <div className="filter-pill">
+                    <select value={constituency} onChange={e=>onConstituency(e.target.value)} style={{ width:'160px' }}>
+                      <option value="">{t.allConstituencies}</option>
+                      {constituencies.map(c=><option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </>
+              );
+            })()}
             <div className="filter-pill">
               <span className="material-symbols-outlined" style={{ fontSize:'16px', color:'#10b981' }}>calendar_month</span>
               <input id="fpDateRange" readOnly placeholder={t.selectDates} style={{ width:'140px', cursor:'pointer' }} />

@@ -63,7 +63,7 @@ function isCriticalFeedback(f) {
 }
 
 // ── Compact feedback card with accordion expand ───────────────
-function FeedbackCard({ item, idx, navigate }) {
+function FeedbackCard({ item, idx, navigate, onResolve, language }) {
   const [expanded, setExpanded] = useState(false);
 
   const rating       = item.feedback?.rating || item.rating || 5;
@@ -245,9 +245,10 @@ function FeedbackCard({ item, idx, navigate }) {
           )}
 
           {/* Action row */}
-          <div style={{ display:'flex', gap:10, padding:'14px 16px' }}><button onClick={() => navigate(`/feedback-detail?id=${item._id}`)}
+          <div style={{ display:'flex', gap:10, padding:'14px 16px', flexWrap:'wrap' }}>
+            <button onClick={() => navigate(`/feedback-detail?id=${item._id}`)}
               style={{
-                flex:1, padding:'11px 0', borderRadius:12, fontSize:11, fontWeight:900,
+                flex:1, minWidth:120, padding:'11px 0', borderRadius:12, fontSize:11, fontWeight:900,
                 border:'none', cursor:'pointer', fontFamily:'Manrope,sans-serif',
                 textTransform:'uppercase', letterSpacing:'0.07em', transition:'all 0.25s',
                 background:'#15803d', color:'#fff',
@@ -258,6 +259,21 @@ function FeedbackCard({ item, idx, navigate }) {
               <span className="material-symbols-outlined" style={{ fontSize:14, verticalAlign:'middle', marginRight:5 }}>manage_search</span>
               Investigate
             </button>
+            {item.status !== 'Solved' && item.status !== 'Resolved' && onResolve && (
+              <button onClick={() => onResolve(item._id, item.tracking_id || item.feedback_id)}
+                style={{
+                  flex:1, minWidth:130, padding:'11px 0', borderRadius:12, fontSize:11, fontWeight:900,
+                  border:'none', cursor:'pointer', fontFamily:'Manrope,sans-serif',
+                  textTransform:'uppercase', letterSpacing:'0.07em', transition:'all 0.25s',
+                  background:'linear-gradient(135deg, #10B981, #059669)', color:'#fff',
+                  boxShadow:'0 4px 14px rgba(16, 185, 129, 0.25)',
+                }}
+                onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 4px 18px rgba(16, 185, 129, 0.4)';}}
+                onMouseLeave={e=>{e.currentTarget.style.boxShadow='0 4px 14px rgba(16, 185, 129, 0.25)';}}>
+                <span className="material-symbols-outlined" style={{ fontSize:14, verticalAlign:'middle', marginRight:5 }}>check_circle</span>
+                Resolve & Notify
+              </button>
+            )}
             <button onClick={() => setExpanded(false)}
               style={{
                 padding:'11px 18px', borderRadius:12, fontSize:11, fontWeight:700,
@@ -389,6 +405,42 @@ export default function CriticalIssuesPage() {
     setUrgencyScore(urgency);
     setUrgencyWidth(`${Math.min(100, parseFloat(urgency) * 10)}%`);
   }
+
+  const handleResolveAndNotify = async (id, trackingId) => {
+    const confirm = await Swal.fire({
+      title: language === 'English' ? 'Resolve & Notify Citizen?' : 'தீர்வு காணவா?',
+      text: language === 'English'
+        ? `This will mark petition ${trackingId || ''} as Resolved and send an automated WhatsApp/SMS alert to the resident.`
+        : "இது புகாரளித்த குடிமகனுக்கு தீர்வு அறிவிப்பை அனுப்பும்.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#10b981',
+      confirmButtonText: language === 'English' ? 'Yes, Resolve & Notify' : 'ஆம், தீர்வு காண்'
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const res = await fetch(`${API}/api/update-status/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'Solved' }),
+      });
+      if (res.ok) {
+        Swal.fire({
+          title: 'Issue Resolved!',
+          text: 'Citizen notified via WhatsApp/SMS.',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        loadCriticalData();
+      }
+    } catch (err) {
+      console.error('Resolve error:', err);
+      Swal.fire('Error', 'Could not resolve petition', 'error');
+    }
+  };
 
   const loadCriticalData = useCallback(async (retryCount = 0) => {
     setLoading(true);
@@ -867,7 +919,7 @@ export default function CriticalIssuesPage() {
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {pageFeed.map((item, idx) => (
                   <div key={item._id || idx} style={{ animation:`fadeInUp 0.35s ${idx*0.04}s both` }}>
-                    <FeedbackCard item={item} idx={page*PER_PAGE+idx} navigate={navigate} />
+                    <FeedbackCard item={item} idx={page*PER_PAGE+idx} navigate={navigate} onResolve={handleResolveAndNotify} language={language} />
                   </div>
                 ))}
               </div>

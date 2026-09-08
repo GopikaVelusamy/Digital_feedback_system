@@ -57,6 +57,21 @@ export default function FeedbackDetailPage() {
     updateStatus('In Progress', false);
   }
 
+  async function handleResolveWithConfirm() {
+    const confirm = await Swal.fire({
+      title: 'Resolve & Notify Citizen?',
+      text: "This will mark the petition as Officially Resolved and send an automated WhatsApp/SMS alert to the resident.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#10b981',
+      confirmButtonText: 'Yes, Resolve & Notify'
+    });
+
+    if (confirm.isConfirmed) {
+      updateStatus('Solved');
+    }
+  }
+
   async function updateStatus(newStatus, showPopup = true) {
     try {
       await fetch(`${API}/api/update-status/${feedbackId}`, {
@@ -351,22 +366,20 @@ export default function FeedbackDetailPage() {
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {!investigationStarted ? (
                   <button className="fd-action-btn" onClick={startResolution}
-                    style={{ background:'#10b981', color:'#fff', boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)' }}>
+                    style={{ background:'#3b82f6', color:'#fff', boxShadow: '0 8px 24px rgba(59, 130, 246, 0.15)' }}>
                     <span className="material-symbols-outlined" style={{ fontSize:18 }}>handshake</span>
                     Acknowledge & Investigate
                   </button>
                 ) : (
-                  <>
-                    <div style={{ padding:'12px', borderRadius:12, background:'rgba(59,130,246,0.12)', border:'1px solid rgba(59,130,246,0.25)', color:'#3B82F6', fontSize:12, fontWeight:750, textAlign:'center' }}>
-                      ◉ Investigation in progress
-                    </div>
-                    <button className="fd-action-btn" onClick={() => updateStatus('Solved')}
-                      style={{ background:'linear-gradient(135deg,#10B981,#059669)', color:'#fff', boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)' }}>
-                      <span className="material-symbols-outlined" style={{ fontSize:18 }}>check_circle</span>
-                      Mark as Resolved
-                    </button>
-                  </>
+                  <div style={{ padding:'12px', borderRadius:12, background:'rgba(59,130,246,0.12)', border:'1px solid rgba(59,130,246,0.25)', color:'#3B82F6', fontSize:12, fontWeight:750, textAlign:'center' }}>
+                    ◉ Investigation in progress
+                  </div>
                 )}
+                <button className="fd-action-btn" onClick={handleResolveWithConfirm}
+                  style={{ background:'linear-gradient(135deg,#10B981,#059669)', color:'#fff', boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize:18 }}>check_circle</span>
+                  Resolve & Notify Citizen
+                </button>
               </div>
             )}
           </div>

@@ -50,6 +50,7 @@ export default function Sidebar({ variant = 'admin' }) {
   const [isCollapsedDesktop, setIsCollapsedDesktop] = useState(false);
   const [language, setLanguageState] = useState(getLanguage());
   const [pendingCount, setPendingCount] = useState(0);
+  const [criticalCount, setCriticalCount] = useState(0);
 
   const isDashboard = location.pathname === '/dashboard';
   const isCritical = location.pathname === '/critical-issues';
@@ -81,8 +82,16 @@ export default function Sidebar({ variant = 'admin' }) {
             }
           }
 
-          const pending = data.filter(f => f.status !== 'Solved' && f.status !== 'Resolved').length;
-          setPendingCount(pending);
+          const pending = data.filter(f => f.status !== 'Solved' && f.status !== 'Resolved');
+          setPendingCount(pending.length);
+
+          const critical = pending.filter(f => {
+            const rating = f.feedback?.rating || f.rating || 5;
+            const importance = (f.importance || f.ai?.priority || '').toLowerCase();
+            const risk = f.image_validation?.overall_risk || 0;
+            return (rating > 0 && rating <= 2) || ['high', 'urgent', 'critical'].includes(importance) || risk >= 65;
+          });
+          setCriticalCount(critical.length);
         }
       } catch (err) {
         console.error('Error fetching unresolved count:', err);
@@ -264,16 +273,16 @@ export default function Sidebar({ variant = 'admin' }) {
                 {(!isCollapsedDesktop || isOpenMobile) && (
                   <span className="text-sm tracking-wide flex-1">{item.label}</span>
                 )}
-                {isCriticalItem && pendingCount > 0 && (!isCollapsedDesktop || isOpenMobile) && (
-                  <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center min-w-5 h-5 shadow-sm">
-                    {pendingCount}
+                {isCriticalItem && (!isCollapsedDesktop || isOpenMobile) && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center min-w-5 h-5 shadow-sm ${criticalCount > 0 ? 'bg-red-500 text-white' : 'bg-emerald-700/30 text-emerald-800'}`}>
+                    {criticalCount}
                   </span>
                 )}
 
                 {/* Collapsed tooltip for desktop */}
                 {isCollapsedDesktop && !isOpenMobile && (
                   <div className="absolute left-16 bg-white border border-emerald-200/80 text-emerald-800 text-xs px-3 py-1.5 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-xl">
-                    {item.label} {isCriticalItem && pendingCount > 0 ? `(${pendingCount})` : ''}
+                    {item.label} {isCriticalItem ? `(${criticalCount})` : ''}
                   </div>
                 )}
               </a>

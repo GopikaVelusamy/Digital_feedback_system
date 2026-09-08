@@ -54,6 +54,14 @@ function layerColor(val) {
   return '#EF4444';
 }
 
+function isCriticalFeedback(f) {
+  if (!f) return false;
+  const rating = f.feedback?.rating || f.rating || 5;
+  const importance = (f.importance || f.ai?.priority || '').toLowerCase();
+  const risk = f.image_validation?.overall_risk || 0;
+  return (rating > 0 && rating <= 2) || ['high', 'urgent', 'critical'].includes(importance) || risk >= 65;
+}
+
 // ── Compact feedback card with accordion expand ───────────────
 function FeedbackCard({ item, idx, navigate }) {
   const [expanded, setExpanded] = useState(false);
@@ -69,7 +77,7 @@ function FeedbackCard({ item, idx, navigate }) {
   const validation   = item.image_validation;
   const risk         = validation?.overall_risk || 0;
   const rm           = riskMeta(risk);
-  const isCritical   = rating <= 2;
+  const isCritical   = isCriticalFeedback(item);
 
   return (
     <div style={{
@@ -465,7 +473,7 @@ export default function CriticalIssuesPage() {
       if (!isMatch) return false;
     }
 
-    if (filter === 'critical') return (f.feedback?.rating || f.rating || 5) <= 2;
+    if (filter === 'critical') return isCriticalFeedback(f);
     if (filter === 'flagged')  return (f.image_validation?.overall_risk || 0) >= 65;
     if (filter === 'verified') return f.image_validation?.overall_status === 'verified';
     return true;
@@ -473,7 +481,7 @@ export default function CriticalIssuesPage() {
 
   const total = scopeFeedbacks.length;
   const flagged = scopeFeedbacks.filter(f => (f.image_validation?.overall_risk || 0) >= 65).length;
-  const critCount = scopeFeedbacks.filter(f => (f.feedback?.rating || f.rating || 5) <= 2).length;
+  const critCount = scopeFeedbacks.filter(f => isCriticalFeedback(f)).length;
   const districts = [...new Set(scopeFeedbacks.map(f => f.location?.district || f.district).filter(Boolean))].sort();
   const allCategories = Array.from(new Set([
     ...ALL_GRIEVANCE_TOPICS,
@@ -639,9 +647,9 @@ export default function CriticalIssuesPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" style={{ animation:'fadeInUp 0.5s 0.05s both' }}>
           {[
             { label: t.totalReports, val:scopeFeedbacks.length,     badgeColor:'#064e3b', icon:'inbox',          bgCard:'linear-gradient(135deg, #e8fbf0 0%, #dcfce7 100%)', textC: '#064e3b', labelC: '#047857' },
-            { label: t.pending,       val:scopeFeedbacks.filter(f => f.status === 'Pending').length,   badgeColor:'#78350f', icon:'pending',        bgCard:'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', textC: '#78350f', labelC: '#92400e' },
+            { label: t.pending,       val:scopeFeedbacks.filter(f => f.status !== 'Solved' && f.status !== 'Resolved').length,   badgeColor:'#78350f', icon:'pending',        bgCard:'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', textC: '#78350f', labelC: '#92400e' },
             { label: t.resolved,      val:scopeFeedbacks.filter(f => f.status === 'Solved' || f.status === 'Resolved').length,    badgeColor:'#065f46', icon:'check_circle',   bgCard:'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', textC: '#065f46', labelC: '#047857' },
-            { label: t.critical,      val:scopeFeedbacks.filter(f => (f.feedback?.rating||f.rating||5) <= 2).length, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)', textC: '#ffffff', labelC: '#fecaca' },
+            { label: t.critical,      val:scopeFeedbacks.filter(f => isCriticalFeedback(f)).length, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)', textC: '#ffffff', labelC: '#fecaca' },
           ].map(({ label, val, badgeColor, icon, bgCard, textC, labelC }) => (
             <div key={label} className="glass-ci" style={{ borderRadius:16, padding:'16px 18px', display:'flex', alignItems:'center', gap:12, transition:'all 0.3s', background: bgCard, border:'1px solid rgba(16,185,129,0.2)' }}
               onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}

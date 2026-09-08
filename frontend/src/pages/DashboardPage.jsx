@@ -62,6 +62,18 @@ const DEPTS = [
   { key:'local',      label:'Local',      apiKey:'local issues' },
 ];
 
+const SALEM_CONSTITUENCIES_BARS = [
+  { key: 'edappadi', label: 'Edappadi', apiKey: 'Edappadi' },
+  { key: 'salem_north', label: 'Salem North', apiKey: 'Salem North' },
+  { key: 'salem_south', label: 'Salem South', apiKey: 'Salem South' },
+  { key: 'salem_west', label: 'Salem West', apiKey: 'Salem West' },
+  { key: 'attur', label: 'Attur', apiKey: 'Attur' },
+  { key: 'mettur', label: 'Mettur', apiKey: 'Mettur' },
+  { key: 'omalur', label: 'Omalur', apiKey: 'Omalur' },
+  { key: 'yercaud', label: 'Yercaud', apiKey: 'Yercaud' },
+  { key: 'veerapandi', label: 'Veerapandi', apiKey: 'Veerapandi' },
+];
+
 function useCountUp(target, duration = 1800) {
   const [val, setVal] = useState(0);
   const rafRef = useRef(null);
@@ -563,6 +575,7 @@ export default function DashboardPage() {
   const [sentNeg,   setSentNeg]   = useState(0);
   const [sentPct,   setSentPct]   = useState('0%');
   const [deptData,  setDeptData]  = useState({});
+  const [constData, setConstData] = useState({});
 
   // ADDITION 2 — district counts for TN map
   const [districtCounts, setDistrictCounts] = useState({});
@@ -693,6 +706,22 @@ export default function DashboardPage() {
       const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
       if (currentUser?.role === 'department_admin' && currentUser?.assigned_department) {
         list = list.filter(f => matchesDepartment(f, currentUser.assigned_department));
+
+        // Compute constituency breakdown for Department Admin
+        const cd = {};
+        SALEM_CONSTITUENCIES_BARS.forEach(({ key, apiKey }) => {
+          const cFeedbacks = list.filter(f => matchesConstituency(f, apiKey));
+          let pos = 0, neu = 0, neg = 0;
+          cFeedbacks.forEach(f => {
+            const r = f.feedback?.rating || f.rating || 0;
+            if (r >= 4) pos++;
+            else if (r === 3) neu++;
+            else neg++;
+          });
+          const d = { pos, neu, neg };
+          cd[key] = { ...d, ...calcPx(d) };
+        });
+        setConstData(cd);
       } else if (currentUser?.role === 'constituency_admin' && currentUser?.assigned_constituency) {
         list = list.filter(f => matchesConstituency(f, currentUser.assigned_constituency));
       }
@@ -1082,8 +1111,8 @@ export default function DashboardPage() {
                 height: BAR_H + 50 + 'px',
                 minWidth: '320px',
               }}>
-                {DEPTS.map(({ key, label }) => {
-                  const d = deptData[key] || { pos:0, neu:0, neg:0, posPx:0, neuPx:0, negPx:0 };
+                {(isDeptAdmin ? SALEM_CONSTITUENCIES_BARS : DEPTS).map(({ key, label }) => {
+                  const d = (isDeptAdmin ? constData : deptData)[key] || { pos:0, neu:0, neg:0, posPx:0, neuPx:0, negPx:0 };
                   return (
                     <BarColumn key={key} label={label}
                       negPx={d.negPx} neuPx={d.neuPx} posPx={d.posPx}

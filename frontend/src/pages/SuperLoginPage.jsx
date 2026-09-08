@@ -204,6 +204,33 @@ export default function SuperLoginPage() {
         backdropFilter: 'blur(24px)',
         boxShadow: '0 20px 40px rgba(22, 163, 74, 0.04)'
       }}>
+        {/* Back to Homepage Button */}
+        <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', zIndex: 100 }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              fontSize: '11px',
+              fontWeight: 800,
+              color: '#064e3b',
+              cursor: 'pointer',
+              outline: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => e.target.style.background = '#ffffff'}
+            onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.8)'}
+          >
+            <span>←</span>
+            <span>{language === 'English' ? 'Homepage' : 'முகப்பு'}</span>
+          </button>
+        </div>
+
         {/* Floating Language Selector inside Card */}
         <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', zIndex: 100 }}>
           <select
@@ -368,6 +395,37 @@ export default function SuperLoginPage() {
               : (btnText === 'INITIALIZE SESSION'
                   ? (language === 'English' ? 'INITIALIZE SESSION' : 'அமர்வைத் தொடங்கு')
                   : (language === 'English' ? 'VERIFYING ENCRYPTED KEY...' : 'விசையை சரிபார்க்கிறது...'))}
+          </button>
+
+          {/* Return to Public Homepage Secondary Button */}
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            style={{
+              width: '100%',
+              padding: '0.85rem',
+              marginTop: '0.8rem',
+              borderRadius: '1.2rem',
+              fontWeight: 800,
+              fontSize: '11px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: '#047857',
+              background: 'transparent',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(16, 185, 129, 0.08)';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            {language === 'English' ? '← Back to Public Homepage' : '← பொது முகப்பு பக்கத்திற்குச் செல்க'}
           </button>
         </form>
 

@@ -458,6 +458,12 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
         "sanitation":             {"pos":0,"neu":0,"neg":0},
         "education":              {"pos":0,"neu":0,"neg":0},
         "healthcare":             {"pos":0,"neu":0,"neg":0},
+        "women's welfare":        {"pos":0,"neu":0,"neg":0},
+        "agriculture":            {"pos":0,"neu":0,"neg":0},
+        "government schemes":     {"pos":0,"neu":0,"neg":0},
+        "party affairs":          {"pos":0,"neu":0,"neg":0},
+        "candidate feedback":     {"pos":0,"neu":0,"neg":0},
+        "local issues":           {"pos":0,"neu":0,"neg":0},
     }
     cat_map = {
         "water": "water supply", "water supply": "water supply",
@@ -467,7 +473,12 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
         "safety": "public security", "security": "public security", "public security": "public security", "public security & safety": "public security",
         "health": "healthcare", "healthcare": "healthcare", "healthcare & medical": "healthcare", "medical": "healthcare",
         "education": "education", "education & youth": "education", "education & youth affairs": "education", "school": "education",
-        "local issues": "roads & infrastructure", "local": "roads & infrastructure"
+        "women's welfare": "women's welfare", "women": "women's welfare",
+        "agriculture": "agriculture", "agri": "agriculture", "agriculture & rural": "agriculture", "farm": "agriculture",
+        "government schemes": "government schemes", "schemes": "government schemes", "pensions": "government schemes",
+        "party affairs": "party affairs", "party": "party affairs", "leader": "party affairs",
+        "candidate feedback": "candidate feedback", "candidate": "candidate feedback",
+        "local issues": "local issues", "local": "local issues", "complaint": "local issues", "general": "local issues"
     }
     for f in feedbacks_list:
         rate = f.get("feedback",{}).get("rating") or f.get("rating") or 0
@@ -486,7 +497,17 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
                 departments["education"][s] += 1
             elif "health" in raw or "medical" in raw or "hospital" in raw:
                 departments["healthcare"][s] += 1
-            elif "road" in raw or "infra" in raw or "local" in raw:
+            elif "women" in raw or "welfare" in raw:
+                departments["women's welfare"][s] += 1
+            elif "agri" in raw or "farm" in raw or "rural" in raw:
+                departments["agriculture"][s] += 1
+            elif "scheme" in raw or "pension" in raw:
+                departments["government schemes"][s] += 1
+            elif "party" in raw or "leader" in raw or "election" in raw:
+                departments["party affairs"][s] += 1
+            elif "candidat" in raw:
+                departments["candidate feedback"][s] += 1
+            elif "road" in raw or "infra" in raw:
                 departments["roads & infrastructure"][s] += 1
             elif "water" in raw:
                 departments["water supply"][s] += 1
@@ -496,6 +517,8 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
                 departments["sanitation"][s] += 1
             elif "secur" in raw or "safet" in raw:
                 departments["public security"][s] += 1
+            else:
+                departments["local issues"][s] += 1
     return {"total_feedbacks": len(feedbacks_list),
             "sentiment": {"positive":pos,"neutral":neu,"negative":neg},
             "departments": departments}

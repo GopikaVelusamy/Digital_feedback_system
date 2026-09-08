@@ -54,6 +54,12 @@ const DEPTS = [
   { key:'education',  label:'Education',  apiKey:'education' },
   { key:'health',     label:'Health',     apiKey:'healthcare' },
   { key:'security',   label:'Security',   apiKey:'public security' },
+  { key:'women',      label:'Women',      apiKey:"women's welfare" },
+  { key:'agri',       label:'Agri',       apiKey:'agriculture' },
+  { key:'schemes',    label:'Schemes',    apiKey:'government schemes' },
+  { key:'party',      label:'Party',      apiKey:'party affairs' },
+  { key:'candidate',  label:'Candidate',  apiKey:'candidate feedback' },
+  { key:'local',      label:'Local',      apiKey:'local issues' },
 ];
 
 function useCountUp(target, duration = 1800) {
@@ -665,7 +671,15 @@ export default function DashboardPage() {
       road:       { pos: 12, neu: 3, neg: 1, ...calcPx({ pos: 12, neu: 3, neg: 1 }) },
       power:      { pos: 3, neu: 1, neg: 0, ...calcPx({ pos: 3, neu: 0, neg: 0 }) },
       water:      { pos: 3, neu: 0, neg: 1, ...calcPx({ pos: 3, neu: 0, neg: 1 }) },
-      security:   { pos: 2, neu: 0, neg: 0, ...calcPx({ pos: 2, neu: 0, neg: 0 }) },
+      education:  { pos: 2, neu: 0, neg: 0, ...calcPx({ pos: 2, neu: 0, neg: 0 }) },
+      health:     { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
+      security:   { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
+      women:      { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
+      agri:       { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
+      schemes:    { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
+      party:      { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
+      candidate:  { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
+      local:      { pos: 0, neu: 0, neg: 0, ...calcPx({ pos: 0, neu: 0, neg: 0 }) },
     });
   }, []);
 

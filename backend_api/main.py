@@ -567,9 +567,12 @@ def get_news_inbox():
                     # Determine language
                     lang = "ta" if any(ord(c) > 2944 for c in title) else "en"
 
+                    clean_desc = re.sub(r'<[^>]+>', '', desc).replace('&nbsp;', ' ').replace('&amp;', '&').replace('&quot;', '"').replace('&#39;', "'").strip() if desc else ""
+                    clean_title = re.sub(r'<[^>]+>', '', title).replace('&nbsp;', ' ').replace('&amp;', '&').replace('&quot;', '"').replace('&#39;', "'").strip() if title else ""
+
                     articles.append({
-                        "title": title,
-                        "desc": desc[:300] if desc else "",
+                        "title": clean_title,
+                        "desc": clean_desc[:300],
                         "source_link": link,
                         "source": source,
                         "date": date_str,

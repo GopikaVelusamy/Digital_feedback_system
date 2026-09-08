@@ -501,6 +501,19 @@ const CATEGORY_TITLES_MAP = {
   }
 };
 
+function cleanNewsText(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .trim();
+}
+
 const INITIAL_PRESS_RELEASES = [
   {
     _id: 'pr-1',
@@ -4137,10 +4150,18 @@ function DistrictDetailsModal({
                   {distName} News Update
                 </span>
                 <h5 className="text-sm font-bold text-white leading-snug">
-                  {language === 'English' ? (item.title_en || item.title) : (item.title_ta || item.title)}
+                  {cleanNewsText(
+                    language === 'English'
+                      ? (item.title_en || item.title_ta || item.title)
+                      : (item.title_ta || item.title_en || item.title)
+                  )}
                 </h5>
                 <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                  {language === 'English' ? (item.desc_en || item.desc) : (item.desc_ta || item.desc)}
+                  {cleanNewsText(
+                    language === 'English'
+                      ? (item.desc_en || item.desc_ta || item.desc)
+                      : (item.desc_ta || item.desc_en || item.desc)
+                  )}
                 </p>
               </div>
             ))}
@@ -6330,18 +6351,26 @@ export default function FeedbackPage() {
                         <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                           <div className="flex items-center justify-between">
                             <span className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                              {language === 'English' ? item.tag_en : item.tag_ta}
+                              {language === 'English' ? (item.tag_en || item.tag_ta || 'PRESS RELEASE') : (item.tag_ta || item.tag_en || 'செய்தி வெளியீடு')}
                             </span>
                             <span className="text-slate-400 text-2xs">{item.date}</span>
                           </div>
                           <div className="flex items-start gap-3">
-                            <span className="text-2xl">{item.icon}</span>
+                            <span className="text-2xl">{item.icon || '📰'}</span>
                             <h4 className="text-base font-bold text-slate-800 leading-tight">
-                              {language === 'English' ? item.title_en : item.title_ta}
+                              {cleanNewsText(
+                                language === 'English'
+                                  ? (item.title_en || item.title_ta || item.title)
+                                  : (item.title_ta || item.title_en || item.title)
+                              )}
                             </h4>
                           </div>
                           <p className="text-xs text-slate-550 leading-relaxed font-medium line-clamp-3">
-                            {language === 'English' ? item.desc_en : item.desc_ta}
+                            {cleanNewsText(
+                              language === 'English'
+                                ? (item.desc_en || item.desc_ta || item.desc)
+                                : (item.desc_ta || item.desc_en || item.desc)
+                            )}
                           </p>
                         </div>
                         <div className="p-6 border-t border-slate-50 bg-slate-50/50 flex items-center justify-between">

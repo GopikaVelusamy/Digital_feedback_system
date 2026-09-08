@@ -58,6 +58,19 @@ function matchesCategoryFilter(f, filterVal) {
   return false;
 }
 
+function cleanNewsText(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .trim();
+}
+
 export default function SuperAdminPage() {
   const navigate = useNavigate();
 
@@ -1002,8 +1015,8 @@ export default function SuperAdminPage() {
                             <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-black uppercase">{item.source}</span>
                             <span>{item.date}</span>
                           </div>
-                          <h4 className="text-xs font-bold text-slate-800 leading-snug">{item.title}</h4>
-                          <p className="text-3xs text-slate-500 mt-1 line-clamp-3 leading-relaxed">{item.desc}</p>
+                          <h4 className="text-xs font-bold text-slate-800 leading-snug">{cleanNewsText(item.title)}</h4>
+                          <p className="text-3xs text-slate-500 mt-1 line-clamp-3 leading-relaxed">{cleanNewsText(item.desc)}</p>
                         </div>
                         <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                           <a href={item.source_link} target="_blank" rel="noopener noreferrer" className="text-3xs font-black text-blue-600 hover:underline">READ SOURCE ↗</a>

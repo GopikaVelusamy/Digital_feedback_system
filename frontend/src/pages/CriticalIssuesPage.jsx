@@ -785,8 +785,7 @@ export default function CriticalIssuesPage() {
                 {[
                   { key:'all',      label: t.allReports,      icon:'list', count:priorityFeedbacks.length },
                   { key:'critical', label: language === 'English' ? 'Critical Only' : 'அவசரமானவை மட்டும்',    icon:'priority_high', count:critCount },
-                  { key:'flagged',  label: t.aiFlagged,       icon:'smart_toy', count:flagged },
-                  { key:'verified', label: language === 'English' ? 'Verified Safe' : 'சரிபார்க்கப்பட்டவை',    icon:'verified', count: allFeedbacks.filter(f=>f.image_validation?.overall_status==='verified').length },
+                  { key:'verified', label: language === 'English' ? 'Verified Safe' : 'சரிபார்க்கப்பட்டவை',    icon:'verified', count: scopeFeedbacks.filter(f=>f.image_validation?.overall_status==='verified').length },
                 ].map(({ key, label, icon, count }) => (
                   <button key={key} onClick={()=>{setFilter(key);setPage(0);}}
                     style={{

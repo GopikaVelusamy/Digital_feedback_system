@@ -51,6 +51,8 @@ const DEPTS = [
   { key:'road',       label:'Road',       apiKey:'roads & infrastructure' },
   { key:'power',      label:'Power',      apiKey:'electricity & power' },
   { key:'water',      label:'Water',      apiKey:'water supply' },
+  { key:'education',  label:'Education',  apiKey:'education' },
+  { key:'health',     label:'Health',     apiKey:'healthcare' },
   { key:'security',   label:'Security',   apiKey:'public security' },
 ];
 
@@ -682,7 +684,7 @@ export default function DashboardPage() {
       }
 
       setSolved(list.filter(f => f.status === 'Solved' || f.status === 'Resolved').length);
-      setPending(list.filter(f => f.status === 'Pending').length);
+      setPending(list.filter(f => f.status !== 'Solved' && f.status !== 'Resolved' && f.status !== 'In Progress').length);
       setSolving(list.filter(f => f.status === 'In Progress').length);
       // Count per-district — supports both flat (f.district) and nested (f.location.district)
       const counts = {};

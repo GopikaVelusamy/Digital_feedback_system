@@ -456,13 +456,18 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
         "water supply":           {"pos":0,"neu":0,"neg":0},
         "public security":        {"pos":0,"neu":0,"neg":0},
         "sanitation":             {"pos":0,"neu":0,"neg":0},
+        "education":              {"pos":0,"neu":0,"neg":0},
+        "healthcare":             {"pos":0,"neu":0,"neg":0},
     }
     cat_map = {
-        "water":"water supply","sanitation":"sanitation","road":"roads & infrastructure",
-        "electricity":"electricity & power","safety":"public security",
-        "transport":"roads & infrastructure","health":"public security",
-        "education":"public security","services":"public security",
-        "local issues":"roads & infrastructure", "local": "roads & infrastructure"
+        "water": "water supply", "water supply": "water supply",
+        "sanitation": "sanitation", "sanitation & waste": "sanitation",
+        "road": "roads & infrastructure", "roads": "roads & infrastructure", "roads & infrastructure": "roads & infrastructure",
+        "electricity": "electricity & power", "electricity & power": "electricity & power", "power": "electricity & power",
+        "safety": "public security", "security": "public security", "public security": "public security", "public security & safety": "public security",
+        "health": "healthcare", "healthcare": "healthcare", "healthcare & medical": "healthcare", "medical": "healthcare",
+        "education": "education", "education & youth": "education", "education & youth affairs": "education", "school": "education",
+        "local issues": "roads & infrastructure", "local": "roads & infrastructure"
     }
     for f in feedbacks_list:
         rate = f.get("feedback",{}).get("rating") or f.get("rating") or 0
@@ -475,6 +480,22 @@ def dashboard(district: str = None, constituency: str = None, dateRange: str = N
                f.get("feedback",{}).get("type","")).lower().strip()
         fc  = cat_map.get(raw)
         if fc and fc in departments: departments[fc][s] += 1
+        else:
+            # Fuzzy fallback if raw contains keywords
+            if "educat" in raw or "school" in raw or "college" in raw:
+                departments["education"][s] += 1
+            elif "health" in raw or "medical" in raw or "hospital" in raw:
+                departments["healthcare"][s] += 1
+            elif "road" in raw or "infra" in raw or "local" in raw:
+                departments["roads & infrastructure"][s] += 1
+            elif "water" in raw:
+                departments["water supply"][s] += 1
+            elif "electric" in raw or "power" in raw:
+                departments["electricity & power"][s] += 1
+            elif "sanitat" in raw or "waste" in raw:
+                departments["sanitation"][s] += 1
+            elif "secur" in raw or "safet" in raw:
+                departments["public security"][s] += 1
     return {"total_feedbacks": len(feedbacks_list),
             "sentiment": {"positive":pos,"neutral":neu,"negative":neg},
             "departments": departments}

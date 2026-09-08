@@ -7,6 +7,42 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { getLanguage, setLanguage } from '../utils/translations';
 import { API } from '../config';
 
+function matchesDepartment(f, deptName) {
+  if (!deptName) return true;
+  const targetDept = deptName.toLowerCase().trim();
+  const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
+  const cat = catRaw.toLowerCase().trim();
+
+  if (cat.includes(targetDept) || targetDept.includes(cat)) return true;
+
+  if (targetDept.includes('infra') || targetDept.includes('public works')) {
+    return cat.includes('road') || cat.includes('infra') || cat.includes('water') || 
+           cat.includes('electric') || cat.includes('power') || cat.includes('sanitat') || 
+           cat.includes('local') || cat.includes('complaint') || cat.includes('general') ||
+           cat.includes('public') || cat.includes('other');
+  }
+  if (targetDept.includes('health') || targetDept.includes('safety') || targetDept.includes('welfare')) {
+    return cat.includes('health') || cat.includes('safety') || cat.includes('women') || 
+           cat.includes('medical') || cat.includes('security') || cat.includes('hospital');
+  }
+  if (targetDept.includes('education') || targetDept.includes('youth')) {
+    return cat.includes('educat') || cat.includes('youth') || cat.includes('employ') || 
+           cat.includes('school') || cat.includes('college');
+  }
+  if (targetDept.includes('party') || targetDept.includes('leader')) {
+    return cat.includes('party') || cat.includes('leader') || cat.includes('candidate') || cat.includes('election');
+  }
+  return true;
+}
+
+function matchesConstituency(f, constName) {
+  if (!constName || constName === 'All') return true;
+  const target = constName.toLowerCase().trim();
+  const fConst = (f.location?.constituency || f.constituency || f.location?.constituency_en || '').toLowerCase().trim();
+  if (!fConst) return false;
+  return fConst === target || fConst.includes(target) || target.includes(fConst);
+}
+
 export default function Sidebar({ variant = 'admin' }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,8 +68,20 @@ export default function Sidebar({ variant = 'admin' }) {
       try {
         const res = await fetch(`${API}/api/feedbacks`);
         if (res.ok) {
-          const data = await res.json();
-          const pending = data.filter(f => f.status !== 'Solved').length;
+          let data = await res.json();
+          const loggedUserRaw = localStorage.getItem('currentUser');
+          const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
+          const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin' && currentUser?.role !== 'constituency_admin';
+
+          if (!isSuperUser) {
+            if (currentUser?.role === 'department_admin' && currentUser?.assigned_department) {
+              data = data.filter(f => matchesDepartment(f, currentUser.assigned_department));
+            } else if (currentUser?.role === 'constituency_admin' && currentUser?.assigned_constituency) {
+              data = data.filter(f => matchesConstituency(f, currentUser.assigned_constituency));
+            }
+          }
+
+          const pending = data.filter(f => f.status !== 'Solved' && f.status !== 'Resolved').length;
           setPendingCount(pending);
         }
       } catch (err) {

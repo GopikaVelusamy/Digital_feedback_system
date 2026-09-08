@@ -636,13 +636,12 @@ export default function CriticalIssuesPage() {
           </div>
         </header>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6" style={{ animation:'fadeInUp 0.5s 0.05s both' }}>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" style={{ animation:'fadeInUp 0.5s 0.05s both' }}>
           {[
             { label: t.totalReports, val:scopeFeedbacks.length,     badgeColor:'#064e3b', icon:'inbox',          bgCard:'linear-gradient(135deg, #e8fbf0 0%, #dcfce7 100%)', textC: '#064e3b', labelC: '#047857' },
             { label: t.pending,       val:scopeFeedbacks.filter(f => f.status === 'Pending').length,   badgeColor:'#78350f', icon:'pending',        bgCard:'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', textC: '#78350f', labelC: '#92400e' },
             { label: t.resolved,      val:scopeFeedbacks.filter(f => f.status === 'Solved' || f.status === 'Resolved').length,    badgeColor:'#065f46', icon:'check_circle',   bgCard:'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)', textC: '#065f46', labelC: '#047857' },
             { label: t.critical,      val:scopeFeedbacks.filter(f => (f.feedback?.rating||f.rating||5) <= 2).length, badgeColor:'#ffffff', icon:'priority_high',  bgCard:'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)', textC: '#ffffff', labelC: '#fecaca' },
-            { label: t.aiFlagged,    val:scopeFeedbacks.filter(f => (f.image_validation?.overall_risk||0) >= 65).length,   badgeColor:'#ffffff', icon:'smart_toy',       bgCard:'linear-gradient(135deg, #0f766e 0%, #0d5c56 100%)', textC: '#ffffff', labelC: '#a7f3d0' },
           ].map(({ label, val, badgeColor, icon, bgCard, textC, labelC }) => (
             <div key={label} className="glass-ci" style={{ borderRadius:16, padding:'16px 18px', display:'flex', alignItems:'center', gap:12, transition:'all 0.3s', background: bgCard, border:'1px solid rgba(16,185,129,0.2)' }}
               onMouseEnter={e=>e.currentTarget.style.transform='translateY(-2px)'}

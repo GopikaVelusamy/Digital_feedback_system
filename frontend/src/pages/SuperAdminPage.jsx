@@ -789,10 +789,10 @@ export default function SuperAdminPage() {
                         const isDept = a.role === 'department_admin';
                         
                         const roleBadge = isSuper
-                          ? { title: 'SUPER ADMIN', icon: '🛡️', bg: 'bg-emerald-800 text-white border-emerald-900' }
+                          ? { title: 'SUPER ADMIN', icon: '🛡️', bg: 'bg-emerald-800 text-white border-emerald-900', scopeBg: 'bg-emerald-50 text-emerald-900 border-emerald-200' }
                           : isDept
-                          ? { title: 'DEPT ADMIN', icon: '🏛️', bg: 'bg-teal-700 text-white border-teal-800' }
-                          : { title: 'CONSTITUENCY LEADER', icon: '🗳️', bg: 'bg-amber-700 text-white border-amber-800' };
+                          ? { title: 'DEPT ADMIN', icon: '🏛️', bg: 'bg-blue-600 text-white border-blue-700', scopeBg: 'bg-blue-50 text-blue-900 border-blue-200' }
+                          : { title: 'CONSTITUENCY LEADER', icon: '🗳️', bg: 'bg-amber-700 text-white border-amber-800', scopeBg: 'bg-amber-50 text-amber-900 border-amber-200' };
 
                         const scopeText = isSuper
                           ? 'All Depts & Constituencies (Salem HQ)'
@@ -812,8 +812,8 @@ export default function SuperAdminPage() {
                               </span>
                             </div>
 
-                            <div className="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5 mb-2 bg-emerald-50/90 px-2.5 py-1 rounded-xl border border-emerald-100">
-                              <span className="material-symbols-outlined text-xs text-emerald-600">tune</span>
+                            <div className={`text-[11px] font-bold flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-xl border ${roleBadge.scopeBg}`}>
+                              <span className="material-symbols-outlined text-xs">tune</span>
                               <span className="truncate">{scopeText}</span>
                             </div>
 

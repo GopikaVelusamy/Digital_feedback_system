@@ -305,13 +305,14 @@ export default function SuperAdminPage() {
     }
   }
 
-  const handlePublishPressRelease = async () => {
+  const handlePublishPressRelease = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     try {
       const payload = {
         title_en: editTitleEn,
-        title_ta: editTitleTa,
+        title_ta: editTitleTa || editTitleEn,
         desc_en: editDescEn,
-        desc_ta: editDescTa,
+        desc_ta: editDescTa || editDescEn,
         tag_en: editTagEn,
         tag_ta: editTagTa,
         icon: editIcon,
@@ -358,6 +359,8 @@ export default function SuperAdminPage() {
       Swal.fire('Error', 'Publishing failed', 'error');
     }
   };
+
+  const handleApproveNews = handlePublishPressRelease;
 
   const handleDeletePressRelease = async (id) => {
     const confirm = await Swal.fire({
@@ -1014,12 +1017,14 @@ export default function SuperAdminPage() {
                             <button
                               onClick={() => {
                                 setSelectedInboxNews(item);
-                                setEditTitleEn(item.title);
-                                setEditDescEn(item.desc);
-                                setEditLink(item.source_link);
+                                setEditTitleEn(item.title || '');
+                                setEditTitleTa(item.title || '');
+                                setEditDescEn(item.desc || '');
+                                setEditDescTa(item.desc || '');
+                                setEditLink(item.source_link || '');
                                 setShowApproveModal(true);
                               }}
-                              className="px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white text-[10px] font-black uppercase shadow-sm"
+                              className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase shadow-sm"
                             >
                               Approve & Edit
                             </button>

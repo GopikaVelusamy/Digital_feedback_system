@@ -89,16 +89,25 @@ export default function SuperAdminPage() {
     }
 
     // Fail-safe fallback if backend is unreachable or returns HTML
-    const localAdmins = JSON.parse(localStorage.getItem('local_dept_admins') || '[]');
+    const localDeptAdmins = JSON.parse(localStorage.getItem('local_dept_admins') || '[]');
+    const localConstAdmins = JSON.parse(localStorage.getItem('local_constituency_admins') || '[]');
     const defaultAdmins = [
-      { email: 'admin@admk.org', name: 'Super Admin (Salem Master)', role: 'admin', district: 'Salem', constituency: 'All' },
-      { email: 'karthick@admk.org', name: 'Karthick', role: 'department_admin', assigned_department: 'Infrastructure & Public Works Department', district: 'Salem' },
-      { email: 'rahul@admk.org', name: 'Rahul', role: 'department_admin', assigned_department: 'Education & Youth Affairs Department', district: 'Salem' }
+      { email: 'admin@admk.org', name: 'Super Admin (Salem HQ)', role: 'admin', district: 'Salem', constituency: 'All' },
+      { email: 'varunthanwar@gmail.com', name: 'Varun Thanwar', role: 'admin', district: 'Salem', constituency: 'All' },
+      { email: 'karthick@admk.org', name: 'Karthick', role: 'department_admin', assigned_department: 'Infrastructure & Public Works', district: 'Salem' },
+      { email: 'rahul@admk.org', name: 'Rahul', role: 'department_admin', assigned_department: 'Education & Youth Affairs', district: 'Salem' },
+      { email: 'saravana@admk.org', name: 'Saravana', role: 'constituency_admin', assigned_constituency: 'Salem South', district: 'Salem' },
+      { email: 'vinayraj@admk.org', name: 'Vinayraj', role: 'constituency_admin', assigned_constituency: 'Salem North', district: 'Salem' }
     ];
     const combined = [...defaultAdmins];
-    localAdmins.forEach(la => {
+    localDeptAdmins.forEach(la => {
       if (!combined.some(a => a.email.toLowerCase() === la.email.toLowerCase())) {
         combined.push(la);
+      }
+    });
+    localConstAdmins.forEach(ca => {
+      if (!combined.some(a => a.email.toLowerCase() === ca.email.toLowerCase())) {
+        combined.push(ca);
       }
     });
     setAdmins(combined);
@@ -775,21 +784,51 @@ export default function SuperAdminPage() {
                     {admins.length === 0 ? (
                       <p className="text-sm text-[#047857] text-center py-4 font-semibold">Loading admins...</p>
                     ) : (
-                      admins.map((a, idx) => (
-                        <div key={idx} className="p-4 bg-emerald-50/70 border border-emerald-200/50 rounded-2xl text-[#064e3b] shadow-sm">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-extrabold text-[#064e3b] text-sm">{a.name}</span>
-                            <span className="text-[9px] font-black bg-white text-[#10b981] border border-emerald-300 px-2 py-0.5 rounded uppercase">
-                              {a.district || 'All'}
-                            </span>
+                      admins.map((a, idx) => {
+                        const isSuper = a.role === 'admin' || a.role === 'super_admin';
+                        const isDept = a.role === 'department_admin';
+                        
+                        const roleBadge = isSuper
+                          ? { title: 'SUPER ADMIN', icon: '🛡️', bg: 'bg-emerald-800 text-white border-emerald-900' }
+                          : isDept
+                          ? { title: 'DEPT ADMIN', icon: '🏛️', bg: 'bg-teal-700 text-white border-teal-800' }
+                          : { title: 'CONSTITUENCY LEADER', icon: '🗳️', bg: 'bg-amber-700 text-white border-amber-800' };
+
+                        const scopeText = isSuper
+                          ? 'All Depts & Constituencies (Salem HQ)'
+                          : isDept
+                          ? `Dept: ${a.assigned_department || a.department || 'Infrastructure & Public Works'}`
+                          : `Constituency: ${a.assigned_constituency || a.constituency || 'Salem South'}`;
+
+                        return (
+                          <div key={idx} className="p-4 bg-white/90 border border-emerald-200/80 rounded-2xl text-[#064e3b] shadow-sm hover:shadow-md transition">
+                            <div className="flex items-center justify-between gap-2 mb-1.5">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="font-black text-[#064e3b] text-sm truncate">{a.name}</span>
+                              </div>
+                              <span className={`text-[9px] font-black px-2.5 py-0.5 rounded-full border flex items-center gap-1 shrink-0 ${roleBadge.bg}`}>
+                                <span>{roleBadge.icon}</span>
+                                <span>{roleBadge.title}</span>
+                              </span>
+                            </div>
+
+                            <div className="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5 mb-2 bg-emerald-50/90 px-2.5 py-1 rounded-xl border border-emerald-100">
+                              <span className="material-symbols-outlined text-xs text-emerald-600">tune</span>
+                              <span className="truncate">{scopeText}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-2 text-[11px]">
+                              <span className="text-slate-500 font-semibold truncate">{a.email}</span>
+                              {a.password && (
+                                <div className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-lg text-[10px] font-mono text-slate-700 border border-slate-200 shrink-0">
+                                  <span className="material-symbols-outlined text-[11px]">lock</span>
+                                  <span className="font-bold">{a.password}</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-[11px] text-[#047857] mb-2 font-semibold">{a.email}</p>
-                          <div className="flex items-center gap-2 bg-white p-2 rounded-xl text-[10px] font-mono border border-emerald-200 text-[#047857]">
-                            <span className="material-symbols-outlined text-xs">lock</span>
-                            Pass: <span className="font-black text-emerald-950">{a.password}</span>
-                          </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 </div>

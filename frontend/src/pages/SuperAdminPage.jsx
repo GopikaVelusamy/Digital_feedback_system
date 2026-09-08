@@ -60,14 +60,20 @@ function matchesCategoryFilter(f, filterVal) {
 
 function cleanNewsText(text) {
   if (!text) return '';
-  return String(text)
-    .replace(/<[^>]*>/g, '')
+  let str = String(text);
+  str = str.replace(/<[^>]*>/g, ' ');
+  str = str.replace(/<[a-z1-6]+/gi, ' ').replace(/href=["'][^"']*["']?/gi, ' ');
+  str = str.replace(/<[^>]*$/g, ' ');
+  str = str.replace(/href=["']?https?:\/\/[^\s"'>]+/gi, '');
+  str = str.replace(/https?:\/\/[^\s"'>]+/gi, '');
+  return str
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/gi, "'")
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 

@@ -428,13 +428,42 @@ export default function CriticalIssuesPage() {
     : priorityFeedbacks;
 
   // ── Filtered feed ─────────────────────────────────────────
+  const ALL_GRIEVANCE_TOPICS = [
+    "Local Issues",
+    "Infrastructure & Public Works",
+    "Roads & Infrastructure",
+    "Water Supply & Sanitation",
+    "Electricity & Power",
+    "Public Security & Safety",
+    "Healthcare & Medical",
+    "Education & Youth Affairs",
+    "Employment & Youth Development",
+    "Women's Welfare",
+    "Agriculture & Rural Development",
+    "Government Schemes & Pensions",
+    "Governance & Public Services",
+    "Party Affairs & Leadership",
+    "Candidate Feedback",
+    "Complaints & Suggestions",
+    "Other Issues"
+  ];
+
   const filteredFeed = priorityScopeFeedbacks.filter(f => {
     const dist = f.location?.district || f.district || '';
     const catRaw = f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General';
     const cat = catRaw.toLowerCase().trim();
+    const target = selectedCategoryFilter.toLowerCase().trim();
 
     if (districtFilter && dist.toLowerCase() !== districtFilter.toLowerCase()) return false;
-    if (selectedCategoryFilter !== 'All' && cat !== selectedCategoryFilter.toLowerCase().trim()) return false;
+    if (selectedCategoryFilter !== 'All') {
+      const isMatch = cat === target || cat.includes(target) || target.includes(cat) ||
+        (target.includes('infra') && (cat.includes('road') || cat.includes('infra') || cat.includes('local'))) ||
+        (target.includes('water') && (cat.includes('water') || cat.includes('sanitat') || cat.includes('drain'))) ||
+        (target.includes('health') && (cat.includes('health') || cat.includes('medic') || cat.includes('hospital'))) ||
+        (target.includes('educat') && (cat.includes('educat') || cat.includes('school') || cat.includes('college'))) ||
+        (target.includes('party') && (cat.includes('party') || cat.includes('candidate') || cat.includes('leader')));
+      if (!isMatch) return false;
+    }
 
     if (filter === 'critical') return (f.feedback?.rating || f.rating || 5) <= 2;
     if (filter === 'flagged')  return (f.image_validation?.overall_risk || 0) >= 65;
@@ -446,7 +475,10 @@ export default function CriticalIssuesPage() {
   const flagged = scopeFeedbacks.filter(f => (f.image_validation?.overall_risk || 0) >= 65).length;
   const critCount = scopeFeedbacks.filter(f => (f.feedback?.rating || f.rating || 5) <= 2).length;
   const districts = [...new Set(scopeFeedbacks.map(f => f.location?.district || f.district).filter(Boolean))].sort();
-  const allCategories = [...new Set(scopeFeedbacks.map(f => f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type).filter(Boolean))].sort();
+  const allCategories = Array.from(new Set([
+    ...ALL_GRIEVANCE_TOPICS,
+    ...scopeFeedbacks.map(f => f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type).filter(Boolean)
+  ]));
 
   const totalPages = Math.ceil(filteredFeed.length / PER_PAGE);
   const pageFeed = filteredFeed.slice(page * PER_PAGE, (page + 1) * PER_PAGE);

@@ -10,6 +10,54 @@ import Sidebar from '../components/Sidebar';
 import { translationData, getLanguage } from '../utils/translations';
 import { API } from '../config';
 
+const ALL_GRIEVANCE_TOPICS = [
+  "Local Issues",
+  "Infrastructure & Public Works",
+  "Roads & Infrastructure",
+  "Water Supply & Sanitation",
+  "Electricity & Power",
+  "Public Security & Safety",
+  "Healthcare & Medical",
+  "Education & Youth Affairs",
+  "Employment & Youth Development",
+  "Women's Welfare",
+  "Agriculture & Rural Development",
+  "Government Schemes & Pensions",
+  "Governance & Public Services",
+  "Party Affairs & Leadership",
+  "Candidate Feedback",
+  "Complaints & Suggestions",
+  "Other Issues"
+];
+
+function matchesCategoryFilter(f, filterVal) {
+  if (!filterVal || filterVal === 'All') return true;
+  const target = filterVal.toLowerCase().trim();
+  const rawCat = (f.type_of_feedback || f.category || f.ai?.category || f.feedback?.type || 'General').toLowerCase().trim();
+
+  if (rawCat === target || rawCat.includes(target) || target.includes(rawCat)) return true;
+
+  if (target.includes('infra') || target.includes('road') || target.includes('local')) {
+    return rawCat.includes('road') || rawCat.includes('infra') || rawCat.includes('local');
+  }
+  if (target.includes('water') || target.includes('sanitat')) {
+    return rawCat.includes('water') || rawCat.includes('sanitat') || rawCat.includes('drain');
+  }
+  if (target.includes('health') || target.includes('medic')) {
+    return rawCat.includes('health') || rawCat.includes('medic') || rawCat.includes('hospital');
+  }
+  if (target.includes('educat') || target.includes('school')) {
+    return rawCat.includes('educat') || rawCat.includes('school') || rawCat.includes('college');
+  }
+  if (target.includes('party') || target.includes('candidate') || target.includes('leader')) {
+    return rawCat.includes('party') || rawCat.includes('candidate') || rawCat.includes('leader');
+  }
+  if (target.includes('women')) {
+    return rawCat.includes('women') || rawCat.includes('female');
+  }
+  return false;
+}
+
 export default function SuperAdminPage() {
   const navigate = useNavigate();
 
@@ -850,27 +898,22 @@ export default function SuperAdminPage() {
                         className="px-3 py-1.5 rounded-xl bg-white border border-emerald-300 text-xs font-bold text-emerald-950 outline-none shadow-sm cursor-pointer"
                       >
                         <option value="All">All Categories</option>
-                        {[...new Set(pendingFeedbacks.map(f => f.type_of_feedback || f.category || f.feedback?.type || f.ai?.category).filter(Boolean))].map(cat => (
+                        {Array.from(new Set([
+                          ...ALL_GRIEVANCE_TOPICS,
+                          ...pendingFeedbacks.map(f => f.type_of_feedback || f.category || f.feedback?.type || f.ai?.category).filter(Boolean)
+                        ])).map(cat => (
                           <option key={cat} value={cat}>{cat}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <div id="resolverList" className="space-y-4">
-                    {pendingFeedbacks.filter(f => {
-                      if (adminCategoryFilter === 'All') return true;
-                      const cat = f.type_of_feedback || f.category || f.feedback?.type || f.ai?.category || 'General';
-                      return cat.toLowerCase().trim() === adminCategoryFilter.toLowerCase().trim();
-                    }).length === 0 ? (
+                    {pendingFeedbacks.filter(f => matchesCategoryFilter(f, adminCategoryFilter)).length === 0 ? (
                       <p className="text-sm text-[#047857] text-center py-6 font-semibold">
                         No pending resolutions matching selected category filter. ✅
                       </p>
                     ) : (
-                      pendingFeedbacks.filter(f => {
-                        if (adminCategoryFilter === 'All') return true;
-                        const cat = f.type_of_feedback || f.category || f.feedback?.type || f.ai?.category || 'General';
-                        return cat.toLowerCase().trim() === adminCategoryFilter.toLowerCase().trim();
-                      }).map((f, idx) => {
+                      pendingFeedbacks.filter(f => matchesCategoryFilter(f, adminCategoryFilter)).map((f, idx) => {
                         const validation = f.image_validation;
                         const risk = validation?.overall_risk || 0;
                         const riskColor = risk >= 65 ? '#EF4444' : risk >= 35 ? '#F59E0B' : '#10B981';

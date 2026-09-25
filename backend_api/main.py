@@ -120,42 +120,37 @@ def login(data: dict):
         if not raw_email or not password:
             return {"message": "Email and password are required"}
 
-        # Case-insensitive email regex search for robust matching
-        email_pattern = {"$regex": f"^{re.escape(raw_email)}$", "$options": "i"}
+        email_lower = raw_email.lower()
         
-        # 1. Exact email + exact password match
-        user = users_collection.find_one({"email": email_pattern, "password": password})
-        
-        # 2. Case-insensitive password fallback
+        # 1. Try exact email match (lowercase or raw)
+        user = users_collection.find_one({"email": raw_email})
         if not user:
-            potential_user = users_collection.find_one({"email": email_pattern})
-            if potential_user:
-                stored_pwd = str(potential_user.get("password") or "").strip()
-                if stored_pwd.lower() == password.lower():
-                    user = potential_user
+            user = users_collection.find_one({"email": email_lower})
 
-        # 3. Lowercase email fallback
+        # 2. Fallback: case-insensitive scan over all users in collection
         if not user:
-            user = users_collection.find_one({"email": raw_email.lower(), "password": password})
+            for doc in users_collection.find():
+                if (doc.get("email") or "").strip().lower() == email_lower:
+                    user = doc
+                    break
 
+        # 3. Validate password (exact or case-insensitive)
         if user:
-            assigned_const = user.get("assigned_constituency") or user.get("constituency", "")
-            return {
-                "message": "Login success",
-                "role": user.get("role", "user"),
-                "name": user.get("name", ""),
-                "email": user.get("email", raw_email.lower()),
-                "district": user.get("district", "Salem"),
-<<<<<<< HEAD
-                "constituency": user.get("assigned_constituency") or user.get("constituency", ""),
-                "assigned_constituency": user.get("assigned_constituency") or user.get("constituency", ""),
-=======
-                "constituency": assigned_const,
-                "assigned_constituency": assigned_const,
->>>>>>> 794098f035855263ac8fead5321f2f2b0e5e7c81
-                "assigned_department": user.get("assigned_department", ""),
-                "admin_type": user.get("admin_type", "department")
-            }
+            stored_pwd = str(user.get("password") or "").strip()
+            if stored_pwd == password or stored_pwd.lower() == password.lower():
+                assigned_const = user.get("assigned_constituency") or user.get("constituency", "")
+                return {
+                    "message": "Login success",
+                    "role": user.get("role", "user"),
+                    "name": user.get("name", ""),
+                    "email": user.get("email", email_lower),
+                    "district": user.get("district", "Salem"),
+                    "constituency": assigned_const,
+                    "assigned_constituency": assigned_const,
+                    "assigned_department": user.get("assigned_department", ""),
+                    "admin_type": user.get("admin_type", "department")
+                }
+
         return {"message": "Invalid email or password"}
     except Exception as e:
         print("ERROR in /api/login:")
@@ -192,27 +187,16 @@ async def create_admin(data: dict):
     role = data.get("role") or "department_admin"
     admin_type = data.get("admin_type") or ("constituency" if role == "constituency_admin" else "department")
     assigned_dept = data.get("assigned_department") or data.get("department") or "Infrastructure & Public Works"
-<<<<<<< HEAD
     assigned_const = data.get("assigned_constituency") or data.get("constituency") or ""
 
-=======
-    assigned_constituency = data.get("assigned_constituency") or data.get("constituency") or ""
-    role = data.get("role") or "department_admin"
->>>>>>> 794098f035855263ac8fead5321f2f2b0e5e7c81
     admin_doc = {
         "name": (data.get("name") or "").strip(),
         "email": email,
         "password": (data.get("password") or "").strip(),
         "role": role,
-<<<<<<< HEAD
         "admin_type": admin_type,
         "assigned_department": assigned_dept,
         "assigned_constituency": assigned_const,
-=======
-        "admin_type": "constituency" if role == "constituency_admin" else "department",
-        "assigned_department": assigned_dept,
-        "assigned_constituency": assigned_constituency,
->>>>>>> 794098f035855263ac8fead5321f2f2b0e5e7c81
         "district": data.get("district") or "Salem",
         "created_at": datetime.now().isoformat()
     }

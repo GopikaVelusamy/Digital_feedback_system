@@ -9,7 +9,7 @@ import traceback
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from fastapi.staticfiles import StaticFiles
-import shutil, os, smtplib
+import shutil, os, smtplib, re
 from dotenv import load_dotenv
 load_dotenv()
 from email.mime.text import MIMEText

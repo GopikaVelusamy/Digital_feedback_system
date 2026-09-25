@@ -52,7 +52,8 @@ export default function CreateAdminPage() {
       const contentType = res.headers.get('content-type') || '';
       if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
-        setAdminList(data);
+        const deptAdmins = data.filter(a => a.role === 'department_admin' || a.role === 'admin' || (a.assigned_department && a.role !== 'constituency_admin'));
+        setAdminList(deptAdmins);
         setLoadingAdmins(false);
         return;
       }
@@ -346,49 +347,57 @@ export default function CreateAdminPage() {
               No assigned department admins found. Use the form above to assign one.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-emerald-200 text-3xs font-black text-emerald-800 uppercase tracking-wider">
-                    <th className="py-3 px-4">Admin Name</th>
-                    <th className="py-3 px-4">Email</th>
-                    <th className="py-3 px-4">Role / Type</th>
-                    <th className="py-3 px-4">Assigned Scope</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-emerald-100 text-xs font-semibold text-[#064e3b]">
-                  {adminList.map((adm) => {
-                    const isSuper = adm.email === 'admin@admk.org' || adm.email === 'varunthanwar@gmail.com' || adm.role === 'admin';
-                    return (
-                      <tr key={adm._id || adm.email} className="hover:bg-emerald-50/50 transition">
-                        <td className="py-3.5 px-4 font-extrabold">{adm.name || 'Admin'}</td>
-                        <td className="py-3.5 px-4 font-mono text-emerald-900">{adm.email}</td>
-                        <td className="py-3.5 px-4">
-                          <span className={`px-3 py-1 rounded-full text-3xs font-black uppercase tracking-wider ${isSuper ? 'bg-amber-100 text-amber-950 border border-amber-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'}`}>
-                            {isSuper ? 'SUPER ADMIN' : 'DEPARTMENT ADMIN'}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 font-bold text-emerald-800">
-                          {isSuper ? 'Salem District (Master)' : (adm.assigned_department || 'Department Queue')}
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          {!isSuper ? (
-                            <button
-                              onClick={() => handleRevokeAdmin(adm.email)}
-                              className="px-3.5 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-200 hover:bg-red-600 hover:text-white font-bold text-3xs uppercase tracking-wider transition"
-                            >
-                              Revoke
-                            </button>
-                          ) : (
-                            <span className="text-3xs text-slate-400 font-bold uppercase tracking-wider">Master Key</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {adminList.map((adm) => {
+                const isSuper = adm.email === 'admin@admk.org' || adm.email === 'varunthanwar@gmail.com' || adm.role === 'admin';
+                return (
+                  <div
+                    key={adm._id || adm.email}
+                    className="bg-white border border-emerald-500/20 rounded-[2rem] p-6 shadow-md hover:shadow-lg transition-all flex flex-col justify-between gap-4"
+                  >
+                    <div className="space-y-3">
+                      {/* Header: Name + Role Badge */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <h4 className="font-extrabold text-slate-800 text-base sm:text-lg truncate max-w-[140px]" title={adm.name}>
+                          {adm.name || 'Department Admin'}
+                        </h4>
+                        <span className={`text-white text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1 shadow-sm ${isSuper ? 'bg-amber-600' : 'bg-emerald-700'}`}>
+                          {isSuper ? '👑 SUPER ADMIN' : '🏛️ DEPARTMENT ADMIN'}
+                        </span>
+                      </div>
+
+                      {/* Assigned Department Pill */}
+                      <div>
+                        <span className="inline-flex items-center gap-1.5 bg-[#f0fdf4] border border-[#a7f3d0] text-[#065f46] px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xs">
+                          <span className="text-xs">🏢</span>
+                          <span>Dept: <strong className="font-black text-[#047857]">{isSuper ? 'Salem District (Master)' : (adm.assigned_department || 'Infrastructure & Public Works')}</strong></span>
+                        </span>
+                      </div>
+
+                      {/* Email */}
+                      <p className="text-xs font-semibold text-slate-500 font-mono">
+                        {adm.email}
+                      </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="pt-3 border-t border-slate-100 flex justify-end">
+                      {!isSuper ? (
+                        <button
+                          onClick={() => handleRevokeAdmin(adm.email)}
+                          className="text-red-600 hover:text-red-800 text-[10px] font-black uppercase tracking-wider bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition"
+                        >
+                          Revoke Access
+                        </button>
+                      ) : (
+                        <span className="text-[10px] font-black uppercase text-amber-700 tracking-wider bg-amber-50 px-3 py-1 rounded-lg">
+                          Master Key
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

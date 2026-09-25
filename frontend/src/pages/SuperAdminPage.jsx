@@ -163,17 +163,24 @@ export default function SuperAdminPage() {
       { email: 'varunthanwar@gmail.com', name: 'Varun Thanwar', role: 'admin', district: 'Salem', constituency: 'All' },
       { email: 'karthick@admk.org', name: 'Karthick', role: 'department_admin', assigned_department: 'Infrastructure & Public Works', district: 'Salem' },
       { email: 'rahul@admk.org', name: 'Rahul', role: 'department_admin', assigned_department: 'Education & Youth Affairs', district: 'Salem' },
-      { email: 'saravana@admk.org', name: 'Saravana', role: 'constituency_admin', assigned_constituency: 'Salem South', district: 'Salem' },
-      { email: 'vinayraj@admk.org', name: 'Vinayraj', role: 'constituency_admin', assigned_constituency: 'Salem North', district: 'Salem' }
+      { email: 'saravana@admk.org', name: 'Saravana', role: 'constituency_admin', assigned_constituency: 'Edappadi', constituency: 'Edappadi', district: 'Salem' },
+      { email: 'vinayraj@admk.org', name: 'Vinayraj', role: 'constituency_admin', assigned_constituency: 'Attur', constituency: 'Attur', district: 'Salem' },
+      { email: 'arun@admk.org', name: 'Arun', role: 'constituency_admin', assigned_constituency: 'Mettur', constituency: 'Mettur', district: 'Salem' }
     ];
     const combined = [...defaultAdmins];
     localDeptAdmins.forEach(la => {
-      if (!combined.some(a => a.email.toLowerCase() === la.email.toLowerCase())) {
+      const existingIdx = combined.findIndex(a => a.email.toLowerCase() === la.email.toLowerCase());
+      if (existingIdx >= 0) {
+        combined[existingIdx] = { ...combined[existingIdx], ...la };
+      } else {
         combined.push(la);
       }
     });
     localConstAdmins.forEach(ca => {
-      if (!combined.some(a => a.email.toLowerCase() === ca.email.toLowerCase())) {
+      const existingIdx = combined.findIndex(a => a.email.toLowerCase() === ca.email.toLowerCase());
+      if (existingIdx >= 0) {
+        combined[existingIdx] = { ...combined[existingIdx], ...ca };
+      } else {
         combined.push(ca);
       }
     });
@@ -864,11 +871,17 @@ export default function SuperAdminPage() {
                           ? { title: 'DEPT ADMIN', icon: '🏛️', bg: 'bg-blue-600 text-white border-blue-700', scopeBg: 'bg-blue-50 text-blue-900 border-blue-200' }
                           : { title: 'CONSTITUENCY LEADER', icon: '🗳️', bg: 'bg-amber-700 text-white border-amber-800', scopeBg: 'bg-amber-50 text-amber-900 border-amber-200' };
 
+                        const constituencyName = 
+                          a.assigned_constituency || 
+                          a.constituency || 
+                          a.assigned_constituencies || 
+                          (a.email?.toLowerCase().includes('vinay') ? 'Attur' : a.email?.toLowerCase().includes('arun') ? 'Mettur' : a.email?.toLowerCase().includes('saravana') ? 'Edappadi' : null);
+
                         const scopeText = isSuper
                           ? 'All Depts & Constituencies (Salem HQ)'
                           : isDept
                           ? `Dept: ${a.assigned_department || a.department || 'Infrastructure & Public Works'}`
-                          : `Constituency: ${a.assigned_constituency || a.constituency || 'Salem South'}`;
+                          : `Constituency: ${constituencyName || 'General Constituency'}`;
 
                         return (
                           <div key={idx} className="p-4 bg-white/90 border border-emerald-200/80 rounded-2xl text-[#064e3b] shadow-sm hover:shadow-md transition">

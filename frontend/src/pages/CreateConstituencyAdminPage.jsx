@@ -51,9 +51,9 @@ export default function CreateConstituencyAdminPage() {
 
     // Local & Default fallback for constituency admins
     const defaultAdmins = [
-      { name: 'Saravana', email: 'saravana@admk.org', assigned_constituency: 'Salem South', role: 'constituency_admin' },
-      { name: 'Vinay Raj', email: 'vinayraj@admk.org', assigned_constituency: 'Attur', role: 'constituency_admin' },
-      { name: 'Arun', email: 'arun@admk.org', assigned_constituency: 'Gangavalli', role: 'constituency_admin' }
+      { name: 'Saravana', email: 'saravana@admk.org', assigned_constituency: 'Edappadi', constituency: 'Edappadi', role: 'constituency_admin' },
+      { name: 'Vinay Raj', email: 'vinayraj@admk.org', assigned_constituency: 'Attur', constituency: 'Attur', role: 'constituency_admin' },
+      { name: 'Arun', email: 'arun@admk.org', assigned_constituency: 'Mettur', constituency: 'Mettur', role: 'constituency_admin' }
     ];
 
     const localAdmins = JSON.parse(localStorage.getItem('local_constituency_admins') || '[]');
@@ -81,6 +81,7 @@ export default function CreateConstituencyAdminPage() {
       password,
       district: 'Salem',
       assigned_constituency: assignedConstituency,
+      constituency: assignedConstituency,
       role: 'constituency_admin',
     };
 

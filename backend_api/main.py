@@ -128,13 +128,15 @@ def login(data: dict):
             user = users_collection.find_one({"email": raw_email.lower(), "password": password})
 
         if user:
+            assigned_const = user.get("assigned_constituency") or user.get("constituency", "")
             return {
                 "message": "Login success",
                 "role": user.get("role", "user"),
                 "name": user.get("name", ""),
                 "email": user.get("email", raw_email.lower()),
                 "district": user.get("district", "Salem"),
-                "constituency": user.get("constituency", ""),
+                "constituency": assigned_const,
+                "assigned_constituency": assigned_const,
                 "assigned_department": user.get("assigned_department", ""),
                 "admin_type": user.get("admin_type", "department")
             }

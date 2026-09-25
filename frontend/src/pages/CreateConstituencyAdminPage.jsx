@@ -49,9 +49,25 @@ export default function CreateConstituencyAdminPage() {
       console.error(e);
     }
 
-    // Local fallback for constituency admins
+    // Local & Default fallback for constituency admins
+    const defaultAdmins = [
+      { name: 'Saravana', email: 'saravana@admk.org', assigned_constituency: 'Salem South', role: 'constituency_admin' },
+      { name: 'Vinay Raj', email: 'vinayraj@admk.org', assigned_constituency: 'Attur', role: 'constituency_admin' },
+      { name: 'Arun', email: 'arun@admk.org', assigned_constituency: 'Gangavalli', role: 'constituency_admin' }
+    ];
+
     const localAdmins = JSON.parse(localStorage.getItem('local_constituency_admins') || '[]');
-    setAdminList(localAdmins);
+    const combined = [...defaultAdmins];
+    localAdmins.forEach(la => {
+      const idx = combined.findIndex(a => a.email.toLowerCase() === la.email.toLowerCase());
+      if (idx >= 0) {
+        combined[idx] = { ...combined[idx], ...la };
+      } else {
+        combined.push(la);
+      }
+    });
+
+    setAdminList(combined);
     setLoadingAdmins(false);
   }
 
@@ -239,38 +255,48 @@ export default function CreateConstituencyAdminPage() {
               No constituency admins assigned yet. Create your first assignment above!
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-emerald-500/20 text-[10px] font-black uppercase text-emerald-900 tracking-wider">
-                    <th className="py-3 px-4">Name</th>
-                    <th className="py-3 px-4">Email</th>
-                    <th className="py-3 px-4">Assigned Constituency</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-emerald-500/10 text-xs font-bold text-[#064e3b]">
-                  {adminList.map((a) => (
-                    <tr key={a.email} className="hover:bg-emerald-50/50 transition">
-                      <td className="py-4 px-4 font-black">{a.name || 'Constituency Admin'}</td>
-                      <td className="py-4 px-4 text-slate-600">{a.email}</td>
-                      <td className="py-4 px-4">
-                        <span className="px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-[10px] font-black uppercase tracking-wider">
-                          {a.assigned_constituency || 'Salem Constituency'}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <button
-                          onClick={() => handleRevokeAdmin(a.email)}
-                          className="text-red-600 hover:text-red-800 text-[10px] font-black uppercase tracking-wider bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition"
-                        >
-                          Revoke Access
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {adminList.map((a) => (
+                <div
+                  key={a.email}
+                  className="bg-white border border-emerald-500/20 rounded-[2rem] p-6 shadow-md hover:shadow-lg transition-all flex flex-col justify-between gap-4"
+                >
+                  <div className="space-y-3">
+                    {/* Header: Name + Badge */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <h4 className="font-extrabold text-slate-800 text-base sm:text-lg truncate max-w-[140px]" title={a.name}>
+                        {a.name || 'Constituency Admin'}
+                      </h4>
+                      <span className="bg-[#b45309] text-white text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                        💼 CONSTITUENCY LEADER
+                      </span>
+                    </div>
+
+                    {/* Assigned Constituency Pill */}
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 bg-[#fffbeb] border border-[#fcd34d] text-[#92400e] px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xs">
+                        <span className="text-xs">🎛️</span>
+                        <span>Constituency: <strong className="font-black text-[#78350f]">{a.assigned_constituency || a.constituency || 'Salem South'}</strong></span>
+                      </span>
+                    </div>
+
+                    {/* Email */}
+                    <p className="text-xs font-semibold text-slate-500 font-mono">
+                      {a.email}
+                    </p>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-3 border-t border-slate-100 flex justify-end">
+                    <button
+                      onClick={() => handleRevokeAdmin(a.email)}
+                      className="text-red-600 hover:text-red-800 text-[10px] font-black uppercase tracking-wider bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition"
+                    >
+                      Revoke Access
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

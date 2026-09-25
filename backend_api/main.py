@@ -159,7 +159,8 @@ def google_login(data: dict):
         "role": user.get("role", "user"),
         "name": user.get("name", name),
         "email": user.get("email", email),
-        "assigned_department": user.get("assigned_department", "")
+        "assigned_department": user.get("assigned_department", ""),
+        "assigned_constituency": user.get("assigned_constituency") or user.get("constituency", "")
     }
 
 @app.post("/api/create-admin")
@@ -171,13 +172,16 @@ async def create_admin(data: dict):
         return {"error": "An admin with this email already exists"}
     
     assigned_dept = data.get("assigned_department") or data.get("department") or "Infrastructure & Public Works"
+    assigned_constituency = data.get("assigned_constituency") or data.get("constituency") or ""
+    role = data.get("role") or "department_admin"
     admin_doc = {
         "name": (data.get("name") or "").strip(),
         "email": email,
         "password": (data.get("password") or "").strip(),
-        "role": data.get("role") or "department_admin",
-        "admin_type": "department",
+        "role": role,
+        "admin_type": "constituency" if role == "constituency_admin" else "department",
         "assigned_department": assigned_dept,
+        "assigned_constituency": assigned_constituency,
         "district": data.get("district") or "Salem",
         "created_at": datetime.now().isoformat()
     }
@@ -189,7 +193,7 @@ async def create_admin(data: dict):
     
     admin_doc["_id"] = str(admin_doc["_id"])
     admin_doc.pop("password", None)
-    return {"message": "Department Admin assigned successfully", "admin": admin_doc}
+    return {"message": "Admin assigned successfully", "admin": admin_doc}
 
 @app.get("/api/admins")
 def get_admins():

@@ -139,14 +139,20 @@ def login(data: dict):
             user = users_collection.find_one({"email": raw_email.lower(), "password": password})
 
         if user:
+            assigned_const = user.get("assigned_constituency") or user.get("constituency", "")
             return {
                 "message": "Login success",
                 "role": user.get("role", "user"),
                 "name": user.get("name", ""),
                 "email": user.get("email", raw_email.lower()),
                 "district": user.get("district", "Salem"),
+<<<<<<< HEAD
                 "constituency": user.get("assigned_constituency") or user.get("constituency", ""),
                 "assigned_constituency": user.get("assigned_constituency") or user.get("constituency", ""),
+=======
+                "constituency": assigned_const,
+                "assigned_constituency": assigned_const,
+>>>>>>> 794098f035855263ac8fead5321f2f2b0e5e7c81
                 "assigned_department": user.get("assigned_department", ""),
                 "admin_type": user.get("admin_type", "department")
             }
@@ -171,7 +177,8 @@ def google_login(data: dict):
         "role": user.get("role", "user"),
         "name": user.get("name", name),
         "email": user.get("email", email),
-        "assigned_department": user.get("assigned_department", "")
+        "assigned_department": user.get("assigned_department", ""),
+        "assigned_constituency": user.get("assigned_constituency") or user.get("constituency", "")
     }
 
 @app.post("/api/create-admin")
@@ -185,16 +192,27 @@ async def create_admin(data: dict):
     role = data.get("role") or "department_admin"
     admin_type = data.get("admin_type") or ("constituency" if role == "constituency_admin" else "department")
     assigned_dept = data.get("assigned_department") or data.get("department") or "Infrastructure & Public Works"
+<<<<<<< HEAD
     assigned_const = data.get("assigned_constituency") or data.get("constituency") or ""
 
+=======
+    assigned_constituency = data.get("assigned_constituency") or data.get("constituency") or ""
+    role = data.get("role") or "department_admin"
+>>>>>>> 794098f035855263ac8fead5321f2f2b0e5e7c81
     admin_doc = {
         "name": (data.get("name") or "").strip(),
         "email": email,
         "password": (data.get("password") or "").strip(),
         "role": role,
+<<<<<<< HEAD
         "admin_type": admin_type,
         "assigned_department": assigned_dept,
         "assigned_constituency": assigned_const,
+=======
+        "admin_type": "constituency" if role == "constituency_admin" else "department",
+        "assigned_department": assigned_dept,
+        "assigned_constituency": assigned_constituency,
+>>>>>>> 794098f035855263ac8fead5321f2f2b0e5e7c81
         "district": data.get("district") or "Salem",
         "created_at": datetime.now().isoformat()
     }
@@ -206,7 +224,7 @@ async def create_admin(data: dict):
     
     admin_doc["_id"] = str(admin_doc["_id"])
     admin_doc.pop("password", None)
-    return {"message": "Department Admin assigned successfully", "admin": admin_doc}
+    return {"message": "Admin assigned successfully", "admin": admin_doc}
 
 @app.get("/api/admins")
 def get_admins():

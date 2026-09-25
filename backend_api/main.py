@@ -122,8 +122,19 @@ def login(data: dict):
 
         # Case-insensitive email regex search for robust matching
         email_pattern = {"$regex": f"^{re.escape(raw_email)}$", "$options": "i"}
+        
+        # 1. Exact email + exact password match
         user = users_collection.find_one({"email": email_pattern, "password": password})
         
+        # 2. Case-insensitive password fallback
+        if not user:
+            potential_user = users_collection.find_one({"email": email_pattern})
+            if potential_user:
+                stored_pwd = str(potential_user.get("password") or "").strip()
+                if stored_pwd.lower() == password.lower():
+                    user = potential_user
+
+        # 3. Lowercase email fallback
         if not user:
             user = users_collection.find_one({"email": raw_email.lower(), "password": password})
 
@@ -134,7 +145,8 @@ def login(data: dict):
                 "name": user.get("name", ""),
                 "email": user.get("email", raw_email.lower()),
                 "district": user.get("district", "Salem"),
-                "constituency": user.get("constituency", ""),
+                "constituency": user.get("assigned_constituency") or user.get("constituency", ""),
+                "assigned_constituency": user.get("assigned_constituency") or user.get("constituency", ""),
                 "assigned_department": user.get("assigned_department", ""),
                 "admin_type": user.get("admin_type", "department")
             }
@@ -170,14 +182,19 @@ async def create_admin(data: dict):
     if users_collection.find_one({"email": email}):
         return {"error": "An admin with this email already exists"}
     
+    role = data.get("role") or "department_admin"
+    admin_type = data.get("admin_type") or ("constituency" if role == "constituency_admin" else "department")
     assigned_dept = data.get("assigned_department") or data.get("department") or "Infrastructure & Public Works"
+    assigned_const = data.get("assigned_constituency") or data.get("constituency") or ""
+
     admin_doc = {
         "name": (data.get("name") or "").strip(),
         "email": email,
         "password": (data.get("password") or "").strip(),
-        "role": data.get("role") or "department_admin",
-        "admin_type": "department",
+        "role": role,
+        "admin_type": admin_type,
         "assigned_department": assigned_dept,
+        "assigned_constituency": assigned_const,
         "district": data.get("district") or "Salem",
         "created_at": datetime.now().isoformat()
     }

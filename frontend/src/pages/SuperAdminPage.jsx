@@ -591,14 +591,14 @@ export default function SuperAdminPage() {
       {/* Assign Admin Choice Modal */}
       {showAssignModal && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4 animate-fadeIn">
-          <div className="bg-white rounded-[2.5rem] p-8 max-w-xl w-full border border-emerald-500/20 shadow-2xl space-y-6">
+          <div className="bg-white rounded-[2.5rem] p-8 max-w-3xl w-full border border-emerald-500/20 shadow-2xl space-y-6">
             <div className="flex items-center justify-between border-b border-emerald-100 pb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xl">
                   👤
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-[#064e3b] uppercase tracking-tight">Assign New Admin</h3>
+                  <h3 className="text-xl font-black text-[#064e3b] uppercase tracking-tight">Assign New Authority / Account</h3>
                   <p className="text-3xs font-bold text-emerald-600 uppercase tracking-widest">Select Administration Authority Level</p>
                 </div>
               </div>
@@ -611,27 +611,27 @@ export default function SuperAdminPage() {
             </div>
 
             <p className="text-xs font-bold text-slate-600 leading-relaxed">
-              Choose the authority level for the new administrator account you wish to create:
+              Choose the role and authority level for the new account you wish to create:
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Option 1: Department Admin */}
               <button
                 onClick={() => {
                   setShowAssignModal(false);
                   navigate('/create-admin');
                 }}
-                className="group flex flex-col items-start p-6 rounded-3xl border-2 border-emerald-500/20 hover:border-emerald-600 bg-emerald-50/40 hover:bg-emerald-100/60 transition-all text-left shadow-sm hover:shadow-md active:scale-95"
+                className="group flex flex-col items-start p-5 rounded-3xl border-2 border-emerald-500/20 hover:border-emerald-600 bg-emerald-50/40 hover:bg-emerald-100/60 transition-all text-left shadow-sm hover:shadow-md active:scale-95"
               >
-                <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-2xl font-bold mb-4 shadow-md group-hover:scale-110 transition-transform">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl font-bold mb-3 shadow-md group-hover:scale-110 transition-transform">
                   🏛️
                 </div>
                 <span className="text-3xs font-black text-emerald-600 uppercase tracking-widest block mb-1">Wing Authority</span>
-                <h4 className="text-base font-black text-[#064e3b] uppercase tracking-tight group-hover:text-emerald-800">
+                <h4 className="text-sm font-black text-[#064e3b] uppercase tracking-tight group-hover:text-emerald-800">
                   Department Admin
                 </h4>
                 <p className="text-[11px] font-bold text-slate-600 mt-2 leading-normal">
-                  Assign district department wing authorities (Infrastructure, Health, Education, Governance, Party Affairs).
+                  Assign district department authorities (Infrastructure, Health, Education, Governance).
                 </p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-black text-emerald-700 group-hover:translate-x-1 transition-transform">
                   Assign Department →
@@ -644,20 +644,43 @@ export default function SuperAdminPage() {
                   setShowAssignModal(false);
                   navigate('/create-constituency-admin');
                 }}
-                className="group flex flex-col items-start p-6 rounded-3xl border-2 border-amber-500/30 hover:border-amber-600 bg-amber-50/40 hover:bg-amber-100/60 transition-all text-left shadow-sm hover:shadow-md active:scale-95"
+                className="group flex flex-col items-start p-5 rounded-3xl border-2 border-amber-500/30 hover:border-amber-600 bg-amber-50/40 hover:bg-amber-100/60 transition-all text-left shadow-sm hover:shadow-md active:scale-95"
               >
-                <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-2xl font-bold mb-4 shadow-md group-hover:scale-110 transition-transform">
+                <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl font-bold mb-3 shadow-md group-hover:scale-110 transition-transform">
                   🗳️
                 </div>
                 <span className="text-3xs font-black text-amber-600 uppercase tracking-widest block mb-1">Field Authority</span>
-                <h4 className="text-base font-black text-amber-950 uppercase tracking-tight group-hover:text-amber-800">
+                <h4 className="text-sm font-black text-amber-950 uppercase tracking-tight group-hover:text-amber-800">
                   Constituency Admin
                 </h4>
                 <p className="text-[11px] font-bold text-slate-600 mt-2 leading-normal">
-                  Assign field authorities across Salem's 11 constituencies (Edappadi, Salem North, Salem South, Attur, etc.).
+                  Assign field authorities across Salem's 11 constituencies (Edappadi, Salem North, Attur, etc.).
                 </p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-black text-amber-800 group-hover:translate-x-1 transition-transform">
                   Assign Constituency →
+                </span>
+              </button>
+
+              {/* Option 3: Field Surveyor */}
+              <button
+                onClick={() => {
+                  setShowAssignModal(false);
+                  navigate('/create-surveyor');
+                }}
+                className="group flex flex-col items-start p-5 rounded-3xl border-2 border-teal-500/30 hover:border-teal-600 bg-teal-50/40 hover:bg-teal-100/60 transition-all text-left shadow-sm hover:shadow-md active:scale-95"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl font-bold mb-3 shadow-md group-hover:scale-110 transition-transform">
+                  📋
+                </div>
+                <span className="text-3xs font-black text-teal-600 uppercase tracking-widest block mb-1">Field Surveyor</span>
+                <h4 className="text-sm font-black text-teal-950 uppercase tracking-tight group-hover:text-teal-800">
+                  Field Surveyor
+                </h4>
+                <p className="text-[11px] font-bold text-slate-600 mt-2 leading-normal">
+                  Register on-ground surveyors for collecting door-to-door citizen survey responses.
+                </p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-black text-teal-800 group-hover:translate-x-1 transition-transform">
+                  Assign Surveyor →
                 </span>
               </button>
             </div>

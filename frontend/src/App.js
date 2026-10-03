@@ -16,6 +16,7 @@ import FeedbackDetailPage from './pages/FeedbackDetailPage';
 import SuperAdminPage from './pages/SuperAdminPage';
 import CreateAdminPage from './pages/CreateAdminPage';
 import CreateConstituencyAdminPage from './pages/CreateConstituencyAdminPage';
+import CreateSurveyorPage from './pages/CreateSurveyorPage';
 
 // Survey Platform Pages (Phase 1)
 import SurveyorLoginPage from './pages/SurveyorLoginPage';
@@ -139,6 +140,16 @@ export default function App() {
           element={
             <SuperAdminRoute>
               <CreateConstituencyAdminPage />
+            </SuperAdminRoute>
+          }
+        />
+
+        {/* Create field surveyor account */}
+        <Route
+          path="/create-surveyor"
+          element={
+            <SuperAdminRoute>
+              <CreateSurveyorPage />
             </SuperAdminRoute>
           }
         />

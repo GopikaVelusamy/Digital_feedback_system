@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import ImageIntelCard from '../components/ImageIntelCard';
 import Sidebar from '../components/Sidebar';
+import SuperAdminSurveyTab from '../components/SuperAdminSurveyTab';
 import { translationData, getLanguage } from '../utils/translations';
 import { API } from '../config';
 
@@ -868,6 +869,14 @@ export default function SuperAdminPage() {
               <span className="material-symbols-outlined text-sm">history_edu</span>
               <span>Legacy Milestones</span>
             </button>
+
+            <button
+              onClick={() => setActiveTab('survey')}
+              className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'survey' ? 'bg-teal-700 text-white shadow-md scale-[1.02]' : 'text-emerald-900 hover:bg-emerald-100/50'}`}
+            >
+              <span className="material-symbols-outlined text-sm">ballot</span>
+              <span>📊 Public Survey Platform</span>
+            </button>
           </div>
 
           {/* TAB 1: ADMIN ACCOUNTS & RESOLUTIONS */}
@@ -1325,6 +1334,11 @@ export default function SuperAdminPage() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* TAB 5: PUBLIC SURVEY PLATFORM (PHASE 2) */}
+          {activeTab === 'survey' && (
+            <SuperAdminSurveyTab language={language} />
           )}
 
         </main>

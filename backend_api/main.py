@@ -854,6 +854,93 @@ def delete_survey_question(question_id: str):
     return {"message": "Question deleted"}
 
 
+# ── Seed Recommended Survey Questions ────────────────────────────
+@app.post("/api/survey-questions/seed")
+def seed_survey_questions(force: bool = False):
+    existing = survey_questions_col.count_documents({})
+    if existing > 0 and not force:
+        return {"message": "Questions already exist", "count": existing}
+
+    default_questions = [
+        {
+            "question_text": "How satisfied are you with local road and infrastructure conditions in your area?",
+            "question_text_ta": "உங்கள் பகுதியில் உள்ள சாலை மற்றும் உள்கட்டமைப்பு வசதிகள் குறித்து உங்கள் திருப்தி நிலை என்ன?",
+            "type": "rating",
+            "options": [],
+            "options_ta": [],
+            "required": True,
+            "order": 1,
+            "created_at": datetime.now().isoformat()
+        },
+        {
+            "question_text": "How is the regular drinking water supply in your ward/street?",
+            "question_text_ta": "உங்கள் வார்டு/தெருவில் குடிநீர் விநியோகம் எவ்வாறு உள்ளது?",
+            "type": "mcq",
+            "options": [
+                "Excellent & Regular (Daily/Alternate)",
+                "Adequate (2-3 times/week)",
+                "Irregular & Low Pressure",
+                "Severe Water Shortage"
+            ],
+            "options_ta": [
+                "மிக நன்று - சீராக கிடைக்கிறது (தினமும்/மாற்று நாள்)",
+                "போதுமானது (வாரத்திற்கு 2-3 முறை)",
+                "சீரற்ற விநியோகம் / குறைந்த அழுத்தம்",
+                "கடும் குடிநீர் தட்டுப்பாடு"
+            ],
+            "required": True,
+            "order": 2,
+            "created_at": datetime.now().isoformat()
+        },
+        {
+            "question_text": "Are street lights functioning properly and is garbage cleared regularly?",
+            "question_text_ta": "தெருவிளக்குகள் முறையாக எரிகிறதா மற்றும் குப்பைகள் உடனுக்குடன் அகற்றப்படுகிறதா?",
+            "type": "yesno",
+            "options": ["Yes / ஆம்", "No / இல்லை"],
+            "options_ta": ["ஆம்", "இல்லை"],
+            "required": True,
+            "order": 3,
+            "created_at": datetime.now().isoformat()
+        },
+        {
+            "question_text": "Have government welfare schemes and pensions reached your household directly?",
+            "question_text_ta": "அரசின் நலத்திட்ட உதவிகள் மற்றும் ஓய்வூதியங்கள் உங்கள் குடும்பத்திற்கு கிடைத்துள்ளதா?",
+            "type": "mcq",
+            "options": [
+                "Yes, received without hassle",
+                "Applied and waiting for approval",
+                "Not eligible / Not applied",
+                "Faced delays / Intermediary issues"
+            ],
+            "options_ta": [
+                "ஆம், தடையின்றி கிடைத்துள்ளது",
+                "விண்ணப்பித்து காத்திருக்கிறோம்",
+                "தகுதி இல்லை / விண்ணப்பிக்கவில்லை",
+                "தாமதம் மற்றும் தடங்கல்கள் உள்ளன"
+            ],
+            "required": True,
+            "order": 4,
+            "created_at": datetime.now().isoformat()
+        },
+        {
+            "question_text": "What is the single most urgent civic problem that should be addressed in your locality?",
+            "question_text_ta": "உங்கள் பகுதியில் உடனடியாக தீர்க்கப்பட வேண்டிய மிக முக்கியமான பொதுப் பிரச்சனை என்ன?",
+            "type": "text",
+            "options": [],
+            "options_ta": [],
+            "required": False,
+            "order": 5,
+            "created_at": datetime.now().isoformat()
+        }
+    ]
+
+    survey_questions_col.insert_many(default_questions)
+    for q in default_questions:
+        q["_id"] = str(q["_id"])
+    return {"message": "Default questions seeded successfully", "count": len(default_questions), "questions": default_questions}
+
+
+
 # ── Submit Survey Response ───────────────────────────────────────
 @app.post("/api/survey-responses")
 def submit_survey_response(data: dict):

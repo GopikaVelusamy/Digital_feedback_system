@@ -57,7 +57,9 @@ feedback_collection = db["feedbacks"]
 global_issues       = db["global_issues"]
 press_releases_col  = db["press_releases"]
 gallery_col         = db["gallery"]
-legacy_col          = db["legacy"]
+legacy_col            = db["legacy"]
+survey_questions_col  = db["survey_questions"]
+survey_responses_col  = db["survey_responses"]
 
 # ── Additional imports for news scraping ──────────────────────
 import requests
@@ -765,3 +767,168 @@ def delete_legacy_milestone(milestone_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Milestone not found")
     return {"message": "Milestone deleted"}
+
+
+# ================================================================
+# PHASE 1 — PUBLIC SURVEY PLATFORM
+# ================================================================
+
+# ── Create Surveyor (Super Admin only) ───────────────────────────
+@app.post("/api/create-surveyor")
+def create_surveyor(data: dict):
+    email = (data.get("email") or "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    if users_collection.find_one({"email": email}):
+        return {"error": "A user with this email already exists"}
+
+    surveyor_doc = {
+        "name":         (data.get("name") or "").strip(),
+        "email":        email,
+        "password":     (data.get("password") or "").strip(),
+        "role":         "surveyor",
+        "phone":        data.get("phone", ""),
+        "constituency": data.get("constituency", ""),
+        "district":     data.get("district", "Salem"),
+        "created_at":   datetime.now().isoformat()
+    }
+    users_collection.insert_one(surveyor_doc)
+    surveyor_doc["_id"] = str(surveyor_doc["_id"])
+    surveyor_doc.pop("password", None)
+    return {"message": "Surveyor created successfully", "surveyor": surveyor_doc}
+
+
+# ── Get all surveyors ────────────────────────────────────────────
+@app.get("/api/surveyors")
+def get_surveyors():
+    surveyors = list(users_collection.find({"role": "surveyor"}))
+    for s in surveyors:
+        s["_id"] = str(s["_id"])
+        s.pop("password", None)
+    return surveyors
+
+
+# ── Delete surveyor ──────────────────────────────────────────────
+@app.delete("/api/surveyors/{email}")
+def delete_surveyor(email: str):
+    res = users_collection.delete_one({"email": email.strip().lower(), "role": "surveyor"})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Surveyor not found")
+    return {"message": f"Surveyor {email} deleted successfully"}
+
+
+# ── Survey Questions (Super Admin creates, Surveyors read) ───────
+@app.get("/api/survey-questions")
+def get_survey_questions():
+    questions = list(survey_questions_col.find().sort("order", 1))
+    for q in questions:
+        q["_id"] = str(q["_id"])
+    return questions
+
+
+@app.post("/api/survey-questions")
+def create_survey_question(data: dict):
+    if not data.get("question_text"):
+        raise HTTPException(status_code=400, detail="question_text is required")
+    count = survey_questions_col.count_documents({})
+    doc = {
+        "question_text":    data.get("question_text", "").strip(),
+        "question_text_ta": data.get("question_text_ta", "").strip(),  # Tamil translation
+        "type":             data.get("type", "mcq"),   # mcq | rating | text | yesno
+        "options":          data.get("options", []),   # list of option strings (for MCQ)
+        "options_ta":       data.get("options_ta", []),
+        "required":         data.get("required", True),
+        "order":            data.get("order", count + 1),
+        "created_at":       datetime.now().isoformat()
+    }
+    result = survey_questions_col.insert_one(doc)
+    doc["_id"] = str(result.inserted_id)
+    return {"message": "Question created", "question": doc}
+
+
+@app.delete("/api/survey-questions/{question_id}")
+def delete_survey_question(question_id: str):
+    result = survey_questions_col.delete_one({"_id": ObjectId(question_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Question not found")
+    return {"message": "Question deleted"}
+
+
+# ── Submit Survey Response ───────────────────────────────────────
+@app.post("/api/survey-responses")
+def submit_survey_response(data: dict):
+    if not data.get("surveyor_email"):
+        raise HTTPException(status_code=400, detail="surveyor_email is required")
+    if not data.get("answers"):
+        raise HTTPException(status_code=400, detail="answers is required")
+
+    doc = {
+        "surveyor_email":  data.get("surveyor_email", ""),
+        "surveyor_name":   data.get("surveyor_name", ""),
+        "state":           data.get("state", "Tamil Nadu"),
+        "district":        data.get("district", ""),
+        "constituency":    data.get("constituency", ""),
+        "local_body":      data.get("local_body", ""),
+        "ward":            data.get("ward", ""),
+        "area_street":     data.get("area_street", ""),
+        "answers":         data.get("answers", []),     # [{question_id, question_text, answer}]
+        "respondent_name": data.get("respondent_name", ""),
+        "respondent_age":  data.get("respondent_age", ""),
+        "respondent_gender": data.get("respondent_gender", ""),
+        "submitted_at":    datetime.now().isoformat()
+    }
+    result = survey_responses_col.insert_one(doc)
+    doc["_id"] = str(result.inserted_id)
+    return {"message": "Survey response submitted successfully", "id": doc["_id"]}
+
+
+# ── Get Survey Responses (Admin analytics) ───────────────────────
+@app.get("/api/survey-responses")
+def get_survey_responses(
+    constituency: str = None,
+    district: str = None,
+    surveyor_email: str = None
+):
+    query = {}
+    if constituency:
+        query["constituency"] = constituency
+    if district:
+        query["district"] = district
+    if surveyor_email:
+        query["surveyor_email"] = surveyor_email
+
+    responses = list(survey_responses_col.find(query).sort("submitted_at", -1))
+    for r in responses:
+        r["_id"] = str(r["_id"])
+    return responses
+
+
+# ── Survey Analytics Summary ─────────────────────────────────────
+@app.get("/api/survey-analytics")
+def get_survey_analytics():
+    total = survey_responses_col.count_documents({})
+    total_surveyors = users_collection.count_documents({"role": "surveyor"})
+    total_questions = survey_questions_col.count_documents({})
+
+    # Per-constituency breakdown
+    pipeline = [
+        {"$group": {"_id": "$constituency", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    by_constituency = list(survey_responses_col.aggregate(pipeline))
+
+    # Per-surveyor breakdown
+    pipeline2 = [
+        {"$group": {"_id": "$surveyor_email", "name": {"$first": "$surveyor_name"}, "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    by_surveyor = list(survey_responses_col.aggregate(pipeline2))
+
+    return {
+        "total_responses":   total,
+        "total_surveyors":   total_surveyors,
+        "total_questions":   total_questions,
+        "by_constituency":   by_constituency,
+        "by_surveyor":       by_surveyor
+    }
+

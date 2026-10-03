@@ -17,6 +17,12 @@ import SuperAdminPage from './pages/SuperAdminPage';
 import CreateAdminPage from './pages/CreateAdminPage';
 import CreateConstituencyAdminPage from './pages/CreateConstituencyAdminPage';
 
+// Survey Platform Pages (Phase 1)
+import SurveyorLoginPage from './pages/SurveyorLoginPage';
+import SurveyLocationPage from './pages/SurveyLocationPage';
+import SurveyFormPage from './pages/SurveyFormPage';
+import SurveySuccessPage from './pages/SurveySuccessPage';
+
 // Import global CSS (equivalent to style.css in original project)
 import './styles/global.css';
 
@@ -50,6 +56,12 @@ function SuperAdminRoute({ children }) {
   if (!isVerified || isConstOrDeptAdmin) {
     return <Navigate to="/super-login" replace />;
   }
+  return children;
+}
+
+function SurveyorRoute({ children }) {
+  const surveyor = localStorage.getItem('surveyor');
+  if (!surveyor) return <Navigate to="/surveyor-login" replace />;
   return children;
 }
 
@@ -128,6 +140,36 @@ export default function App() {
             <SuperAdminRoute>
               <CreateConstituencyAdminPage />
             </SuperAdminRoute>
+          }
+        />
+
+        {/* ─── Survey Platform Routes (Phase 1) ────────────────── */}
+        <Route path="/surveyor-login" element={<SurveyorLoginPage />} />
+
+        <Route
+          path="/survey/location"
+          element={
+            <SurveyorRoute>
+              <SurveyLocationPage />
+            </SurveyorRoute>
+          }
+        />
+
+        <Route
+          path="/survey/form"
+          element={
+            <SurveyorRoute>
+              <SurveyFormPage />
+            </SurveyorRoute>
+          }
+        />
+
+        <Route
+          path="/survey/success"
+          element={
+            <SurveyorRoute>
+              <SurveySuccessPage />
+            </SurveyorRoute>
           }
         />
 

@@ -32,6 +32,10 @@ import './styles/global.css';
 
 function AdminRoute({ children }) {
   const userRole = localStorage.getItem('role') || localStorage.getItem('userRole');
+  const surveyor = localStorage.getItem('surveyor');
+  if (userRole === 'surveyor' || surveyor) {
+    return <Navigate to="/survey/location" replace />;
+  }
   const isSuperVerified = localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES';
   const currentUser = localStorage.getItem('currentUser');
   const hasAccess = userRole === 'admin' || userRole === 'department_admin' || userRole === 'constituency_admin' || userRole === 'leader' || isSuperVerified || currentUser;
@@ -50,11 +54,18 @@ function UserRoute({ children }) {
 }
 
 function SuperAdminRoute({ children }) {
-  const isVerified = localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES';
   const currentUserRaw = localStorage.getItem('currentUser');
   const currentUser = currentUserRaw ? JSON.parse(currentUserRaw) : null;
-  const isConstOrDeptAdmin = currentUser?.role === 'constituency_admin' || currentUser?.role === 'department_admin';
-  if (!isVerified || isConstOrDeptAdmin) {
+  const userRole = currentUser?.role || localStorage.getItem('role') || localStorage.getItem('userRole');
+  const surveyor = localStorage.getItem('surveyor');
+  
+  if (userRole === 'surveyor' || surveyor) {
+    return <Navigate to="/survey/location" replace />;
+  }
+
+  const isVerified = localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES';
+  const isNotSuperAdmin = currentUser?.role === 'constituency_admin' || currentUser?.role === 'department_admin';
+  if (!isVerified || isNotSuperAdmin) {
     return <Navigate to="/super-login" replace />;
   }
   return children;

@@ -128,6 +128,22 @@ export default function LoginPage() {
         localStorage.setItem('user', loginEmail);
         localStorage.setItem('role', data.role);
         notify('Access Granted', 'Redirecting to workspace...', 'success');
+        if (data.role === 'surveyor') {
+          localStorage.removeItem('super_verified');
+          localStorage.removeItem('VERIFIED_VARUN');
+          localStorage.setItem('surveyor', JSON.stringify({
+            email: data.email || loginEmail,
+            name: data.name || 'Surveyor',
+            role: 'surveyor',
+            district: data.district || 'Salem',
+            constituency: data.constituency || ''
+          }));
+          setTimeout(() => {
+            navigate('/survey/location');
+          }, 1200);
+          return;
+        }
+
         setTimeout(() => {
           if (data.role === 'admin') {
             navigate('/dashboard');

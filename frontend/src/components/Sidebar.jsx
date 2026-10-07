@@ -113,7 +113,7 @@ export default function Sidebar({ variant = 'admin' }) {
 
   const loggedUserRaw = localStorage.getItem('currentUser');
   const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
-  const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin' && currentUser?.role !== 'constituency_admin';
+  const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin' && currentUser?.role !== 'constituency_admin' && currentUser?.role !== 'surveyor';
   const isDeptAdmin = currentUser?.role === 'department_admin';
   const isConstAdmin = currentUser?.role === 'constituency_admin';
   const userName = currentUser?.name || (isSuperUser ? 'Super Admin' : 'Admin User');

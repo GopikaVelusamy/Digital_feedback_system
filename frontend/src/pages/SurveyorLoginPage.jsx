@@ -60,6 +60,13 @@ export default function SurveyorLoginPage() {
           setLoading(false);
           return;
         }
+        // Clear super admin session flags
+        localStorage.removeItem('super_verified');
+        localStorage.removeItem('VERIFIED_VARUN');
+        localStorage.removeItem('currentUser');
+        localStorage.setItem('userRole', 'surveyor');
+        localStorage.setItem('role', 'surveyor');
+
         // Save surveyor session
         localStorage.setItem('surveyor', JSON.stringify({
           email: data.email || email.trim(),
@@ -74,6 +81,12 @@ export default function SurveyorLoginPage() {
         const localSurveyors = JSON.parse(localStorage.getItem('local_surveyors') || '[]');
         const matched = localSurveyors.find(s => s.email.toLowerCase() === email.trim().toLowerCase() && (s.password === password.trim() || password.trim() === '123' || password.trim() === 'admin123'));
         if (matched) {
+          localStorage.removeItem('super_verified');
+          localStorage.removeItem('VERIFIED_VARUN');
+          localStorage.removeItem('currentUser');
+          localStorage.setItem('userRole', 'surveyor');
+          localStorage.setItem('role', 'surveyor');
+
           localStorage.setItem('surveyor', JSON.stringify({
             email: matched.email,
             name: matched.name || 'Surveyor',
@@ -92,6 +105,12 @@ export default function SurveyorLoginPage() {
       const localSurveyors = JSON.parse(localStorage.getItem('local_surveyors') || '[]');
       const matched = localSurveyors.find(s => s.email.toLowerCase() === email.trim().toLowerCase() && (s.password === password.trim() || password.trim() === '123' || password.trim() === 'admin123'));
       if (matched) {
+        localStorage.removeItem('super_verified');
+        localStorage.removeItem('VERIFIED_VARUN');
+        localStorage.removeItem('currentUser');
+        localStorage.setItem('userRole', 'surveyor');
+        localStorage.setItem('role', 'surveyor');
+
         localStorage.setItem('surveyor', JSON.stringify({
           email: matched.email,
           name: matched.name || 'Surveyor',

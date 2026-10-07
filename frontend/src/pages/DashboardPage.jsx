@@ -539,7 +539,7 @@ export default function DashboardPage() {
 
   const loggedUserRaw = localStorage.getItem('currentUser');
   const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw) : null;
-  const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin' && currentUser?.role !== 'constituency_admin';
+  const isSuperUser = (currentUser?.role === 'admin' || localStorage.getItem('super_verified') === 'true' || localStorage.getItem('VERIFIED_VARUN') === 'YES') && currentUser?.role !== 'department_admin' && currentUser?.role !== 'constituency_admin' && currentUser?.role !== 'surveyor';
   const isDeptAdmin = currentUser?.role === 'department_admin' && currentUser?.assigned_department;
   const isConstAdmin = currentUser?.role === 'constituency_admin' && currentUser?.assigned_constituency;
   const assignedDeptName = currentUser?.assigned_department || '';

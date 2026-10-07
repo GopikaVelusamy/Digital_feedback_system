@@ -158,7 +158,23 @@ export default function SurveyorLoginPage() {
           >
             {loading ? L.logging : L.login}
           </button>
+
+          {/* Secondary Back to Homepage Link */}
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            style={styles.backBtn}
+          >
+            {lang === 'ta' ? '← பொது முகப்பு பக்கத்திற்குச் செல்க' : '← Back to Public Homepage'}
+          </button>
         </form>
+
+        {/* Security / Super Admin Note */}
+        <div style={styles.infoBox}>
+          ℹ️ {lang === 'ta' 
+            ? 'ஆய்வாளர் கணக்குகள் சூப்பர் அட்மினால் மட்டுமே உருவாக்கப்படுகின்றன.' 
+            : 'Surveyor accounts are created & assigned exclusively by the Super Admin.'}
+        </div>
 
         <p style={styles.footer}>InsightFlow • ADMK Survey Portal</p>
       </div>

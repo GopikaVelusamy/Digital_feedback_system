@@ -9,7 +9,7 @@ import { API } from '../config';
 
 export default function SuperLoginPage() {
   const navigate = useNavigate();
-  
+
   // Language state
   const [language, setLanguageState] = useState(getLanguage());
   const t = translationData[language];
@@ -400,8 +400,8 @@ export default function SuperLoginPage() {
             {btnText === 'Admin Sign In'
               ? (language === 'English' ? 'ADMIN SIGN IN' : 'நிர்வாகி உள்நுழைவு')
               : (btnText === 'INITIALIZE SESSION'
-                  ? (language === 'English' ? 'INITIALIZE SESSION' : 'அமர்வைத் தொடங்கு')
-                  : (language === 'English' ? 'VERIFYING ENCRYPTED KEY...' : 'விசையை சரிபார்க்கிறது...'))}
+                ? (language === 'English' ? 'INITIALIZE SESSION' : 'அமர்வைத் தொடங்கு')
+                : (language === 'English' ? 'VERIFYING ENCRYPTED KEY...' : 'விசையை சரிபார்க்கிறது...'))}
           </button>
 
           {/* Return to Public Homepage Secondary Button */}

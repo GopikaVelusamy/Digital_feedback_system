@@ -2986,7 +2986,7 @@ function GovernanceHomeSection({ language, onExploreSchemes }) {
                     className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-                  
+
                   {/* Floating Sector Badge Icon */}
                   <div className="absolute top-3 left-3 w-10 h-10 rounded-xl bg-slate-950/80 border border-white/20 flex items-center justify-center text-amber-400 shadow-md">
                     <span className="material-symbols-outlined text-xl font-bold">{item.icon}</span>
@@ -3056,7 +3056,7 @@ function Generation2KSection({ language }) {
           <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white drop-shadow-2xl">
             {language === 'English' ? 'BORN INTO CHANGE. BUILDING WHAT\'S NEXT.' : 'மாற்றத்தில் பிறந்து, எதிர்காலத்தை உருவாக்குவோம்.'}
           </h2>
-          
+
           {/* Single Focal Quote */}
           <div className="pt-2">
             <p className="text-sm sm:text-base font-extrabold text-amber-300 uppercase tracking-wide bg-slate-950/90 px-6 py-3 rounded-2xl border border-amber-400/40 inline-block shadow-2xl backdrop-blur-xl">
@@ -3172,7 +3172,7 @@ function InteractiveEngagementHub({
     try {
       const saved = localStorage.getItem('insightflow_user_ideas');
       if (saved) return JSON.parse(saved);
-    } catch (e) {}
+    } catch (e) { }
     return [
       { title: 'AI-Powered Crop Advisory', author: 'Karthik (Coimbatore)', votes: 42 },
       { title: 'Solar Powered Public Bus Shelters', author: 'Anitha (Salem)', votes: 38 },
@@ -3395,18 +3395,16 @@ function InteractiveEngagementHub({
         <div className="flex flex-wrap justify-center gap-3 p-2 rounded-2xl bg-slate-900/90 border border-white/15 max-w-2xl mx-auto shadow-2xl">
           <button
             onClick={() => setActiveTab('2031')}
-            className={`px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
-              activeTab === '2031' ? 'bg-amber-400 text-slate-950 shadow-lg scale-105' : 'text-slate-300 hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === '2031' ? 'bg-amber-400 text-slate-950 shadow-lg scale-105' : 'text-slate-300 hover:text-white hover:bg-white/5'
+              }`}
           >
             <span>💡</span>
             <span>TAMIL NADU 2031</span>
           </button>
           <button
             onClick={() => setActiveTab('quiz')}
-            className={`px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
-              activeTab === 'quiz' ? 'bg-amber-400 text-slate-950 shadow-lg scale-105' : 'text-slate-300 hover:text-white hover:bg-white/5'
-            }`}
+            className={`px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${activeTab === 'quiz' ? 'bg-amber-400 text-slate-950 shadow-lg scale-105' : 'text-slate-300 hover:text-white hover:bg-white/5'
+              }`}
           >
             <span>🏆</span>
             <span>LEGACY QUIZ</span>
@@ -7112,7 +7110,7 @@ export default function FeedbackPage() {
                             <div className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/30 text-amber-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
                               🔒
                             </div>
-                            
+
                             <div className="space-y-2">
                               <span className="text-3xs font-black text-amber-400 tracking-widest uppercase block">
                                 {language === 'English' ? 'CONSTITUENCY LEADER ACCESS REQUIRED' : 'தொகுதி நிர்வாகி அணுகல் தேவை'}
@@ -7709,7 +7707,7 @@ export default function FeedbackPage() {
         {/* ─── SLEEK MINIMAL SITE FOOTER ─── */}
         <footer className="w-full bg-slate-950 text-slate-300 border-t border-emerald-900/60 relative z-10 py-6 px-6 sm:px-12 select-none">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-semibold">
-            
+
             {/* Left: Logo & Party Identity */}
             <div className="flex items-center gap-3 text-center sm:text-left">
               <img src="/irratai_ellai.png" className="w-8 h-8 object-contain bg-white rounded-full p-0.5 shadow-md border border-amber-400" alt="ADMK Leaves" />
@@ -8134,7 +8132,7 @@ export default function FeedbackPage() {
                   setTn2031Ideas(updatedTN);
                   try {
                     localStorage.setItem('insightflow_tn2031_ideas', JSON.stringify(updatedTN));
-                  } catch (err) {}
+                  } catch (err) { }
 
                   // Send to backend API
                   try {
@@ -8151,7 +8149,7 @@ export default function FeedbackPage() {
                         user: { name: newIdeaAuthor, email: 'citizen@tn2031.org' }
                       })
                     });
-                  } catch (apiErr) {}
+                  } catch (apiErr) { }
 
                   setNewIdeaText('');
                   setNewIdeaAuthor('');

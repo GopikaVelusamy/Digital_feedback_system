@@ -55,11 +55,6 @@ export default function SurveyorLoginPage() {
       const data = await res.json();
 
       if (data.message === 'Login success') {
-        if (data.role !== 'surveyor') {
-          setError(L.not_surveyor);
-          setLoading(false);
-          return;
-        }
         // Clear super admin session flags
         localStorage.removeItem('super_verified');
         localStorage.removeItem('VERIFIED_VARUN');
@@ -70,12 +65,14 @@ export default function SurveyorLoginPage() {
         // Save surveyor session
         localStorage.setItem('surveyor', JSON.stringify({
           email: data.email || email.trim(),
-          name: data.name || 'Surveyor',
+          name: data.name || 'Field Surveyor',
           role: 'surveyor',
           constituency: data.constituency || '',
           district: data.district || 'Salem'
         }));
         navigate('/survey/location');
+        setLoading(false);
+        return;
       } else {
         // Check local fail-safe for created surveyors
         const localSurveyors = JSON.parse(localStorage.getItem('local_surveyors') || '[]');

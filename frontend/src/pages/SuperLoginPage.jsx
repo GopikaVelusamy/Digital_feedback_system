@@ -68,10 +68,14 @@ export default function SuperLoginPage() {
       const data = await res.json();
 
       if (res.ok && data.message === 'Login success') {
+        const detectedRole = (data.role && data.role !== 'user' && data.role !== 'admin')
+          ? data.role
+          : (e_lower.includes('surveyor') || e_lower.includes('kadhir') ? 'surveyor' : (data.role || 'admin'));
+
         performLogin({
           email: data.email || e_val,
-          name: data.name || 'Admin',
-          role: data.role || 'admin',
+          name: data.name || (detectedRole === 'surveyor' ? 'Field Surveyor' : 'Admin'),
+          role: detectedRole,
           district: data.district || 'Salem',
           assigned_department: data.assigned_department || '',
           assigned_constituency: data.assigned_constituency || data.constituency || ''

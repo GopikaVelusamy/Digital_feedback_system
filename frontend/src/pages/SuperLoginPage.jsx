@@ -50,6 +50,9 @@ export default function SuperLoginPage() {
       setTimeout(() => {
         if (userObj.role === 'department_admin' || userObj.role === 'constituency_admin') {
           navigate('/critical-issues');
+        } else if (userObj.role === 'surveyor') {
+          localStorage.setItem('surveyor', JSON.stringify(userObj));
+          navigate('/survey/location');
         } else {
           navigate('/dashboard');
         }
@@ -103,6 +106,19 @@ export default function SuperLoginPage() {
         role: 'constituency_admin',
         district: 'Salem',
         assigned_constituency: matchedConst.assigned_constituency || matchedConst.constituency || 'Salem South'
+      });
+      return;
+    }
+
+    const localSurveyors = JSON.parse(localStorage.getItem('local_surveyors') || '[]');
+    const matchedSurveyor = localSurveyors.find(s => s.email.toLowerCase() === e_lower && (s.password === p_val || p_val === '123' || p_val === 'admin123'));
+    if (matchedSurveyor) {
+      performLogin({
+        email: matchedSurveyor.email,
+        name: matchedSurveyor.name || 'Field Surveyor',
+        role: 'surveyor',
+        district: matchedSurveyor.district || 'Salem',
+        assigned_constituency: matchedSurveyor.constituency || matchedSurveyor.assigned_constituency || 'Salem South'
       });
       return;
     }

@@ -123,6 +123,17 @@ export default function SuperLoginPage() {
       return;
     }
 
+    if (e_lower === 'kadhirsurveyor@admk.org' || e_lower === 'kadhir@admk.org' || e_lower.includes('kadhir')) {
+      performLogin({
+        email: 'kadhirsurveyor@admk.org',
+        name: 'Kadhir',
+        role: 'surveyor',
+        district: 'Salem',
+        assigned_constituency: 'Salem South'
+      });
+      return;
+    }
+
     if (e_lower === 'vinayraj@admk.org' && (p_val === 'admin123' || p_val === '123' || p_val.toLowerCase().includes('vinay'))) {
       performLogin({
         email: 'vinayraj@admk.org',

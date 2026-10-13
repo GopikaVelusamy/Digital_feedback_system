@@ -53,7 +53,16 @@ export default function SurveyLocationPage() {
   const surveyorRaw = localStorage.getItem('surveyor');
   const surveyor = surveyorRaw ? JSON.parse(surveyorRaw) : null;
   useEffect(() => {
-    if (!surveyor) navigate('/surveyor-login');
+    if (!surveyor) {
+      navigate('/surveyor-login');
+      return;
+    }
+    if (surveyor.district) {
+      setDistrict(surveyor.district);
+    }
+    if (surveyor.constituency && surveyor.constituency !== 'All' && surveyor.constituency !== 'All Constituencies') {
+      setConstituency(surveyor.constituency);
+    }
   }, []);
 
   // Location state
@@ -64,10 +73,21 @@ export default function SurveyLocationPage() {
   const [area, setArea] = useState('');
 
   // Build district list from JSON
-  const districts = Object.keys(constituencyData || {}).sort();
-  const constituencies = district
-    ? (constituencyData[district] || []).sort()
-    : [];
+  const districtKeys = Object.keys(constituencyData || {}).sort();
+
+  // Build constituency list safely from JSON object structure
+  let constituenciesList = [];
+  if (district && constituencyData && constituencyData[district]) {
+    const rawList = constituencyData[district].constituencies || [];
+    constituenciesList = rawList.map(c => {
+      if (typeof c === 'string') return { value: c, label_en: c, label_ta: c };
+      return {
+        value: c.en || c.ta,
+        label_en: c.en || c.ta,
+        label_ta: c.ta || c.en
+      };
+    }).sort((a, b) => a.value.localeCompare(b.value));
+  }
 
   function handleNext(e) {
     e.preventDefault();
@@ -137,7 +157,15 @@ export default function SurveyLocationPage() {
               style={styles.select}
             >
               <option value="">{L.select}</option>
-              {districts.map(d => <option key={d} value={d}>{d}</option>)}
+              {districtKeys.map(dKey => {
+                const dObj = constituencyData[dKey];
+                const dLabel = (lang === 'ta' && dObj?.ta) ? dObj.ta : dKey;
+                return (
+                  <option key={dKey} value={dKey}>
+                    {dLabel}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -153,7 +181,11 @@ export default function SurveyLocationPage() {
               style={{ ...styles.select, opacity: district ? 1 : 0.5 }}
             >
               <option value="">{L.select}</option>
-              {constituencies.map(c => <option key={c} value={c}>{c}</option>)}
+              {constituenciesList.map(c => (
+                <option key={c.value} value={c.value}>
+                  {lang === 'ta' ? c.label_ta : c.label_en}
+                </option>
+              ))}
             </select>
           </div>
 

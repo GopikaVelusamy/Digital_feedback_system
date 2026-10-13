@@ -235,23 +235,27 @@ export default function SurveyFormPage() {
     <div style={styles.bg}>
       {/* Top bar */}
       <div style={styles.topBar}>
-        <button onClick={() => navigate('/survey/location')} style={styles.backBtn}>{L.back}</button>
-        <div style={styles.topCenter}>
-          <span style={styles.stepBadge}>{L.step}</span>
-          <span style={styles.topTitle}>{L.title}</span>
-        </div>
-        <div style={styles.langRow}>
-          <button style={{ ...styles.langBtn, ...(lang === 'ta' ? styles.langActive : {}) }} onClick={() => setLang('ta')}>தமிழ்</button>
-          <button style={{ ...styles.langBtn, ...(lang === 'en' ? styles.langActive : {}) }} onClick={() => setLang('en')}>EN</button>
+        <div style={styles.topBarInner}>
+          <button onClick={() => navigate('/survey/location')} style={styles.backBtn}>{L.back}</button>
+          <div style={styles.topCenter}>
+            <span style={styles.stepBadge}>{L.step}</span>
+            <span style={styles.topTitle}>{L.title}</span>
+          </div>
+          <div style={styles.langRow}>
+            <button style={{ ...styles.langBtn, ...(lang === 'ta' ? styles.langActive : {}) }} onClick={() => setLang('ta')}>தமிழ்</button>
+            <button style={{ ...styles.langBtn, ...(lang === 'en' ? styles.langActive : {}) }} onClick={() => setLang('en')}>EN</button>
+          </div>
         </div>
       </div>
 
       {/* Location summary banner */}
       {location && (
         <div style={styles.locBanner}>
-          📍 {location.district} › {location.constituency}
-          {location.ward && ` › Ward ${location.ward}`}
-          {location.area_street && ` › ${location.area_street}`}
+          <div style={styles.locBannerInner}>
+            📍 {location.district} › {location.constituency}
+            {location.ward && ` › Ward ${location.ward}`}
+            {location.area_street && ` › ${location.area_street}`}
+          </div>
         </div>
       )}
 
@@ -326,10 +330,15 @@ const styles = {
   topBar: {
     background: 'linear-gradient(135deg, #0f4c35, #1a7a52)',
     padding: '12px 16px',
+    boxShadow: '0 3px 12px rgba(15,76,53,0.3)',
+  },
+  topBarInner: {
+    maxWidth: '560px',
+    margin: '0 auto',
+    width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    boxShadow: '0 3px 12px rgba(15,76,53,0.3)',
   },
   backBtn: {
     background: 'rgba(255,255,255,0.15)',
@@ -371,7 +380,12 @@ const styles = {
     color: '#065f46',
     fontWeight: '700',
   },
-  container: { maxWidth: '520px', margin: '0 auto', padding: '16px' },
+  locBannerInner: {
+    maxWidth: '560px',
+    margin: '0 auto',
+    width: '100%',
+  },
+  container: { maxWidth: '560px', margin: '0 auto', padding: '16px' },
   respondentCard: {
     background: '#fff',
     borderRadius: '14px',

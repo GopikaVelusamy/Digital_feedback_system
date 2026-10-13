@@ -125,6 +125,21 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (data.message === 'Login success') {
+        if (data.role === 'surveyor') {
+          localStorage.setItem('surveyor', JSON.stringify({
+            email: data.email || loginEmail.trim(),
+            name: data.name || 'Surveyor',
+            role: 'surveyor',
+            constituency: data.constituency || '',
+            district: data.district || 'Salem'
+          }));
+          notify('Surveyor Verified', 'Redirecting to Field Survey Portal...', 'success');
+          setTimeout(() => {
+            navigate('/survey/location');
+          }, 800);
+          return;
+        }
+
         localStorage.setItem('user', loginEmail);
         localStorage.setItem('role', data.role);
         notify('Access Granted', 'Redirecting to workspace...', 'success');
@@ -619,6 +634,13 @@ export default function LoginPage() {
               >
                 <span className="material-symbols-outlined text-emerald-600">person_add</span>
                 <span className="font-semibold text-sm">{language === 'English' ? 'Citizen Registration' : 'கருத்து போர்டல் பதிவு'}</span>
+              </button>
+              <button
+                onClick={() => { setIsDrawerOpen(false); navigate('/surveyor-login'); }}
+                className="w-full text-left flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-teal-50/70 border border-teal-200/80 hover:bg-teal-100 hover:border-teal-300 text-teal-900 transition-all"
+              >
+                <span className="material-symbols-outlined text-teal-700">assignment</span>
+                <span className="font-semibold text-sm">{language === 'English' ? 'Field Surveyor Portal' : 'கள ஆய்வாளர் போர்ட்டல்'}</span>
               </button>
               <button
                 onClick={() => { setIsDrawerOpen(false); navigate('/super-login'); }}

@@ -5047,6 +5047,22 @@ export default function FeedbackPage() {
       });
       const data = await res.json();
       if (data.message === 'Login success') {
+        if (data.role === 'surveyor') {
+          localStorage.setItem('surveyor', JSON.stringify({
+            email: data.email || loginEmail.trim(),
+            name: data.name || 'Surveyor',
+            role: 'surveyor',
+            constituency: data.constituency || '',
+            district: data.district || 'Salem'
+          }));
+          setShowAuthModal(false);
+          notify('Surveyor Verified', 'Redirecting to Field Survey Portal...', 'success');
+          setTimeout(() => {
+            navigate('/survey/location');
+          }, 800);
+          return;
+        }
+
         localStorage.setItem('user', loginEmail);
         localStorage.setItem('role', data.role);
         localStorage.setItem('user_district', data.district || '');
@@ -7790,14 +7806,23 @@ export default function FeedbackPage() {
                     </button>
                   </div>
 
-                  {/* Direct Super Admin Switch Link */}
-                  <button
-                    type="button"
-                    onClick={() => { setShowAuthModal(false); navigate('/super-login'); }}
-                    className="text-3xs font-black text-amber-600 hover:text-amber-700 uppercase tracking-wide bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 transition"
-                  >
-                    🛡️ {language === 'English' ? 'Admin Portal' : 'நிர்வாகிகள் போர்ட்டல்'}
-                  </button>
+                  {/* Direct Portal Switch Links */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setShowAuthModal(false); navigate('/surveyor-login'); }}
+                      className="text-3xs font-black text-teal-700 hover:text-teal-800 uppercase tracking-wide bg-teal-50 hover:bg-teal-100 px-2.5 py-1.5 rounded-lg border border-teal-300 transition shadow-sm flex items-center gap-1 active:scale-95"
+                    >
+                      📋 {language === 'English' ? 'Surveyor Portal' : 'கள ஆய்வாளர்'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAuthModal(false); navigate('/super-login'); }}
+                      className="text-3xs font-black text-amber-600 hover:text-amber-700 uppercase tracking-wide bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded-lg border border-amber-200 transition shadow-sm flex items-center gap-1 active:scale-95"
+                    >
+                      🛡️ {language === 'English' ? 'Admin Portal' : 'நிர்வாகிகள் போர்ட்டல்'}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Login Form */}

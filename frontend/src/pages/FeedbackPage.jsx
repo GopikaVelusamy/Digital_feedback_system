@@ -7790,39 +7790,19 @@ export default function FeedbackPage() {
                 </div>
 
                 {/* Tab switch header */}
-                <div className="flex items-center justify-between mb-6 border-b border-emerald-100 pb-2">
-                  <div className="flex items-center gap-6">
-                    <button
-                      className={`text-base font-bold pb-2 transition-all focus:outline-none ${activeTab === 'login' ? 'text-emerald-800 border-b-2 border-emerald-600' : 'text-slate-400 hover:text-emerald-700'}`}
-                      onClick={() => setActiveTab('login')}
-                    >
-                      {language === 'English' ? 'Sign In' : 'உள்நுழைவு'}
-                    </button>
-                    <button
-                      className={`text-base font-bold pb-2 transition-all focus:outline-none ${activeTab === 'signup' ? 'text-emerald-800 border-b-2 border-emerald-600' : 'text-slate-400 hover:text-emerald-700'}`}
-                      onClick={() => setActiveTab('signup')}
-                    >
-                      {language === 'English' ? 'Register' : 'பதிவு செய்ய'}
-                    </button>
-                  </div>
-
-                  {/* Direct Portal Switch Links */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => { setShowAuthModal(false); navigate('/surveyor-login'); }}
-                      className="text-3xs font-black text-teal-700 hover:text-teal-800 uppercase tracking-wide bg-teal-50 hover:bg-teal-100 px-2.5 py-1.5 rounded-lg border border-teal-300 transition shadow-sm flex items-center gap-1 active:scale-95"
-                    >
-                      📋 {language === 'English' ? 'Surveyor Portal' : 'கள ஆய்வாளர்'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setShowAuthModal(false); navigate('/super-login'); }}
-                      className="text-3xs font-black text-amber-600 hover:text-amber-700 uppercase tracking-wide bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded-lg border border-amber-200 transition shadow-sm flex items-center gap-1 active:scale-95"
-                    >
-                      🛡️ {language === 'English' ? 'Admin Portal' : 'நிர்வாகிகள் போர்ட்டல்'}
-                    </button>
-                  </div>
+                <div className="flex items-center gap-8 mb-6 border-b border-emerald-100 pb-2">
+                  <button
+                    className={`text-base font-bold pb-2 transition-all focus:outline-none ${activeTab === 'login' ? 'text-emerald-800 border-b-2 border-emerald-600' : 'text-slate-400 hover:text-emerald-700'}`}
+                    onClick={() => setActiveTab('login')}
+                  >
+                    {language === 'English' ? 'Sign In' : 'உள்நுழைவு'}
+                  </button>
+                  <button
+                    className={`text-base font-bold pb-2 transition-all focus:outline-none ${activeTab === 'signup' ? 'text-emerald-800 border-b-2 border-emerald-600' : 'text-slate-400 hover:text-emerald-700'}`}
+                    onClick={() => setActiveTab('signup')}
+                  >
+                    {language === 'English' ? 'Register' : 'பதிவு செய்ய'}
+                  </button>
                 </div>
 
                 {/* Login Form */}
@@ -7984,10 +7964,39 @@ export default function FeedbackPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* Specialized Staff & Field Portals Section */}
+                <div className="mt-6 pt-5 border-t border-slate-100">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <div className="h-px bg-slate-200 flex-1"></div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-1">
+                      {language === 'English' ? 'Staff & Field Portals' : 'நிர்வாக & கள போர்ட்டல்கள்'}
+                    </span>
+                    <div className="h-px bg-slate-200 flex-1"></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setShowAuthModal(false); navigate('/surveyor-login'); }}
+                      className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 font-bold text-xs transition active:scale-95 shadow-sm"
+                    >
+                      <span>📋</span>
+                      <span className="truncate">{language === 'English' ? 'Surveyor Portal' : 'கள ஆய்வாளர்'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAuthModal(false); navigate('/super-login'); }}
+                      className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold text-xs transition active:scale-95 shadow-sm"
+                    >
+                      <span>🛡️</span>
+                      <span className="truncate">{language === 'English' ? 'Admin Portal' : 'நிர்வாக போர்ட்டல்'}</span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Footer inside the card */}
-              <div className="pt-6 border-t border-slate-100 text-center mt-8">
+              <div className="pt-5 border-t border-slate-100 text-center mt-6">
                 <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider">
                   InsightFlow Corporate Feedback &copy; {new Date().getFullYear()}
                 </p>

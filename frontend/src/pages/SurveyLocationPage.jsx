@@ -53,7 +53,16 @@ export default function SurveyLocationPage() {
   const surveyorRaw = localStorage.getItem('surveyor');
   const surveyor = surveyorRaw ? JSON.parse(surveyorRaw) : null;
   useEffect(() => {
-    if (!surveyor) navigate('/surveyor-login');
+    if (!surveyor) {
+      navigate('/surveyor-login');
+      return;
+    }
+    if (surveyor.district) {
+      setDistrict(surveyor.district);
+    }
+    if (surveyor.constituency && surveyor.constituency !== 'All' && surveyor.constituency !== 'All Constituencies') {
+      setConstituency(surveyor.constituency);
+    }
   }, []);
 
   // Location state
@@ -64,10 +73,21 @@ export default function SurveyLocationPage() {
   const [area, setArea] = useState('');
 
   // Build district list from JSON
-  const districts = Object.keys(constituencyData || {}).sort();
-  const constituencies = district
-    ? (constituencyData[district] || []).sort()
-    : [];
+  const districtKeys = Object.keys(constituencyData || {}).sort();
+
+  // Build constituency list safely from JSON object structure
+  let constituenciesList = [];
+  if (district && constituencyData && constituencyData[district]) {
+    const rawList = constituencyData[district].constituencies || [];
+    constituenciesList = rawList.map(c => {
+      if (typeof c === 'string') return { value: c, label_en: c, label_ta: c };
+      return {
+        value: c.en || c.ta,
+        label_en: c.en || c.ta,
+        label_ta: c.ta || c.en
+      };
+    }).sort((a, b) => a.value.localeCompare(b.value));
+  }
 
   function handleNext(e) {
     e.preventDefault();
@@ -93,27 +113,32 @@ export default function SurveyLocationPage() {
     <div style={styles.bg}>
       {/* Top bar */}
       <div style={styles.topBar}>
-        <div style={styles.topLeft}>
-          <span style={styles.stepBadge}>{L.step}</span>
-          <span style={styles.topTitle}>{L.title}</span>
-        </div>
-        <div style={styles.topRight}>
-          <div style={styles.langRow}>
-            <button style={{ ...styles.langBtn, ...(lang === 'ta' ? styles.langActive : {}) }} onClick={() => setLang('ta')}>தமிழ்</button>
-            <button style={{ ...styles.langBtn, ...(lang === 'en' ? styles.langActive : {}) }} onClick={() => setLang('en')}>EN</button>
+        <div style={styles.topBarInner}>
+          <div style={styles.topLeft}>
+            <span style={styles.stepBadge}>{L.step}</span>
+            <span style={styles.topTitle}>{L.title}</span>
           </div>
-          <button onClick={handleLogout} style={styles.logoutBtn}>{L.logout}</button>
+          <div style={styles.topRight}>
+            <div style={styles.langRow}>
+              <button style={{ ...styles.langBtn, ...(lang === 'ta' ? styles.langActive : {}) }} onClick={() => setLang('ta')}>தமிழ்</button>
+              <button style={{ ...styles.langBtn, ...(lang === 'en' ? styles.langActive : {}) }} onClick={() => setLang('en')}>EN</button>
+            </div>
+            <button onClick={handleLogout} style={styles.logoutBtn}>{L.logout}</button>
+          </div>
         </div>
       </div>
 
       {/* Surveyor badge */}
       <div style={styles.surveyorBadge}>
-        <span>👤 {L.welcome}, <strong>{surveyor?.name || 'Surveyor'}</strong></span>
+        <div style={styles.badgeInner}>
+          <span>👤 {L.welcome}, <strong>{surveyor?.name || 'Surveyor'}</strong></span>
+        </div>
       </div>
 
-      {/* Form card */}
-      <div style={styles.card}>
-        <form onSubmit={handleNext} style={styles.form}>
+      {/* Centered Container */}
+      <div style={styles.container}>
+        <div style={styles.card}>
+          <form onSubmit={handleNext} style={styles.form}>
 
           {/* State (fixed) */}
           <div style={styles.field}>
@@ -132,7 +157,15 @@ export default function SurveyLocationPage() {
               style={styles.select}
             >
               <option value="">{L.select}</option>
-              {districts.map(d => <option key={d} value={d}>{d}</option>)}
+              {districtKeys.map(dKey => {
+                const dObj = constituencyData[dKey];
+                const dLabel = (lang === 'ta' && dObj?.ta) ? dObj.ta : dKey;
+                return (
+                  <option key={dKey} value={dKey}>
+                    {dLabel}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -148,7 +181,11 @@ export default function SurveyLocationPage() {
               style={{ ...styles.select, opacity: district ? 1 : 0.5 }}
             >
               <option value="">{L.select}</option>
-              {constituencies.map(c => <option key={c} value={c}>{c}</option>)}
+              {constituenciesList.map(c => (
+                <option key={c.value} value={c.value}>
+                  {lang === 'ta' ? c.label_ta : c.label_en}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -197,6 +234,7 @@ export default function SurveyLocationPage() {
         </form>
       </div>
     </div>
+  </div>
   );
 }
 
@@ -205,15 +243,20 @@ const styles = {
     minHeight: '100vh',
     background: 'linear-gradient(160deg, #f0faf5 0%, #e8f5ee 100%)',
     fontFamily: "'Noto Sans Tamil', 'Manrope', sans-serif",
-    paddingBottom: '40px',
+    paddingBottom: '60px',
   },
   topBar: {
     background: 'linear-gradient(135deg, #0f4c35, #1a7a52)',
     padding: '14px 20px',
+    boxShadow: '0 3px 12px rgba(15,76,53,0.3)',
+  },
+  topBarInner: {
+    maxWidth: '560px',
+    margin: '0 auto',
+    width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    boxShadow: '0 3px 12px rgba(15,76,53,0.3)',
   },
   topLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
   stepBadge: {
@@ -254,22 +297,36 @@ const styles = {
   },
   surveyorBadge: {
     background: '#e6f7ef',
-    border: '1px solid #b2dfc5',
-    borderRadius: '0',
+    borderBottom: '1px solid #b2dfc5',
     padding: '10px 20px',
     fontSize: '13px',
     color: '#1a5c3a',
     fontWeight: '600',
   },
+  badgeInner: {
+    maxWidth: '560px',
+    margin: '0 auto',
+    width: '100%',
+  },
+  container: {
+    maxWidth: '560px',
+    margin: '0 auto',
+    padding: '28px 16px',
+    display: 'flex',
+    justifyContent: 'center',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
   card: {
-    margin: '20px auto',
-    maxWidth: '480px',
+    width: '100%',
+    maxWidth: '520px',
+    margin: '0 auto',
     background: '#fff',
-    borderRadius: '16px',
-    padding: '28px 24px',
-    boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
-    marginLeft: '16px',
-    marginRight: '16px',
+    borderRadius: '20px',
+    padding: '32px 28px',
+    boxShadow: '0 10px 35px rgba(15,76,53,0.08), 0 2px 8px rgba(0,0,0,0.04)',
+    border: '1px solid #d1fae5',
+    boxSizing: 'border-box',
   },
   form: { display: 'flex', flexDirection: 'column', gap: '16px' },
   field: { display: 'flex', flexDirection: 'column', gap: '5px' },

@@ -36,6 +36,18 @@ export default function SuperLoginPage() {
     setBtnText('VERIFYING ENCRYPTED KEY...');
 
     function performLogin(userObj) {
+      if (userObj.role === 'surveyor') {
+        localStorage.setItem('surveyor', JSON.stringify({
+          email: userObj.email,
+          name: userObj.name || 'Surveyor',
+          role: 'surveyor',
+          constituency: userObj.assigned_constituency || userObj.constituency || '',
+          district: userObj.district || 'Salem'
+        }));
+        navigate('/survey/location');
+        return;
+      }
+
       if (userObj.role === 'admin') {
         localStorage.setItem('super_verified', 'true');
         localStorage.setItem('VERIFIED_VARUN', 'YES');
@@ -464,6 +476,37 @@ export default function SuperLoginPage() {
             }}
           >
             {language === 'English' ? '← Back to Public Homepage' : '← பொது முகப்பு பக்கத்திற்குச் செல்க'}
+          </button>
+
+          {/* Switch to Field Surveyor Portal */}
+          <button
+            type="button"
+            onClick={() => navigate('/surveyor-login')}
+            style={{
+              width: '100%',
+              padding: '0.85rem',
+              marginTop: '0.6rem',
+              borderRadius: '1.2rem',
+              fontWeight: 800,
+              fontSize: '11px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: '#0f766e',
+              background: '#f0fdfa',
+              border: '1px solid #5eead4',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = '#ccfbf1';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = '#f0fdfa';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            📋 {language === 'English' ? 'Field Surveyor Portal Login →' : 'கள ஆய்வாளர் உள்நுழைவு →'}
           </button>
         </form>
 

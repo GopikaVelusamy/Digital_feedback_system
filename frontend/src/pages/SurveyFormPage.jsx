@@ -315,6 +315,7 @@ export default function SurveyFormPage() {
       {/* Top bar */}
       <div style={styles.topBar}>
         <div style={styles.topBarInner}>
+          <button onClick={() => navigate('/surveyor-dashboard')} style={styles.dashBtn}>🏠</button>
           <button onClick={() => navigate('/survey/location')} style={styles.backBtn}>{L.back}</button>
           <div style={styles.topCenter}>
             <span style={styles.stepBadge}>{L.step}</span>
@@ -428,6 +429,16 @@ const styles = {
     cursor: 'pointer',
     fontSize: '12px',
     fontWeight: '700',
+  },
+  dashBtn: {
+    background: 'rgba(255,255,255,0.15)',
+    border: '1.5px solid rgba(255,255,255,0.4)',
+    color: '#fff',
+    borderRadius: '8px',
+    padding: '5px 10px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    lineHeight: 1,
   },
   topCenter: { display: 'flex', alignItems: 'center', gap: '8px' },
   stepBadge: {

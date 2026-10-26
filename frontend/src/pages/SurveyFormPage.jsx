@@ -134,6 +134,7 @@ export default function SurveyFormPage() {
   }, []);
 
   const [questions, setQuestions] = useState(DEFAULT_QUESTIONS);
+  const [formMeta, setFormMeta] = useState(null);
   const [loadingQ, setLoadingQ] = useState(false);
   const [answers, setAnswers] = useState({});
   const [respondentName, setRespondentName] = useState('');
@@ -144,21 +145,36 @@ export default function SurveyFormPage() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API}/api/survey-questions`)
+    setLoadingQ(true);
+
+    const dist = location?.district || 'Salem';
+    const consti = location?.constituency || '';
+    const wrd = location?.ward || '';
+
+    const url = `${API}/api/ward-survey-form?district=${encodeURIComponent(dist)}&constituency=${encodeURIComponent(consti)}&ward=${encodeURIComponent(wrd)}`;
+
+    fetch(url)
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
       })
       .then(data => {
-        if (isMounted && Array.isArray(data) && data.length > 0) {
-          setQuestions(data);
+        if (isMounted && data) {
+          setFormMeta(data);
+          if (Array.isArray(data.questions) && data.questions.length > 0) {
+            setQuestions(data.questions);
+          }
         }
       })
       .catch(err => {
         console.warn('Backend questions fetch delayed or offline, using default questions:', err);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingQ(false);
       });
+
     return () => { isMounted = false; };
-  }, []);
+  }, [location?.district, location?.constituency, location?.ward]);
 
   function setAnswer(qid, value) {
     setAnswers(prev => ({ ...prev, [qid]: value }));
@@ -191,6 +207,8 @@ export default function SurveyFormPage() {
       surveyor_email: surveyor?.email || '',
       surveyor_name:  surveyor?.name  || '',
       ...location,
+      form_id:    formMeta?._id || '',
+      form_title: (lang === 'ta' && formMeta?.title_ta ? formMeta.title_ta : formMeta?.title) || '',
       answers: answersList,
       respondent_name:   respondentName,
       respondent_age:    respondentAge,
@@ -315,6 +333,7 @@ export default function SurveyFormPage() {
       {/* Top bar */}
       <div style={styles.topBar}>
         <div style={styles.topBarInner}>
+          <button onClick={() => navigate('/surveyor-dashboard')} style={styles.dashBtn}>🏠</button>
           <button onClick={() => navigate('/survey/location')} style={styles.backBtn}>{L.back}</button>
           <div style={styles.topCenter}>
             <span style={styles.stepBadge}>{L.step}</span>
@@ -331,9 +350,29 @@ export default function SurveyFormPage() {
       {location && (
         <div style={styles.locBanner}>
           <div style={styles.locBannerInner}>
-            📍 {location.district} › {location.constituency}
-            {location.ward && ` › Ward ${location.ward}`}
-            {location.area_street && ` › ${location.area_street}`}
+            <span>
+              📍 {location.district} › {location.constituency}
+              {location.ward && ` › Ward ${location.ward}`}
+              {location.area_street && ` › ${location.area_street}`}
+            </span>
+            {formMeta && (
+              <span style={{
+                background: formMeta.is_custom ? 'rgba(74, 222, 128, 0.25)' : 'rgba(255, 255, 255, 0.15)',
+                border: formMeta.is_custom ? '1px solid #4ade80' : '1px solid rgba(255,255,255,0.25)',
+                color: formMeta.is_custom ? '#4ade80' : '#fff',
+                padding: '3px 9px',
+                borderRadius: '8px',
+                fontSize: '11px',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                {formMeta.is_custom
+                  ? (lang === 'ta' ? '🎯 தனிப்பயன் வார்டு வினாப்பட்டியல்' : '🎯 Custom Ward Form')
+                  : (lang === 'ta' ? '📋 பொது வினாப்பட்டியல்' : '📋 General Survey Form')}
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -428,6 +467,16 @@ const styles = {
     cursor: 'pointer',
     fontSize: '12px',
     fontWeight: '700',
+  },
+  dashBtn: {
+    background: 'rgba(255,255,255,0.15)',
+    border: '1.5px solid rgba(255,255,255,0.4)',
+    color: '#fff',
+    borderRadius: '8px',
+    padding: '5px 10px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    lineHeight: 1,
   },
   topCenter: { display: 'flex', alignItems: 'center', gap: '8px' },
   stepBadge: {

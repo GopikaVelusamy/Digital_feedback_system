@@ -60,6 +60,7 @@ gallery_col         = db["gallery"]
 legacy_col            = db["legacy"]
 survey_questions_col  = db["survey_questions"]
 survey_responses_col  = db["survey_responses"]
+ward_survey_forms_col = db["ward_survey_forms"]
 
 # ── Additional imports for news scraping ──────────────────────
 import requests
@@ -962,6 +963,8 @@ def submit_survey_response(data: dict):
         "respondent_name": data.get("respondent_name", ""),
         "respondent_age":  data.get("respondent_age", ""),
         "respondent_gender": data.get("respondent_gender", ""),
+        "form_id":         data.get("form_id", ""),
+        "form_title":      data.get("form_title", ""),
         "submitted_at":    datetime.now().isoformat()
     }
     result = survey_responses_col.insert_one(doc)
@@ -1169,4 +1172,154 @@ def get_survey_summary(constituency: str = None):
     except Exception as e:
         print("Error in /api/survey-summary:", e)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ================================================================
+# WARD-SPECIFIC SURVEY FORMS (1 Form per Ward)
+# ================================================================
+
+@app.get("/api/ward-survey-form")
+def get_ward_survey_form(district: str = "Salem", constituency: str = "", ward: str = ""):
+    """
+    Get the single active survey form for a specific ward.
+    If a custom form exists for this ward, return it.
+    Otherwise, fall back to the default questions.
+    """
+    d_clean = (district or "").strip()
+    c_clean = (constituency or "").strip()
+    w_clean = (ward or "").strip()
+
+    if d_clean and c_clean and w_clean:
+        custom_form = ward_survey_forms_col.find_one({
+            "district": {"$regex": f"^{re.escape(d_clean)}$", "$options": "i"},
+            "constituency": {"$regex": f"^{re.escape(c_clean)}$", "$options": "i"},
+            "ward": {"$regex": f"^{re.escape(w_clean)}$", "$options": "i"}
+        })
+        if custom_form:
+            custom_form["_id"] = str(custom_form["_id"])
+            custom_form["is_custom"] = True
+            return custom_form
+
+    # Fallback to general survey questions
+    default_qs = list(survey_questions_col.find().sort("order", 1))
+    for q in default_qs:
+        q["_id"] = str(q["_id"])
+
+    title = f"{c_clean} - Ward {w_clean} Survey" if c_clean and w_clean else "General Civic Survey"
+    title_ta = f"{c_clean} - வார்டு {w_clean} பொதுமக்கள் கணக்கெடுப்பு" if c_clean and w_clean else "பொதுமக்கள் கருத்துக்கணிப்பு"
+
+    return {
+        "_id": "default",
+        "district": d_clean,
+        "constituency": c_clean,
+        "ward": w_clean,
+        "title": title,
+        "title_ta": title_ta,
+        "questions": default_qs,
+        "is_custom": False
+    }
+
+
+@app.post("/api/ward-survey-form")
+def save_ward_survey_form(data: dict):
+    """
+    Create or update the dedicated survey form for a specific ward.
+    """
+    district = (data.get("district") or "").strip()
+    constituency = (data.get("constituency") or "").strip()
+    ward = (data.get("ward") or "").strip()
+
+    if not district or not constituency or not ward:
+        raise HTTPException(status_code=400, detail="district, constituency, and ward are required")
+
+    questions = data.get("questions", [])
+    if not isinstance(questions, list) or len(questions) == 0:
+        raise HTTPException(status_code=400, detail="At least one question is required for the survey form")
+
+    # Ensure each question has clean fields
+    clean_questions = []
+    for idx, q in enumerate(questions):
+        clean_questions.append({
+            "_id": str(q.get("_id") or q.get("id") or ObjectId()),
+            "question_text": (q.get("question_text") or "").strip(),
+            "question_text_ta": (q.get("question_text_ta") or q.get("question_text") or "").strip(),
+            "type": q.get("type", "mcq"),
+            "options": q.get("options", []) if q.get("type") == "mcq" else [],
+            "options_ta": q.get("options_ta", []) if q.get("type") == "mcq" else [],
+            "required": bool(q.get("required", True)),
+            "order": idx + 1
+        })
+
+    title = data.get("title") or f"{constituency} - Ward {ward} Survey"
+    title_ta = data.get("title_ta") or f"{constituency} - வார்டு {ward} கணக்கெடுப்பு"
+
+    doc = {
+        "district": district,
+        "constituency": constituency,
+        "ward": ward,
+        "title": title,
+        "title_ta": title_ta,
+        "description": data.get("description", ""),
+        "questions": clean_questions,
+        "updated_at": datetime.now().isoformat()
+    }
+
+    # Upsert: 1 form per ward
+    ward_survey_forms_col.update_one(
+        {
+            "district": {"$regex": f"^{re.escape(district)}$", "$options": "i"},
+            "constituency": {"$regex": f"^{re.escape(constituency)}$", "$options": "i"},
+            "ward": {"$regex": f"^{re.escape(ward)}$", "$options": "i"}
+        },
+        {"$set": doc},
+        upsert=True
+    )
+
+    saved = ward_survey_forms_col.find_one({
+        "district": {"$regex": f"^{re.escape(district)}$", "$options": "i"},
+        "constituency": {"$regex": f"^{re.escape(constituency)}$", "$options": "i"},
+        "ward": {"$regex": f"^{re.escape(ward)}$", "$options": "i"}
+    })
+    saved["_id"] = str(saved["_id"])
+    saved["is_custom"] = True
+    return {"message": f"Survey form for Ward {ward} ({constituency}) saved successfully", "form": saved}
+
+
+@app.get("/api/ward-survey-forms")
+def list_ward_survey_forms(district: str = None, constituency: str = None):
+    """
+    List all configured ward survey forms.
+    """
+    query = {}
+    if district and district != "All":
+        query["district"] = {"$regex": f"^{re.escape(district.strip())}$", "$options": "i"}
+    if constituency and constituency != "All":
+        query["constituency"] = {"$regex": f"^{re.escape(constituency.strip())}$", "$options": "i"}
+
+    forms = list(ward_survey_forms_col.find(query).sort("updated_at", -1))
+    for f in forms:
+        f["_id"] = str(f["_id"])
+        f["questions_count"] = len(f.get("questions", []))
+        f["responses_count"] = survey_responses_col.count_documents({
+            "constituency": f.get("constituency"),
+            "ward": f.get("ward")
+        })
+    return forms
+
+
+@app.delete("/api/ward-survey-form/{form_id}")
+def delete_ward_survey_form(form_id: str):
+    """
+    Delete a custom ward survey form (reverts ward to default questions).
+    """
+    try:
+        res = ward_survey_forms_col.delete_one({"_id": ObjectId(form_id)})
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid form ID")
+
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Ward survey form not found")
+
+    return {"message": "Custom ward survey form deleted; ward will now use default questions"}
+
 

@@ -13,7 +13,7 @@ const LABELS = {
     success_msg: 'The survey response has been recorded successfully.',
     offline_msg: 'No internet connection. Response saved locally and will sync automatically when online.',
     add_next: 'Add Next Respondent',
-    view_my: 'View My Surveys',
+    view_my: 'View My Dashboard',
     logout: 'Logout',
     syncing: 'Syncing offline data...',
     synced: 'All offline data synced!',
@@ -24,7 +24,7 @@ const LABELS = {
     success_msg: 'கணக்கெடுப்பு பதில் வெற்றிகரமாக பதிவு செய்யப்பட்டது.',
     offline_msg: 'இணைய இணைப்பு இல்லை. பதில் உள்ளூரில் சேமிக்கப்பட்டது, ஆன்லைனில் தானாக ஒத்திசைக்கப்படும்.',
     add_next: 'அடுத்த நபரை சேர்க்கவும்',
-    view_my: 'எனது கணக்கெடுப்புகள்',
+    view_my: 'என் டாஷ்போர்டு',
     logout: 'வெளியேறு',
     syncing: 'ஆஃப்லைன் தரவை ஒத்திசைக்கிறது...',
     synced: 'அனைத்து தரவும் ஒத்திசைக்கப்பட்டது!',
@@ -121,6 +121,14 @@ export default function SurveySuccessPage() {
             style={styles.primaryBtn}
           >
             {L.add_next}
+          </button>
+
+          <button
+            id="view-dashboard-btn"
+            onClick={() => navigate('/surveyor-dashboard')}
+            style={styles.dashBtn}
+          >
+            {L.view_my}
           </button>
 
           <button
@@ -231,5 +239,17 @@ const styles = {
     fontSize: '14px',
     fontWeight: '700',
     cursor: 'pointer',
+  },
+  dashBtn: {
+    width: '100%',
+    padding: '13px',
+    background: 'linear-gradient(135deg, #1e40af, #1d4ed8)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '12px',
+    fontSize: '14px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    boxShadow: '0 4px 14px rgba(29,78,216,0.3)',
   },
 };

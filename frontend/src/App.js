@@ -18,8 +18,9 @@ import CreateAdminPage from './pages/CreateAdminPage';
 import CreateConstituencyAdminPage from './pages/CreateConstituencyAdminPage';
 import CreateSurveyorPage from './pages/CreateSurveyorPage';
 
-// Survey Platform Pages (Phase 1)
+// Survey Platform Pages
 import SurveyorLoginPage from './pages/SurveyorLoginPage';
+import SurveyorDashboardPage from './pages/SurveyorDashboardPage';
 import SurveyLocationPage from './pages/SurveyLocationPage';
 import SurveyFormPage from './pages/SurveyFormPage';
 import SurveySuccessPage from './pages/SurveySuccessPage';
@@ -165,8 +166,17 @@ export default function App() {
           }
         />
 
-        {/* ─── Survey Platform Routes (Phase 1) ────────────────── */}
+        {/* ─── Survey Platform Routes ───────────────────────────── */}
         <Route path="/surveyor-login" element={<SurveyorLoginPage />} />
+
+        <Route
+          path="/surveyor-dashboard"
+          element={
+            <SurveyorRoute>
+              <SurveyorDashboardPage />
+            </SurveyorRoute>
+          }
+        />
 
         <Route
           path="/survey/location"

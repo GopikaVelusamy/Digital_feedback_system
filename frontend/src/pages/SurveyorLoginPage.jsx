@@ -70,7 +70,7 @@ export default function SurveyorLoginPage() {
           constituency: data.constituency || '',
           district: data.district || 'Salem'
         }));
-        navigate('/survey/location');
+        navigate('/surveyor-dashboard');
         setLoading(false);
         return;
       } else {

@@ -36,6 +36,8 @@ export default function SuperAdminSurveyTab({ language = 'English' }) {
   const [summaryData, setSummaryData] = useState(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [summaryCopied, setSummaryCopied] = useState(false);
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
 
   // Global Question Form States
   const [qTextEn, setQTextEn] = useState('');
@@ -640,6 +642,470 @@ export default function SuperAdminSurveyTab({ language = 'English' }) {
     setTimeout(() => setSummaryCopied(false), 2500);
   }
 
+  function buildPrintableHTML(data, scope) {
+    const genDate = new Date().toLocaleString(isTa ? 'ta-IN' : 'en-IN', {
+      dateStyle: 'full',
+      timeStyle: 'short'
+    });
+
+    const total = data?.total_responses || 0;
+    const overallRating = data?.overall_average_rating || '0.0';
+    const ratingNum = parseFloat(overallRating) || 0;
+    const starsCount = Math.min(5, Math.max(1, Math.round(ratingNum)));
+    const stars = '★'.repeat(starsCount) + '☆'.repeat(5 - starsCount);
+    const satisfactionPct = Math.round((ratingNum / 5) * 100);
+    const avgAge = data?.average_age || '—';
+    const ageRange = data?.min_age && data?.max_age ? `${data.min_age} - ${data.max_age} yrs` : 'Demographic sample';
+
+    const qAverages = data?.question_averages || [];
+    const constAverages = data?.constituency_averages || [];
+
+    return `<!DOCTYPE html>
+<html lang="${isTa ? 'ta' : 'en'}">
+<head>
+  <meta charset="UTF-8">
+  <title>${isTa ? 'பொது கணக்கெடுப்பு சுருக்கம் & சராசரிகள் அறிக்கை' : 'Salem Public Survey Summary & Averages Report'}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background-color: #f8fafc;
+      padding: 24px;
+      line-height: 1.5;
+    }
+    .no-print {
+      background: #064e3b;
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);
+    }
+    .print-btn {
+      background: #10b981;
+      color: #ffffff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .print-btn:hover { background: #059669; }
+    .close-btn {
+      background: rgba(255,255,255,0.2);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .report-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 36px 40px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .header {
+      border-bottom: 3px double #059669;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: #064e3b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .brand-sub {
+      font-size: 12px;
+      font-weight: 700;
+      color: #047857;
+      margin-top: 4px;
+    }
+    .meta-box {
+      text-align: right;
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .meta-box strong { color: #0f172a; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+    }
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #166534;
+      margin-bottom: 6px;
+    }
+    .kpi-val {
+      font-size: 28px;
+      font-weight: 900;
+      color: #064e3b;
+      font-family: monospace;
+      line-height: 1.1;
+    }
+    .kpi-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: #047857;
+      margin-top: 4px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #064e3b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 28px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-bottom: 24px;
+    }
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      padding: 10px 12px;
+      border-bottom: 2px solid #cbd5e1;
+      text-align: left;
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+      vertical-align: middle;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-info { background: #e0f2fe; color: #075985; }
+    .bar-container {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 4px;
+    }
+    .footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #64748b;
+    }
+    @media print {
+      body { background: #ffffff !important; padding: 0 !important; font-size: 10pt; }
+      .no-print { display: none !important; }
+      .report-container { border: none !important; box-shadow: none !important; padding: 0 !important; max-width: 100% !important; }
+      .page-break { page-break-before: always; }
+      th { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .kpi-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #f0fdf4 !important; }
+      .badge-success { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #dcfce7 !important; }
+      .bar-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print">
+    <div>
+      <div style="font-weight: 900; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+        📄 ${isTa ? 'பொது கணக்கெடுப்பு சுருக்கம் & சராசரிகள் அறிக்கை (PDF)' : 'Salem Public Survey Summary & Averages Report'}
+      </div>
+      <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">
+        ${isTa ? 'அச்சு உரையாடலில் "Save as PDF" என்பதைத் தேர்ந்தெடுக்கவும்.' : 'In the print dialog, select "Save as PDF" to save this official summary.'}
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="print-btn" onclick="window.print()">
+        🖨️ ${isTa ? 'PDF ஆக சேமி / அச்சிடு' : 'Save as PDF / Print'}
+      </button>
+      <button class="close-btn" onclick="window.close()">✕ ${isTa ? 'மூடு' : 'Close'}</button>
+    </div>
+  </div>
+
+  <div class="report-container">
+    <div class="header">
+      <div>
+        <div class="brand-title">🍃 AIADMK INSIGHTFLOW • SALEM DISTRICT</div>
+        <div class="brand-sub">${isTa ? 'பொதுமக்கள் கள கணக்கெடுப்பு • ஒருங்கிணைந்த பதில்கள் சுருக்கம் & சராசரிகள் அறிக்கை' : 'Field Public Survey • Consolidated Responses Summary & Numerical Averages Report'}</div>
+      </div>
+      <div class="meta-box">
+        <div><strong>${isTa ? 'அறிக்கை தேதி:' : 'Date:'}</strong> ${genDate}</div>
+        <div><strong>${isTa ? 'தொகுதி எல்லை:' : 'Scope:'}</strong> ${scope}</div>
+        <div><strong>${isTa ? 'ஆவணம் ID:' : 'Document ID:'}</strong> PS-SLM-${new Date().getTime().toString().slice(-6)}</div>
+      </div>
+    </div>
+
+    <!-- Executive KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">${isTa ? 'ஒட்டுமொத்த மதிப்பீடு' : 'Overall Civic Rating'}</div>
+        <div class="kpi-val">${overallRating} <span style="font-size: 13px; color: #64748b;">/ 5.0</span></div>
+        <div class="kpi-sub" style="color: #b45309;">${stars} (${satisfactionPct}%)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${isTa ? 'சராசரி குடிமக்கள் வயது' : 'Average Citizen Age'}</div>
+        <div class="kpi-val">${avgAge} <span style="font-size: 13px; color: #64748b;">${isTa ? 'வயது' : 'yrs'}</span></div>
+        <div class="kpi-sub">${ageRange}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${isTa ? 'மதிப்பிடப்பட்ட கேள்விகள்' : 'Evaluated Questions'}</div>
+        <div class="kpi-val">${qAverages.length || questions.length}</div>
+        <div class="kpi-sub">${isTa ? 'அனைத்து படிவங்கள்' : 'Civic & Infrastructure'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${isTa ? 'மொத்த பதில்கள்' : 'Total Survey Sample'}</div>
+        <div class="kpi-val">${total}</div>
+        <div class="kpi-sub">${isTa ? 'சரிபார்க்கப்பட்ட பதில்கள்' : 'Verified Submissions'}</div>
+      </div>
+    </div>
+
+    <!-- Question-by-Question Numerical Averages Table -->
+    <div class="section-title">
+      <span>📊</span> ${isTa ? 'வினா வாரியான சராசரிகள் & மதிப்பீட்டு விவரங்கள்' : 'Question-by-Question Numerical Averages & Detailed Metrics'}
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 40px;">#</th>
+          <th>${isTa ? 'கேள்வி விவரம்' : 'Question / Dimension'}</th>
+          <th style="width: 100px;">${isTa ? 'வகை' : 'Type'}</th>
+          <th style="width: 90px; text-align: center;">${isTa ? 'பதில்கள்' : 'Sample Size'}</th>
+          <th style="width: 160px; text-align: right;">${isTa ? 'சராசரி மதிப்பீடு / முடிவு' : 'Average Rating / Result'}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${qAverages.length === 0 ? `
+          <tr>
+            <td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">
+              ${isTa ? 'கணக்கெடுப்பு பதில்கள் இன்னும் பதிவாகவில்லை. (கேள்விகள் படிவங்கள் செயலில் உள்ளன).' : 'No survey responses recorded yet. (Survey form questionnaires are active).'}
+            </td>
+          </tr>
+        ` : qAverages.map((q, i) => {
+          const hasAvg = q.is_numeric && q.average !== null;
+          const avgVal = parseFloat(q.average) || 0;
+          const pctVal = Math.round((avgVal / 5) * 100);
+          return `
+            <tr>
+              <td style="font-weight: 800; color: #047857; font-family: monospace;">${i + 1}</td>
+              <td>
+                <div style="font-weight: 700; color: #0f172a;">${q.question_text || ''}</div>
+                ${q.question_text_ta ? `<div style="font-size: 10px; color: #047857; margin-top: 2px;">${q.question_text_ta}</div>` : ''}
+              </td>
+              <td><span class="badge ${hasAvg ? 'badge-success' : 'badge-info'}">${q.type || 'mcq'}</span></td>
+              <td style="text-align: center; font-family: monospace; font-weight: 700;">${q.total_responses || 0}</td>
+              <td style="text-align: right;">
+                ${hasAvg ? `
+                  <div style="font-weight: 900; font-size: 13px; color: #064e3b; font-family: monospace;">
+                    ★ ${q.average} / 5.0
+                  </div>
+                  <div class="bar-container">
+                    <div class="bar-fill" style="width: ${Math.max(8, pctVal)}%;"></div>
+                  </div>
+                  <div style="font-size: 9px; color: #64748b; margin-top: 2px;">${pctVal}% Satisfaction</div>
+                ` : `
+                  <div style="font-size: 11px; font-weight: 700; color: #475569;">
+                    ${q.breakdown ? Object.entries(q.breakdown).sort((a,b)=>b[1]-a[1]).slice(0,1).map(([k,v])=>`${k} (${v})`).join('') || 'Recorded' : 'Recorded'}
+                  </div>
+                `}
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+
+    <!-- Constituency-Wise Performance Table -->
+    <div class="section-title">
+      <span>🏆</span> ${isTa ? 'தொகுதி வாரியான சராசரிகள் ஒப்பீடு' : 'Constituency-Wise Averages & Comparison Scorecard'}
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 50px;">Rank</th>
+          <th>${isTa ? 'தொகுதி பெயர்' : 'Constituency'}</th>
+          <th style="text-align: center; width: 100px;">${isTa ? 'பதில்கள்' : 'Surveys'}</th>
+          <th style="text-align: center; width: 130px;">${isTa ? 'சராசரி மதிப்பீடு' : 'Average Rating'}</th>
+          <th style="text-align: center; width: 100px;">${isTa ? 'சராசரி வயது' : 'Avg Age'}</th>
+          <th style="text-align: right; width: 120px;">${isTa ? 'நிலை' : 'Civic Health Status'}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${constAverages.length === 0 ? `
+          <tr>
+            <td colspan="6" style="text-align: center; color: #64748b; padding: 20px;">
+              ${isTa ? 'தொகுதி வாரியான தரவுகள் கணக்கிடப்படுகின்றன...' : 'No constituency breakdown data recorded yet.'}
+            </td>
+          </tr>
+        ` : constAverages.map((c, i) => {
+          const rating = parseFloat(c.average_rating);
+          const hasR = !isNaN(rating);
+          const statusBadge = hasR && rating >= 4.0 ? 'Optimal (சிறப்பு)' : hasR && rating >= 3.0 ? 'Satisfactory (திருப்தி)' : 'Needs Focus (கவனம் தேவை)';
+          const badgeClass = hasR && rating >= 4.0 ? 'badge-success' : hasR && rating >= 3.0 ? 'badge-warning' : 'badge-info';
+          return `
+            <tr>
+              <td style="font-weight: 800; font-family: monospace;">#${i + 1}</td>
+              <td style="font-weight: 800; color: #064e3b;">${c.constituency}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: 700;">${c.total_responses}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: 900; color: #064e3b;">
+                ${hasR ? `★ ${c.average_rating} / 5.0` : '—'}
+              </td>
+              <td style="text-align: center; font-family: monospace;">${c.average_age ? `${c.average_age} yrs` : '—'}</td>
+              <td style="text-align: right;"><span class="badge ${badgeClass}">${statusBadge}</span></td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+
+    <!-- Ward Survey Forms Summary -->
+    ${configuredWardForms && configuredWardForms.length > 0 ? `
+      <div class="section-title">
+        <span>🏘️</span> ${isTa ? 'தனிப்பயனாக்கப்பட்ட வார்டு வினாப்பட்டியல்கள்' : 'Active Dedicated Ward-Specific Survey Questionnaires'}
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>${isTa ? 'தொகுதி & வார்டு' : 'Constituency & Ward'}</th>
+            <th>${isTa ? 'படிவம் தலைப்பு' : 'Form Title'}</th>
+            <th style="text-align: center;">${isTa ? 'கேள்விகள்' : 'Questions'}</th>
+            <th style="text-align: center;">${isTa ? 'பதிவான பதில்கள்' : 'Responses'}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${configuredWardForms.map((wf, idx) => `
+            <tr>
+              <td style="font-weight: bold; font-family: monospace;">${idx + 1}</td>
+              <td style="font-weight: 800; color: #064e3b;">${wf.constituency} — Ward ${wf.ward}</td>
+              <td>${wf.title || 'Ward Survey'}</td>
+              <td style="text-align: center; font-family: monospace;">${wf.questions_count || (wf.questions && wf.questions.length) || 0}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: 800;">${wf.responses_count || 0}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` : ''}
+
+    <div class="footer">
+      <div>
+        <strong>AIADMK Election & Public Survey Command Center</strong> • Salem District Central HQ<br>
+        Automated statistical computation with verified field response audit trail.
+      </div>
+      <div style="text-align: right;">
+        <strong>Authorized Signatory</strong><br>
+        District Field Survey Management System
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 500);
+    };
+  </script>
+</body>
+</html>`;
+  }
+
+  function handleDownloadPDFSummary() {
+    setGeneratingPDF(true);
+    try {
+      const data = summaryData || calculateClientSummary(
+        (filterConstituency && filterConstituency !== 'All')
+          ? responses.filter(r => (r.constituency || '').toLowerCase() === filterConstituency.toLowerCase())
+          : responses,
+        questions
+      );
+
+      const constituencyScope = filterConstituency === 'All'
+        ? (isTa ? 'அனைத்து தொகுதிகள் (சேலம் மாவட்டம்)' : 'All 11 Constituencies (Salem District)')
+        : `${filterConstituency} Constituency`;
+
+      const printWindow = window.open('', '_blank', 'width=1000,height=850');
+      if (!printWindow) {
+        // Fallback to in-page preview modal if popup was blocked
+        setShowPDFModal(true);
+        setGeneratingPDF(false);
+        return;
+      }
+
+      const htmlContent = buildPrintableHTML(data, constituencyScope);
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      setGeneratingPDF(false);
+    } catch (e) {
+      console.error("PDF generation error:", e);
+      setShowPDFModal(true);
+      setGeneratingPDF(false);
+    }
+  }
+
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Top Banner & Sub-Tabs Navigation */}
@@ -657,18 +1123,28 @@ export default function SuperAdminSurveyTab({ language = 'English' }) {
               : 'Configure dedicated 1-to-1 survey forms per ward, manage questions, and analyze responses.'}
           </p>
 
-          {/* Quick Action Button for Responses Summary & Averages */}
+          {/* Quick Action Buttons for Responses Summary, Averages & PDF */}
           <div className="mt-3.5 flex flex-wrap items-center gap-2.5">
+            <button
+              onClick={handleDownloadPDFSummary}
+              disabled={generatingPDF}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider transition flex items-center gap-2 shadow-lg active:scale-95 cursor-pointer disabled:opacity-50"
+              title="Summarize all survey forms and download as official PDF report"
+            >
+              <span className="text-base">📄</span>
+              <span>{generatingPDF ? (isTa ? 'PDF தயாராகிறது...' : 'Generating PDF...') : (isTa ? 'படிவங்கள் சுருக்கம் & PDF பதிவிறக்கு' : 'Summarize Forms & Download PDF')}</span>
+              <span className="text-3xs font-black bg-white/25 px-1.5 py-0.5 rounded uppercase font-mono">PDF REPORT</span>
+            </button>
+
             <button
               onClick={() => {
                 setSubTab('summary');
                 fetchSummary(filterConstituency);
               }}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase tracking-wider transition flex items-center gap-2 shadow-md active:scale-95"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase tracking-wider transition flex items-center gap-2 shadow-md active:scale-95 cursor-pointer"
             >
               <span>📈</span>
-              <span>{isTa ? 'பதில்கள் சுருக்கம் & சராசரிகள் காண்க' : 'View Responses Summary & Averages'}</span>
-              <span className="text-3xs opacity-90 bg-white/20 px-1.5 py-0.5 rounded font-mono">NEW</span>
+              <span>{isTa ? 'பதில்கள் சுருக்கம் & சராசரிகள் காண்க' : 'View Summary & Averages On Screen'}</span>
             </button>
           </div>
         </div>
@@ -708,6 +1184,7 @@ export default function SuperAdminSurveyTab({ language = 'English' }) {
           >
             <span>📈</span>
             <span>{isTa ? 'சுருக்கம் & சராசரி' : 'Summary & Averages'}</span>
+            <span className="text-3xs bg-amber-300 text-amber-950 px-1 py-0.2 rounded font-black">PDF</span>
           </button>
           <button
             onClick={() => setSubTab('builder')}
@@ -1562,6 +2039,15 @@ export default function SuperAdminSurveyTab({ language = 'English' }) {
 
             <div className="flex flex-wrap items-center gap-2.5">
               <button
+                onClick={handleDownloadPDFSummary}
+                disabled={generatingPDF}
+                className="px-4 py-2.5 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow active:scale-95 disabled:opacity-50 cursor-pointer"
+                title="Download full summary report as PDF"
+              >
+                <span>📄</span>
+                <span>{generatingPDF ? (isTa ? 'தயாராகிறது...' : 'Generating...') : (isTa ? 'PDF அறிக்கை' : 'Download Summary PDF')}</span>
+              </button>
+              <button
                 onClick={() => {
                   setSubTab('summary');
                   fetchSummary(filterConstituency);
@@ -1689,6 +2175,16 @@ export default function SuperAdminSurveyTab({ language = 'English' }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={handleDownloadPDFSummary}
+                disabled={generatingPDF}
+                className="px-5 py-2.5 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-2 shadow-md active:scale-95 disabled:opacity-50 cursor-pointer"
+                title="Save and download this statistical summary as official PDF document"
+              >
+                <span>📄</span>
+                <span>{generatingPDF ? (isTa ? 'தயாராகிறது...' : 'Generating...') : (isTa ? 'சுருக்கத்தை PDF ஆக பதிவிறக்கு' : 'Download Summary as PDF')}</span>
+              </button>
+
               <button
                 onClick={() => fetchSummary(filterConstituency)}
                 disabled={loadingSummary}
@@ -2076,6 +2572,110 @@ export default function SuperAdminSurveyTab({ language = 'English' }) {
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────── */}
+      {/* PDF PREVIEW & DIRECT PRINT MODAL                           */}
+      {/* ─────────────────────────────────────────────────────────── */}
+      {showPDFModal && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-fadeIn">
+          <div className="bg-white rounded-[2rem] max-w-4xl w-full max-h-[90vh] flex flex-col border border-emerald-500/30 shadow-2xl overflow-hidden">
+            <div className="p-5 sm:p-6 bg-gradient-to-r from-emerald-900 via-teal-900 to-emerald-900 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📄</span>
+                <div>
+                  <h4 className="font-black text-base uppercase tracking-wide">
+                    {isTa ? 'கள கணக்கெடுப்பு சுருக்கம் & சராசரிகள் (PDF முன்னோட்டம்)' : 'Survey Summary & Averages (PDF Dossier)'}
+                  </h4>
+                  <p className="text-xs text-emerald-200">
+                    Scope: {filterConstituency === 'All' ? 'Salem District (Full)' : filterConstituency}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDownloadPDFSummary}
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-black text-xs uppercase tracking-wider transition flex items-center gap-1.5 shadow"
+                >
+                  <span>🖨️</span>
+                  <span>{isTa ? 'PDF சேமி / அச்சிடு' : 'Print / Save as PDF'}</span>
+                </button>
+                <button
+                  onClick={() => setShowPDFModal(false)}
+                  className="w-8 h-8 rounded-full bg-white/20 text-white hover:bg-white/30 flex items-center justify-center font-bold text-sm transition"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-800">
+              {/* Executive Summary Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                  <div className="text-[10px] font-black uppercase text-emerald-800">Overall Rating</div>
+                  <div className="text-2xl font-black text-emerald-900 font-mono mt-1">
+                    {summaryData?.overall_average_rating || '0.0'} / 5.0
+                  </div>
+                </div>
+                <div className="p-4 rounded-2xl bg-teal-50 border border-teal-200">
+                  <div className="text-[10px] font-black uppercase text-teal-800">Average Age</div>
+                  <div className="text-2xl font-black text-teal-900 font-mono mt-1">
+                    {summaryData?.average_age || '—'} yrs
+                  </div>
+                </div>
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                  <div className="text-[10px] font-black uppercase text-amber-800">Active Questions</div>
+                  <div className="text-2xl font-black text-amber-900 font-mono mt-1">
+                    {summaryData?.question_averages?.length || questions.length}
+                  </div>
+                </div>
+                <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200">
+                  <div className="text-[10px] font-black uppercase text-blue-800">Sample Responses</div>
+                  <div className="text-2xl font-black text-blue-900 font-mono mt-1">
+                    {summaryData?.total_responses || responses.length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Questions Numerical Averages Preview */}
+              <div>
+                <h5 className="text-xs font-black uppercase tracking-wider text-slate-700 mb-3">
+                  Question-by-Question Numerical Averages:
+                </h5>
+                <div className="space-y-2">
+                  {(summaryData?.question_averages || []).map((q, idx) => (
+                    <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-4 text-xs">
+                      <div>
+                        <span className="font-bold text-slate-800">{idx + 1}. {q.question_text}</span>
+                        {q.question_text_ta && <span className="block text-[11px] text-emerald-700">{q.question_text_ta}</span>}
+                      </div>
+                      <div className="text-right shrink-0">
+                        {q.is_numeric && q.average !== null ? (
+                          <span className="font-black font-mono text-emerald-800 text-sm bg-emerald-100 px-2.5 py-1 rounded-lg">
+                            ★ {q.average} / 5.0
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">{q.total_responses} responses</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <span>In the print preview dialog, set destination to <strong>"Save as PDF"</strong> to save this document.</span>
+                <button
+                  onClick={handleDownloadPDFSummary}
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-xl text-xs uppercase shadow transition"
+                >
+                  Save as PDF
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

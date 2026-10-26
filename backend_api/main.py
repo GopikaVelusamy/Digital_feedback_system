@@ -1019,3 +1019,154 @@ def get_survey_analytics():
         "by_surveyor":       by_surveyor
     }
 
+
+# ── Survey Responses Summary & Numerical Averages ────────────────
+@app.get("/api/survey-summary")
+def get_survey_summary(constituency: str = None):
+    try:
+        query = {}
+        if constituency and constituency != "All":
+            query["constituency"] = constituency
+
+        responses = list(survey_responses_col.find(query))
+        total_responses = len(responses)
+
+        if total_responses == 0:
+            return {
+                "total_responses": 0,
+                "overall_average_rating": 0.0,
+                "average_age": 0.0,
+                "min_age": 0,
+                "max_age": 0,
+                "question_averages": [],
+                "constituency_averages": []
+            }
+
+        # Calculate average age
+        ages = []
+        for r in responses:
+            raw_age = r.get("respondent_age")
+            try:
+                if raw_age:
+                    age_val = float(str(raw_age).strip())
+                    if 1 <= age_val <= 120:
+                        ages.append(age_val)
+            except (ValueError, TypeError):
+                pass
+
+        avg_age = round(sum(ages) / len(ages), 1) if ages else 0.0
+        min_age = int(min(ages)) if ages else 0
+        max_age = int(max(ages)) if ages else 0
+
+        # Calculate question averages
+        q_map = {}
+        all_ratings = []
+        constituency_scores = {}
+
+        for r in responses:
+            c_name = r.get("constituency") or "Salem General"
+            if c_name not in constituency_scores:
+                constituency_scores[c_name] = {"ratings": [], "ages": [], "count": 0}
+            constituency_scores[c_name]["count"] += 1
+
+            raw_age = r.get("respondent_age")
+            try:
+                if raw_age:
+                    age_num = float(str(raw_age).strip())
+                    if 1 <= age_num <= 120:
+                        constituency_scores[c_name]["ages"].append(age_num)
+            except:
+                pass
+
+            for ans in (r.get("answers") or []):
+                q_id = str(ans.get("question_id") or ans.get("question_text", ""))
+                q_text = ans.get("question_text", "")
+                raw_ans = ans.get("answer", "")
+
+                if q_id not in q_map:
+                    q_map[q_id] = {
+                        "question_id": q_id,
+                        "question_text": q_text,
+                        "numeric_values": [],
+                        "all_answers": [],
+                        "by_constituency": {}
+                    }
+
+                q_map[q_id]["all_answers"].append(raw_ans)
+
+                # Try numeric conversion
+                try:
+                    num_val = float(str(raw_ans).strip())
+                    q_map[q_id]["numeric_values"].append(num_val)
+                    if 1.0 <= num_val <= 10.0:
+                        all_ratings.append(num_val)
+                        constituency_scores[c_name]["ratings"].append(num_val)
+
+                    if c_name not in q_map[q_id]["by_constituency"]:
+                        q_map[q_id]["by_constituency"][c_name] = []
+                    q_map[q_id]["by_constituency"][c_name].append(num_val)
+                except (ValueError, TypeError):
+                    pass
+
+        question_averages = []
+        for q_id, item in q_map.items():
+            nums = item["numeric_values"]
+            is_numeric = len(nums) > 0 and len(nums) >= (len(item["all_answers"]) * 0.4)
+            avg_val = round(sum(nums) / len(nums), 2) if nums else None
+            min_val = min(nums) if nums else None
+            max_val = max(nums) if nums else None
+
+            # Distribution (1 to 5)
+            distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+            if nums:
+                for n in nums:
+                    rounded = int(round(n))
+                    if rounded in distribution:
+                        distribution[rounded] += 1
+
+            # Option breakdown
+            breakdown = {}
+            for a in item["all_answers"]:
+                s = str(a).strip()
+                breakdown[s] = breakdown.get(s, 0) + 1
+
+            question_averages.append({
+                "question_id": q_id,
+                "question_text": item["question_text"],
+                "total_responses": len(item["all_answers"]),
+                "is_numeric": is_numeric,
+                "average": avg_val,
+                "min": min_val,
+                "max": max_val,
+                "distribution": distribution,
+                "breakdown": breakdown
+            })
+
+        overall_avg_rating = round(sum(all_ratings) / len(all_ratings), 2) if all_ratings else 0.0
+
+        # Constituency averages
+        const_averages = []
+        for c_name, c_data in constituency_scores.items():
+            c_ratings = c_data["ratings"]
+            c_ages = c_data["ages"]
+            const_averages.append({
+                "constituency": c_name,
+                "total_responses": c_data["count"],
+                "average_rating": round(sum(c_ratings) / len(c_ratings), 2) if c_ratings else None,
+                "average_age": round(sum(c_ages) / len(c_ages), 1) if c_ages else None
+            })
+        const_averages.sort(key=lambda x: (x["average_rating"] or 0), reverse=True)
+
+        return {
+            "total_responses": total_responses,
+            "overall_average_rating": overall_avg_rating,
+            "average_age": avg_age,
+            "min_age": min_age,
+            "max_age": max_age,
+            "question_averages": question_averages,
+            "constituency_averages": const_averages
+        }
+    except Exception as e:
+        print("Error in /api/survey-summary:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
